@@ -25,7 +25,9 @@ const {
   FiStar,
   FiMessageSquare,
   FiCheck,
-  FiX
+  FiX,
+  FiInfo,
+  FiPlus
 } = FiIcons
 
 const ProfessionalProfile = () => {
@@ -231,7 +233,7 @@ const ProfessionalProfile = () => {
         
         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-sm text-blue-700">
           <div className="font-medium mb-1 flex items-center">
-            <SafeIcon icon={FiIcons.FiInfo} className="mr-2" />
+            <SafeIcon icon={FiInfo} className="mr-2" />
             <span>Your Professional Profile</span>
           </div>
           <p>This is your primary public profile, always available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. 
