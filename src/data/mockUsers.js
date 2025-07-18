@@ -189,12 +189,12 @@ export const mockPages = [
   }
 ]
 
-// Template configurations
+// Template configurations with updated brand colors
 export const templateTypes = {
   standard: {
     name: 'Standard Hybrid',
     description: 'Professional profile with services overview',
-    color: 'bg-blue-500'
+    color: 'bg-picton-blue'
   },
   recruiting: {
     name: 'Recruiting',
@@ -214,6 +214,6 @@ export const templateTypes = {
   international: {
     name: 'International',
     description: 'Cross-border financial services',
-    color: 'bg-indigo-500'
+    color: 'bg-polynesian-blue'
   }
 }

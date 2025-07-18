@@ -13,28 +13,32 @@ const DashboardStats = () => {
       value: '2,847',
       change: '+12.3%',
       icon: FiEye,
-      color: 'text-blue-600'
+      color: 'text-picton-blue',
+      bgColor: 'bg-picton-blue/10'
     },
     {
       title: 'Active Pages',
       value: '3',
       change: '+1',
       icon: FiGlobe,
-      color: 'text-green-600'
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
     },
     {
       title: 'Leads Generated',
       value: '24',
       change: '+8.1%',
       icon: FiUsers,
-      color: 'text-purple-600'
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50'
     },
     {
       title: 'Conversion Rate',
       value: '4.2%',
       change: '+0.5%',
       icon: FiTrendingUp,
-      color: 'text-orange-600'
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
     }
   ]
 
@@ -50,11 +54,11 @@ const DashboardStats = () => {
           <Card className="p-6" hover>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-sm font-medium text-polynesian-blue/70">{stat.title}</p>
+                <p className="text-2xl font-bold text-polynesian-blue mt-1">{stat.value}</p>
                 <p className="text-sm text-green-600 mt-1">{stat.change}</p>
               </div>
-              <div className={`p-3 rounded-full bg-gray-50 ${stat.color}`}>
+              <div className={`p-3 rounded-full ${stat.bgColor} ${stat.color}`}>
                 <SafeIcon icon={stat.icon} className="w-6 h-6" />
               </div>
             </div>

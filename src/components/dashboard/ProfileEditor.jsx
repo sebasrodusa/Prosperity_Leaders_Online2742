@@ -73,8 +73,8 @@ const ProfileEditor = () => {
   return (
     <Card className="p-6">
       <div className="flex items-center space-x-3 mb-6">
-        <SafeIcon icon={FiUser} className="w-6 h-6 text-blue-600" />
-        <h2 className="text-xl font-semibold text-gray-900">Profile Settings</h2>
+        <SafeIcon icon={FiUser} className="w-6 h-6 text-picton-blue" />
+        <h2 className="text-xl font-semibold text-polynesian-blue">Profile Settings</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -146,7 +146,7 @@ const ProfileEditor = () => {
 
         {/* Social Links */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Social Media Links</h3>
+          <h3 className="text-lg font-medium text-polynesian-blue">Social Media Links</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2">
               <SafeIcon icon={FiInstagram} className="w-5 h-5 text-pink-500" />

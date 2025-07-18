@@ -16,10 +16,10 @@ const LandingPage = () => {
 
   if (!page || !user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-anti-flash-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
-          <p className="text-gray-600">The page you're looking for doesn't exist.</p>
+          <h1 className="text-4xl font-bold text-polynesian-blue mb-4">Page Not Found</h1>
+          <p className="text-polynesian-blue/70">The page you're looking for doesn't exist.</p>
         </div>
       </div>
     )
@@ -29,22 +29,22 @@ const LandingPage = () => {
   const socialLinks = Object.entries(user.social_links || {}).filter(([key, value]) => value)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-anti-flash-white to-white">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white shadow-sm"
+        className="bg-polynesian-blue shadow-sm"
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${template.color}`} />
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-white/90">
                 {template.name}
               </span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-white/70">
               Prosperity Leaders™
             </div>
           </div>
@@ -60,25 +60,25 @@ const LandingPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-1"
           >
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-gray-200">
               <img
                 src={user.profile_photo_url}
                 alt={user.full_name}
-                className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-picton-blue/20"
               />
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-polynesian-blue mb-2">
                 {user.full_name}
               </h1>
-              <p className="text-gray-600 mb-4">{user.bio}</p>
+              <p className="text-polynesian-blue/70 mb-4">{user.bio}</p>
               
               {/* Contact Info */}
               <div className="space-y-2 mb-6">
-                <div className="flex items-center justify-center space-x-2 text-gray-600">
+                <div className="flex items-center justify-center space-x-2 text-polynesian-blue/70">
                   <SafeIcon icon={FiMail} className="w-4 h-4" />
                   <span className="text-sm">{user.email}</span>
                 </div>
                 {user.phone && (
-                  <div className="flex items-center justify-center space-x-2 text-gray-600">
+                  <div className="flex items-center justify-center space-x-2 text-polynesian-blue/70">
                     <SafeIcon icon={FiPhone} className="w-4 h-4" />
                     <span className="text-sm">{user.phone}</span>
                   </div>
@@ -93,7 +93,7 @@ const LandingPage = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center justify-center w-full px-4 py-2 bg-picton-blue text-white rounded-lg hover:bg-picton-blue/90 transition-colors mb-6"
                 >
                   <SafeIcon icon={FiCalendar} className="w-4 h-4 mr-2" />
                   Schedule Consultation
@@ -103,7 +103,7 @@ const LandingPage = () => {
               {/* Social Links */}
               {socialLinks.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">Connect With Me</h3>
+                  <h3 className="text-sm font-medium text-polynesian-blue mb-3">Connect With Me</h3>
                   <div className="flex justify-center space-x-3">
                     {socialLinks.map(([platform, url]) => {
                       const icons = {
@@ -125,7 +125,7 @@ const LandingPage = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           whileHover={{ scale: 1.1 }}
-                          className={`p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${colors[platform]}`}
+                          className={`p-2 rounded-full bg-anti-flash-white hover:bg-gray-200 transition-colors ${colors[platform]}`}
                         >
                           <SafeIcon icon={icons[platform]} className="w-5 h-5" />
                         </motion.a>
@@ -143,8 +143,8 @@ const LandingPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
+              <h2 className="text-3xl font-bold text-polynesian-blue mb-6">
                 {page.title || `${template.name} Services`}
               </h2>
               
@@ -152,16 +152,16 @@ const LandingPage = () => {
               {page.template_type === 'recruiting' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Join Our Growing Team</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-xl font-semibold text-polynesian-blue mb-3">Join Our Growing Team</h3>
+                    <p className="text-polynesian-blue/70 mb-4">
                       Are you ready to take control of your financial future? Join our team of successful financial professionals and build a career that offers unlimited earning potential.
                     </p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-900 mb-2">Why Join Us?</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
+                    <div className="bg-picton-blue/10 p-4 rounded-lg border border-picton-blue/20">
+                      <h4 className="font-semibold text-polynesian-blue mb-2">Why Join Us?</h4>
+                      <ul className="text-sm text-polynesian-blue/80 space-y-1">
                         <li>• Unlimited earning potential</li>
                         <li>• Comprehensive training program</li>
                         <li>• Flexible work schedule</li>
@@ -169,7 +169,7 @@ const LandingPage = () => {
                       </ul>
                     </div>
                     
-                    <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                       <h4 className="font-semibold text-green-900 mb-2">What We Offer</h4>
                       <ul className="text-sm text-green-800 space-y-1">
                         <li>• Industry-leading compensation</li>
@@ -185,20 +185,20 @@ const LandingPage = () => {
               {page.template_type === 'client' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Client Resources</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-xl font-semibold text-polynesian-blue mb-3">Client Resources</h3>
+                    <p className="text-polynesian-blue/70 mb-4">
                       Access your account information, policy documents, and financial planning tools all in one place.
                     </p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="font-semibold text-gray-900 mb-2">Policy Management</h4>
-                      <p className="text-sm text-gray-600">View and manage your insurance policies</p>
+                    <div className="border border-picton-blue/20 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-picton-blue/5">
+                      <h4 className="font-semibold text-polynesian-blue mb-2">Policy Management</h4>
+                      <p className="text-sm text-polynesian-blue/70">View and manage your insurance policies</p>
                     </div>
-                    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <h4 className="font-semibold text-gray-900 mb-2">Financial Planning</h4>
-                      <p className="text-sm text-gray-600">Access your personalized financial plan</p>
+                    <div className="border border-picton-blue/20 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-picton-blue/5">
+                      <h4 className="font-semibold text-polynesian-blue mb-2">Financial Planning</h4>
+                      <p className="text-sm text-polynesian-blue/70">Access your personalized financial plan</p>
                     </div>
                   </div>
                 </div>
@@ -207,13 +207,13 @@ const LandingPage = () => {
               {page.template_type === 'latino_usa' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Servicios Financieros para la Comunidad Latina</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-xl font-semibold text-polynesian-blue mb-3">Servicios Financieros para la Comunidad Latina</h3>
+                    <p className="text-polynesian-blue/70 mb-4">
                       Ofrecemos servicios financieros especializados para ayudar a las familias latinas a construir un futuro próspero y seguro.
                     </p>
                   </div>
                   
-                  <div className="bg-orange-50 p-6 rounded-lg">
+                  <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
                     <h4 className="font-semibold text-orange-900 mb-3">Nuestros Servicios</h4>
                     <ul className="text-orange-800 space-y-2">
                       <li>• Seguros de vida y salud</li>
@@ -228,13 +228,13 @@ const LandingPage = () => {
               {page.template_type === 'international' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">International Financial Services</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-xl font-semibold text-polynesian-blue mb-3">International Financial Services</h3>
+                    <p className="text-polynesian-blue/70 mb-4">
                       Specialized financial solutions for international clients, including cross-border wealth management and global investment strategies.
                     </p>
                   </div>
                   
-                  <div className="bg-indigo-50 p-6 rounded-lg">
+                  <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
                     <h4 className="font-semibold text-indigo-900 mb-3">Global Expertise</h4>
                     <ul className="text-indigo-800 space-y-2">
                       <li>• Cross-border financial planning</li>
@@ -249,16 +249,16 @@ const LandingPage = () => {
               {page.template_type === 'standard' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Professional Financial Services</h3>
-                    <p className="text-gray-600 mb-4">
+                    <h3 className="text-xl font-semibold text-polynesian-blue mb-3">Professional Financial Services</h3>
+                    <p className="text-polynesian-blue/70 mb-4">
                       I provide comprehensive financial planning and insurance solutions to help you achieve your financial goals and protect your family's future.
                     </p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-900 mb-2">Services Offered</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
+                    <div className="bg-picton-blue/10 p-4 rounded-lg border border-picton-blue/20">
+                      <h4 className="font-semibold text-polynesian-blue mb-2">Services Offered</h4>
+                      <ul className="text-sm text-polynesian-blue/80 space-y-1">
                         <li>• Life Insurance</li>
                         <li>• Financial Planning</li>
                         <li>• Retirement Planning</li>
@@ -266,9 +266,9 @@ const LandingPage = () => {
                       </ul>
                     </div>
                     
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-gray-900 mb-2">Why Choose Me?</h4>
-                      <ul className="text-sm text-gray-700 space-y-1">
+                    <div className="bg-anti-flash-white p-4 rounded-lg border border-gray-200">
+                      <h4 className="font-semibold text-polynesian-blue mb-2">Why Choose Me?</h4>
+                      <ul className="text-sm text-polynesian-blue/80 space-y-1">
                         <li>• Personalized approach</li>
                         <li>• Years of experience</li>
                         <li>• Trusted advisor</li>
@@ -281,7 +281,7 @@ const LandingPage = () => {
 
               {/* Professional IDs */}
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                <div className="flex flex-wrap gap-4 text-sm text-polynesian-blue/60">
                   {user.agent_id && (
                     <span>Agent ID: {user.agent_id}</span>
                   )}

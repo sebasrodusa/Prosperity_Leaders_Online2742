@@ -10,7 +10,7 @@ const Dashboard = () => {
   const { user } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-anti-flash-white">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -19,10 +19,10 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-polynesian-blue">
             Welcome back, {user?.full_name}!
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-polynesian-blue/70 mt-2">
             Manage your profile and landing pages from your dashboard.
           </p>
         </motion.div>
@@ -30,7 +30,7 @@ const Dashboard = () => {
         <div className="space-y-8">
           {/* Stats Overview */}
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Overview</h2>
+            <h2 className="text-xl font-semibold text-polynesian-blue mb-4">Overview</h2>
             <DashboardStats />
           </section>
 

@@ -14,15 +14,15 @@ const Header = () => {
     <motion.header
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="bg-white shadow-sm border-b border-gray-200"
+      className="bg-polynesian-blue shadow-sm border-b border-polynesian-blue/20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-blue-600">
+            <h1 className="text-2xl font-bold text-white">
               Prosperity Leaders™
             </h1>
-            <span className="ml-2 text-sm text-gray-500">Platform</span>
+            <span className="ml-2 text-sm text-white/70">Platform</span>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -31,11 +31,11 @@ const Header = () => {
               <select
                 value={user?.id || ''}
                 onChange={(e) => switchUser(e.target.value)}
-                className="appearance-none bg-gray-100 border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="appearance-none bg-white/10 border border-white/20 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-picton-blue"
               >
-                <option value="">Switch User (Demo)</option>
+                <option value="" className="text-polynesian-blue">Switch User (Demo)</option>
                 {mockUsers.map(mockUser => (
-                  <option key={mockUser.id} value={mockUser.id}>
+                  <option key={mockUser.id} value={mockUser.id} className="text-polynesian-blue">
                     {mockUser.full_name}
                   </option>
                 ))}
@@ -48,16 +48,16 @@ const Header = () => {
                   <img
                     src={user.profile_photo_url}
                     alt={user.full_name}
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-white">
                     {user.full_name}
                   </span>
                 </div>
                 
                 <button
                   onClick={logout}
-                  className="p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+                  className="p-2 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-picton-blue rounded-md transition-colors"
                   title="Logout"
                 >
                   <SafeIcon icon={FiLogOut} className="w-5 h-5" />
