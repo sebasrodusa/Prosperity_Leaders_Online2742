@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Dashboard from './components/pages/Dashboard'
 import LandingPage from './components/pages/LandingPage'
 import Login from './components/pages/Login'
-import HomePage from './components/pages/HomePage'
 import './App.css'
 
 const ProtectedRoute = ({ children }) => {
@@ -26,7 +25,6 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       <Route path="/dashboard" element={
         <ProtectedRoute>
@@ -34,6 +32,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       <Route path="/:username" element={<LandingPage />} />
+      <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
   )
 }
