@@ -8,6 +8,7 @@ import ProfessionalProfile from './components/dashboard/ProfessionalProfile'
 import MyLandingPages from './components/dashboard/MyLandingPages'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
+import ProfilePage from './components/pages/ProfilePage'
 import Login from './components/pages/Login'
 import './App.css'
 
@@ -45,7 +46,7 @@ const AppRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="profile" element={<ProfessionalProfile />} />
+        <Route path="professional-profile" element={<ProfessionalProfile />} />
         <Route path="landing-pages" element={<MyLandingPages />} />
         <Route
           path="cms"
@@ -58,7 +59,8 @@ const AppRoutes = () => {
       </Route>
 
       {/* Public Profile & Landing Pages Routes */}
-      <Route path="/:username" element={<LandingPage />} />
+      <Route path="/:username" element={<ProfilePage />} />
+      <Route path="/:username/:custom" element={<LandingPage />} />
     </Routes>
   )
 }

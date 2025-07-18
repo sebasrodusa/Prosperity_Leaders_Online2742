@@ -9,7 +9,7 @@ import Input from '../ui/Input'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiPlus, FiEye, FiTrash2, FiEdit3, FiExternalLink, FiGlobe } = FiIcons
+const { FiPlus, FiTrash2, FiEdit3, FiExternalLink, FiGlobe, FiInfo } = FiIcons
 
 const MyLandingPages = () => {
   const { user } = useAuth()
@@ -113,7 +113,7 @@ const MyLandingPages = () => {
 
       <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-sm text-blue-700">
         <div className="font-medium mb-1 flex items-center">
-          <SafeIcon icon={FiIcons.FiInfo} className="mr-2" />
+          <SafeIcon icon={FiInfo} className="mr-2" />
           <span>Landing Pages vs. Professional Profile</span>
         </div>
         <p>Your professional profile is available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. 
@@ -253,7 +253,7 @@ const MyLandingPages = () => {
           {(newPage.custom_username || user?.username) && (
             <div className="p-3 bg-anti-flash-white rounded-lg">
               <p className="text-sm text-polynesian-blue/70">
-                Your page will be available at:
+                Your landing page will be available at:
               </p>
               <p className="font-medium text-picton-blue">
                 {generatePageUrl(newPage.custom_username || `${user?.username}-${newPage.template_type}`)}

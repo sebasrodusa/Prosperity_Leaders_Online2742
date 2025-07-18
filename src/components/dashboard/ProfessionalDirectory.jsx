@@ -7,7 +7,7 @@ import Input from '../ui/Input'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiSearch, FiMapPin, FiGlobe, FiStar } = FiIcons
+const { FiSearch, FiMapPin, FiGlobe, FiStar, FiCalendar } = FiIcons
 
 const ProfessionalDirectory = () => {
   const [professionals, setProfessionals] = useState([])
@@ -29,8 +29,8 @@ const ProfessionalDirectory = () => {
       (professional.full_name.toLowerCase().includes(searchLower) ||
         professional.bio.toLowerCase().includes(searchLower)) &&
       (!filters.location || professional.location === filters.location) &&
-      (!filters.language || professional.languages.includes(filters.language)) &&
-      (!filters.service || professional.services.includes(filters.service))
+      (!filters.language || professional.languages?.includes(filters.language)) &&
+      (!filters.service || professional.services?.includes(filters.service))
     )
   })
 
@@ -90,22 +90,39 @@ const ProfessionalDirectory = () => {
                       {professional.full_name}
                     </h3>
                     <p className="text-sm text-polynesian-blue/70 mb-2">
-                      Financial Professional
+                      {professional.title || "Financial Professional"}
                     </p>
+                    
                     {professional.ratings && (
                       <div className="flex items-center space-x-1 mb-2">
-                        <SafeIcon icon={FiStar} className="w-4 h-4 text-yellow-400" />
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <SafeIcon 
+                              key={i} 
+                              icon={FiStar} 
+                              className={`w-4 h-4 ${i < Math.floor(professional.ratings.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                            />
+                          ))}
+                        </div>
                         <span className="text-sm font-medium text-polynesian-blue">
-                          {professional.ratings.average}
+                          {professional.ratings.average.toFixed(1)}
                         </span>
                         <span className="text-sm text-polynesian-blue/60">
                           ({professional.ratings.count} reviews)
                         </span>
                       </div>
                     )}
-                    <p className="text-sm text-polynesian-blue/70 line-clamp-2">
+                    
+                    <p className="text-sm text-polynesian-blue/70 line-clamp-2 mb-2">
                       {professional.bio}
                     </p>
+                    
+                    {professional.calendly_link && (
+                      <div className="mt-2 text-xs text-picton-blue flex items-center">
+                        <SafeIcon icon={FiCalendar} className="w-3 h-3 mr-1" />
+                        <span>Available for appointments</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>

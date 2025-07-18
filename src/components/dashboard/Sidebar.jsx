@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiHome, FiLayout, FiUsers, FiSettings, FiEdit3, FiBox, FiUser } = FiIcons
+const { FiHome, FiLayout, FiUsers, FiSettings, FiEdit3, FiBox, FiUser, FiFileText } = FiIcons
 
 const Sidebar = () => {
   const location = useLocation()
@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: 'Dashboard', icon: FiHome, path: '/dashboard' },
-    { name: 'My Professional Profile', icon: FiUser, path: '/dashboard/profile' },
+    { name: 'My Professional Profile', icon: FiUser, path: '/dashboard/professional-profile' },
     { name: 'My Landing Pages', icon: FiLayout, path: '/dashboard/landing-pages' },
     { name: 'Team', icon: FiUsers, path: '/dashboard/team' },
     ...(isAdmin
