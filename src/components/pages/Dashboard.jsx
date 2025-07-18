@@ -1,18 +1,16 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import Header from '../layout/Header'
 import DashboardStats from '../dashboard/DashboardStats'
 import ProfileEditor from '../dashboard/ProfileEditor'
 import PagesManager from '../dashboard/PagesManager'
+import MainNav from '../layout/MainNav'
 
 const Dashboard = () => {
   const { user } = useAuth()
 
   return (
     <div className="min-h-screen bg-anti-flash-white">
-      <Header />
-      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

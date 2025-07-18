@@ -17,25 +17,30 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 export default supabase
 
 export async function getSiteContent() {
-  const { data, error } = await supabase
-    .from('site_content_12345')
-    .select('*')
-  
-  if (error) {
-    console.error('Error fetching site content:', error)
+  try {
+    const { data, error } = await supabase
+      .from('site_content_12345')
+      .select('*')
+    
+    if (error) {
+      console.error('Error fetching site content:', error)
+      return {}
+    }
+    
+    // Transform the flat array into a nested object by section and key
+    const contentBySection = data.reduce((acc, item) => {
+      if (!acc[item.section]) {
+        acc[item.section] = {}
+      }
+      acc[item.section][item.key] = item.value
+      return acc
+    }, {})
+    
+    return contentBySection
+  } catch (err) {
+    console.error('Error in getSiteContent:', err)
     return {}
   }
-  
-  // Transform the flat array into a nested object by section and key
-  const contentBySection = data.reduce((acc, item) => {
-    if (!acc[item.section]) {
-      acc[item.section] = {}
-    }
-    acc[item.section][item.key] = item.value
-    return acc
-  }, {})
-  
-  return contentBySection
 }
 
 export async function submitContactForm(formData) {

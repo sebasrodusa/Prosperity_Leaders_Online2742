@@ -1,16 +1,17 @@
 import React from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import MainNav from './components/layout/MainNav'
+import DashboardLayout from './components/dashboard/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
+import ContentManager from './components/cms/ContentManager'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import Login from './components/pages/Login'
 import './App.css'
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { user, loading } = useAuth()
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
@@ -18,27 +19,43 @@ const ProtectedRoute = ({ children }) => {
       </div>
     )
   }
-  
-  return user ? children : <Navigate to="/login" />
+
+  if (!user) return <Navigate to="/login" />
+  if (requireAdmin && user.role !== 'admin') return <Navigate to="/dashboard" />
+
+  return children
 }
 
 const AppRoutes = () => {
   const { user } = useAuth()
 
   return (
-    <>
-      <MainNav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/dashboard" element={
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+
+      {/* Dashboard Routes */}
+      <Route
+        path="/dashboard"
+        element={
           <ProtectedRoute>
-            <Dashboard />
+            <DashboardLayout />
           </ProtectedRoute>
-        } />
-        <Route path="/:username" element={<LandingPage />} />
-      </Routes>
-    </>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route
+          path="cms"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ContentManager />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+
+      <Route path="/:username" element={<LandingPage />} />
+    </Routes>
   )
 }
 

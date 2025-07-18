@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { mockUsers } from '../../data/mockUsers'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiUser, FiLogOut, FiUsers } = FiIcons
+const { FiUser, FiLogOut, FiUsers, FiChevronDown } = FiIcons
 
 const Header = () => {
   const { user, logout, switchUser } = useAuth()
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   return (
     <motion.header
@@ -43,8 +44,11 @@ const Header = () => {
             </div>
 
             {user && (
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 relative">
+                <div 
+                  className="flex items-center space-x-2 cursor-pointer"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                >
                   <img
                     src={user.profile_photo_url}
                     alt={user.full_name}
@@ -53,8 +57,42 @@ const Header = () => {
                   <span className="text-sm font-medium text-white">
                     {user.full_name}
                   </span>
+                  <SafeIcon 
+                    icon={userMenuOpen ? FiIcons.FiChevronUp : FiChevronDown} 
+                    className="w-4 h-4 text-white/70"
+                  />
                 </div>
-                
+
+                {userMenuOpen && (
+                  <div 
+                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                    onMouseLeave={() => setUserMenuOpen(false)}
+                  >
+                    <a 
+                      href="/profile" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setUserMenuOpen(false);
+                        // Add navigation logic here
+                      }}
+                    >
+                      <SafeIcon icon={FiUser} className="inline-block mr-2 w-4 h-4" />
+                      Profile Settings
+                    </a>
+                    <button 
+                      onClick={() => {
+                        logout();
+                        setUserMenuOpen(false);
+                      }} 
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <SafeIcon icon={FiLogOut} className="inline-block mr-2 w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+
                 <button
                   onClick={logout}
                   className="p-2 text-white/70 hover:text-white focus:outline-none focus:ring-2 focus:ring-picton-blue rounded-md transition-colors"

@@ -1,12 +1,12 @@
 import React from 'react'
 
-const Textarea = ({ 
-  label, 
-  error, 
-  className = '', 
+const Textarea = ({
+  label,
+  error,
+  className = '',
   rows = 4,
   required = false,
-  ...props 
+  ...props
 }) => {
   return (
     <div className="space-y-1">

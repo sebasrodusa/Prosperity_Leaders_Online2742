@@ -19,8 +19,8 @@ export const AuthProvider = ({ children }) => {
     // Simulate Clerk authentication check
     const checkAuth = async () => {
       try {
-        // For demo purposes, auto-login with first mock user
-        const mockUser = mockUsers[0]
+        // For demo purposes, auto-login with first mock admin user
+        const mockUser = { ...mockUsers[0], role: 'admin' }
         setUser(mockUser)
       } catch (error) {
         console.error('Auth check failed:', error)
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false)
       }
     }
-
+    
     checkAuth()
   }, [])
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   const switchUser = (userId) => {
     const mockUser = mockUsers.find(u => u.id === userId)
     if (mockUser) {
-      setUser(mockUser)
+      setUser({ ...mockUser, role: 'admin' })
     }
   }
 
