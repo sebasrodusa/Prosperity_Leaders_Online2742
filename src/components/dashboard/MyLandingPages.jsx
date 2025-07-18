@@ -24,9 +24,9 @@ const MyLandingPages = () => {
 
   useEffect(() => {
     if (user) {
-      // Filter out the main profile page
+      // Get all landing pages (not the main profile page)
       const userLandingPages = mockPages.filter(
-        page => page.user_id === user.id && page.template_type !== 'profile'
+        page => page.user_id === user.id
       )
       setPages(userLandingPages)
     }
@@ -44,13 +44,21 @@ const MyLandingPages = () => {
         return
       }
 
+      // Suggest a custom username if not provided
+      let customUsername = newPage.custom_username
+      if (!customUsername) {
+        customUsername = `${user.username}-${newPage.template_type}`
+      }
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       const pageData = {
         id: `page_${Date.now()}`,
         user_id: user.id,
-        ...newPage,
+        template_type: newPage.template_type,
+        custom_username: customUsername,
+        title: newPage.title || `${templateTypes[newPage.template_type].name} Page`,
         created_at: new Date().toISOString()
       }
 
@@ -84,10 +92,8 @@ const MyLandingPages = () => {
     return `https://prosperityleaders.net/${customUsername}`
   }
 
-  // Filter out the profile template from available templates
-  const availableTemplates = Object.entries(templateTypes).filter(
-    ([key]) => key !== 'profile'
-  )
+  // All available templates from templateTypes
+  const availableTemplates = Object.entries(templateTypes)
 
   return (
     <Card className="p-6">
@@ -103,6 +109,15 @@ const MyLandingPages = () => {
           <SafeIcon icon={FiPlus} className="w-4 h-4" />
           <span>Create Landing Page</span>
         </Button>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-sm text-blue-700">
+        <div className="font-medium mb-1 flex items-center">
+          <SafeIcon icon={FiIcons.FiInfo} className="mr-2" />
+          <span>Landing Pages vs. Professional Profile</span>
+        </div>
+        <p>Your professional profile is available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. 
+          Landing pages are additional marketing pages with specific themes you can create below.</p>
       </div>
 
       <div className="space-y-4">
@@ -224,7 +239,7 @@ const MyLandingPages = () => {
             onChange={(e) =>
               setNewPage(prev => ({ ...prev, custom_username: e.target.value }))
             }
-            placeholder="your-page-name"
+            placeholder={`${user?.username}-${newPage.template_type}`}
             required
           />
 
@@ -232,16 +247,16 @@ const MyLandingPages = () => {
             label="Page Title (Optional)"
             value={newPage.title}
             onChange={(e) => setNewPage(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="Custom page title"
+            placeholder={`${templateTypes[newPage.template_type].name} Page`}
           />
 
-          {newPage.custom_username && (
+          {(newPage.custom_username || user?.username) && (
             <div className="p-3 bg-anti-flash-white rounded-lg">
               <p className="text-sm text-polynesian-blue/70">
                 Your page will be available at:
               </p>
               <p className="font-medium text-picton-blue">
-                {generatePageUrl(newPage.custom_username)}
+                {generatePageUrl(newPage.custom_username || `${user?.username}-${newPage.template_type}`)}
               </p>
             </div>
           )}
@@ -256,7 +271,7 @@ const MyLandingPages = () => {
             </Button>
             <Button
               type="submit"
-              disabled={creating || !newPage.custom_username}
+              disabled={creating}
             >
               {creating ? 'Creating...' : 'Create Page'}
             </Button>

@@ -111,7 +111,7 @@ export const mockPages = [
     id: 'page_1',
     user_id: 'user_2abc123def456',
     template_type: 'standard',
-    custom_username: 'sebasrodusa',
+    custom_username: 'sebasrodusa-standard',
     title: 'Sebastian Rodriguez - Financial Advisor',
     created_at: '2024-01-15T10:35:00Z'
   },
@@ -135,7 +135,7 @@ export const mockPages = [
     id: 'page_4',
     user_id: 'user_3xyz789abc012',
     template_type: 'latino_usa',
-    custom_username: 'mariaelenag',
+    custom_username: 'mariaelenag-latino',
     title: 'Maria Elena Gonzalez - Servicios Financieros',
     created_at: '2024-01-20T14:20:00Z'
   },
@@ -151,7 +151,7 @@ export const mockPages = [
     id: 'page_6',
     user_id: 'user_4mno345pqr678',
     template_type: 'standard',
-    custom_username: 'davidchen',
+    custom_username: 'davidchen-standard',
     title: 'David Chen - Investment Specialist',
     created_at: '2024-02-01T09:50:00Z'
   },
@@ -159,7 +159,7 @@ export const mockPages = [
     id: 'page_7',
     user_id: 'user_5stu901vwx234',
     template_type: 'standard',
-    custom_username: 'sarahjohnson',
+    custom_username: 'sarahjohnson-standard',
     title: 'Sarah Johnson - Wealth Management',
     created_at: '2024-02-10T16:25:00Z'
   },
@@ -175,7 +175,7 @@ export const mockPages = [
     id: 'page_9',
     user_id: 'user_6def567ghi890',
     template_type: 'international',
-    custom_username: 'carlosmendoza',
+    custom_username: 'carlosmendoza-international',
     title: 'Carlos Mendoza - International Finance',
     created_at: '2024-02-15T11:35:00Z'
   },
@@ -189,7 +189,7 @@ export const mockPages = [
   }
 ]
 
-// Template configurations with updated brand colors
+// Template configurations with updated brand colors - Removed profile type
 export const templateTypes = {
   standard: {
     name: 'Standard Hybrid',

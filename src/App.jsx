@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
+import ProfessionalProfile from './components/dashboard/ProfessionalProfile'
+import MyLandingPages from './components/dashboard/MyLandingPages'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import Login from './components/pages/Login'
@@ -22,7 +24,6 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
   if (!user) return <Navigate to="/login" />
   if (requireAdmin && user.role !== 'admin') return <Navigate to="/dashboard" />
-
   return children
 }
 
@@ -44,6 +45,8 @@ const AppRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="profile" element={<ProfessionalProfile />} />
+        <Route path="landing-pages" element={<MyLandingPages />} />
         <Route
           path="cms"
           element={
@@ -54,6 +57,7 @@ const AppRoutes = () => {
         />
       </Route>
 
+      {/* Public Profile & Landing Pages Routes */}
       <Route path="/:username" element={<LandingPage />} />
     </Routes>
   )
