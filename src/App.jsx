@@ -6,6 +6,10 @@ import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
 import ProfessionalProfile from './components/dashboard/ProfessionalProfile'
 import MyLandingPages from './components/dashboard/MyLandingPages'
+import LeadsLayout from './components/leads/LeadsLayout'
+import LeadsDashboard from './components/leads/LeadsDashboard'
+import CreateLead from './components/leads/CreateLead'
+import LeadDetails from './components/leads/LeadDetails'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
@@ -25,6 +29,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
   if (!user) return <Navigate to="/login" />
   if (requireAdmin && user.role !== 'admin') return <Navigate to="/dashboard" />
+
   return children
 }
 
@@ -35,27 +40,29 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-
+      
       {/* Dashboard Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
         <Route path="professional-profile" element={<ProfessionalProfile />} />
         <Route path="landing-pages" element={<MyLandingPages />} />
-        <Route
-          path="cms"
-          element={
-            <ProtectedRoute requireAdmin>
-              <ContentManager />
-            </ProtectedRoute>
-          }
-        />
+        
+        {/* Leads Routes */}
+        <Route path="leads" element={<LeadsLayout />}>
+          <Route index element={<LeadsDashboard />} />
+          <Route path="new" element={<CreateLead />} />
+          <Route path=":id" element={<LeadDetails />} />
+        </Route>
+        
+        <Route path="cms" element={
+          <ProtectedRoute requireAdmin>
+            <ContentManager />
+          </ProtectedRoute>
+        } />
       </Route>
 
       {/* Public Profile & Landing Pages Routes */}

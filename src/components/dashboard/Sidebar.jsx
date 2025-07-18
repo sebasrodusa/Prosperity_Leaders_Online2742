@@ -5,7 +5,16 @@ import { useAuth } from '../../context/AuthContext'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiHome, FiLayout, FiUsers, FiSettings, FiEdit3, FiBox, FiUser, FiFileText } = FiIcons
+const {
+  FiHome,
+  FiLayout,
+  FiUsers,
+  FiSettings,
+  FiEdit3,
+  FiBox,
+  FiUser,
+  FiUserPlus
+} = FiIcons
 
 const Sidebar = () => {
   const location = useLocation()
@@ -16,10 +25,11 @@ const Sidebar = () => {
     { name: 'Dashboard', icon: FiHome, path: '/dashboard' },
     { name: 'My Professional Profile', icon: FiUser, path: '/dashboard/professional-profile' },
     { name: 'My Landing Pages', icon: FiLayout, path: '/dashboard/landing-pages' },
+    { name: 'Lead Management', icon: FiUserPlus, path: '/dashboard/leads' },
     { name: 'Team', icon: FiUsers, path: '/dashboard/team' },
-    ...(isAdmin
-      ? [{ name: 'Content Manager', icon: FiEdit3, path: '/dashboard/cms' }]
-      : []),
+    ...(isAdmin ? [
+      { name: 'Content Manager', icon: FiEdit3, path: '/dashboard/cms' }
+    ] : []),
     { name: 'Settings', icon: FiSettings, path: '/dashboard/settings' }
   ]
 
@@ -33,9 +43,12 @@ const Sidebar = () => {
           </span>
         </Link>
       </div>
+      
       <div className="px-4 py-2">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.path
+          const isActive = location.pathname === item.path || 
+                          (item.path === '/dashboard/leads' && location.pathname.startsWith('/dashboard/leads'))
+          
           return (
             <Link
               key={item.path}
