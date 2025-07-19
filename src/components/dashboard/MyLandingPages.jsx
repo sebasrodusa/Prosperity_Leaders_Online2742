@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { mockPages, templateTypes } from '../../data/mockUsers'
+import { mockPages } from '../../data/mockUsers'
+import { getAllTemplates } from '../../data/landingPageTemplates'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Modal from '../ui/Modal'
@@ -16,11 +17,12 @@ const MyLandingPages = () => {
   const [pages, setPages] = useState([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newPage, setNewPage] = useState({
-    template_type: 'standard',
+    template_type: 'recruiting',
     custom_username: '',
     title: ''
   })
   const [creating, setCreating] = useState(false)
+  const availableTemplates = getAllTemplates()
 
   useEffect(() => {
     if (user) {
@@ -53,19 +55,21 @@ const MyLandingPages = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
 
+      const selectedTemplate = availableTemplates.find(t => t.id === newPage.template_type)
+      
       const pageData = {
         id: `page_${Date.now()}`,
         user_id: user.id,
         template_type: newPage.template_type,
         custom_username: customUsername,
-        title: newPage.title || `${templateTypes[newPage.template_type].name} Page`,
+        title: newPage.title || selectedTemplate.name,
         created_at: new Date().toISOString()
       }
 
       setPages(prev => [...prev, pageData])
       setShowCreateModal(false)
       setNewPage({
-        template_type: 'standard',
+        template_type: 'recruiting',
         custom_username: '',
         title: ''
       })
@@ -92,9 +96,6 @@ const MyLandingPages = () => {
     return `https://prosperityleaders.net/${customUsername}`
   }
 
-  // All available templates from templateTypes
-  const availableTemplates = Object.entries(templateTypes)
-
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -102,7 +103,7 @@ const MyLandingPages = () => {
           <SafeIcon icon={FiGlobe} className="w-6 h-6 text-picton-blue" />
           <h2 className="text-xl font-semibold text-polynesian-blue">My Landing Pages</h2>
         </div>
-        <Button 
+        <Button
           onClick={() => setShowCreateModal(true)}
           className="flex items-center space-x-2"
         >
@@ -116,8 +117,11 @@ const MyLandingPages = () => {
           <SafeIcon icon={FiInfo} className="mr-2" />
           <span>Landing Pages vs. Professional Profile</span>
         </div>
-        <p>Your professional profile is available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. 
-          Landing pages are additional marketing pages with specific themes you can create below.</p>
+        <p>
+          Your professional profile is available at{' '}
+          <span className="font-semibold">prosperityleaders.net/{user?.username}</span>.
+          Landing pages are additional marketing pages with specific themes you can create below.
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -130,62 +134,68 @@ const MyLandingPages = () => {
             </p>
           </div>
         ) : (
-          pages.map(page => (
-            <motion.div
-              key={page.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="border border-gray-200 rounded-lg p-4 hover:bg-anti-flash-white/30 transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${templateTypes[page.template_type].color}`} />
-                    <h3 className="font-medium text-polynesian-blue">
-                      {page.title || `${templateTypes[page.template_type].name} Page`}
-                    </h3>
-                    <span className="text-sm text-polynesian-blue/60">
-                      ({templateTypes[page.template_type].name})
-                    </span>
+          pages.map(page => {
+            const template = availableTemplates.find(t => t.id === page.template_type)
+            
+            return (
+              <motion.div
+                key={page.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="border border-gray-200 rounded-lg p-4 hover:bg-anti-flash-white/30 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${template?.color || 'bg-gray-500'}`} />
+                      <h3 className="font-medium text-polynesian-blue">
+                        {page.title || template?.name}
+                      </h3>
+                      <span className="text-sm text-polynesian-blue/60">
+                        ({template?.name})
+                      </span>
+                    </div>
+                    <p className="text-sm text-polynesian-blue/70 mt-1">
+                      {generatePageUrl(page.custom_username)}
+                    </p>
+                    <p className="text-xs text-polynesian-blue/50 mt-2">
+                      Created {new Date(page.created_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <p className="text-sm text-polynesian-blue/70 mt-1">
-                    {generatePageUrl(page.custom_username)}
-                  </p>
-                  <p className="text-xs text-polynesian-blue/50 mt-2">
-                    Created {new Date(page.created_at).toLocaleDateString()}
-                  </p>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(generatePageUrl(page.custom_username), '_blank')}
+                      className="flex items-center space-x-1"
+                    >
+                      <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
+                      <span>Visit</span>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center space-x-1"
+                    >
+                      <SafeIcon icon={FiEdit3} className="w-4 h-4" />
+                      <span>Edit</span>
+                    </Button>
+                    
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeletePage(page.id)}
+                      className="flex items-center space-x-1"
+                    >
+                      <SafeIcon icon={FiTrash2} className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(generatePageUrl(page.custom_username), '_blank')}
-                    className="flex items-center space-x-1"
-                  >
-                    <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
-                    <span>Visit</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center space-x-1"
-                  >
-                    <SafeIcon icon={FiEdit3} className="w-4 h-4" />
-                    <span>Edit</span>
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDeletePage(page.id)}
-                    className="flex items-center space-x-1"
-                  >
-                    <SafeIcon icon={FiTrash2} className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          ))
+              </motion.div>
+            )
+          })
         )}
       </div>
 
@@ -201,12 +211,12 @@ const MyLandingPages = () => {
             <label className="block text-sm font-medium text-polynesian-blue mb-2">
               Template Type
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {availableTemplates.map(([key, template]) => (
+            <div className="grid grid-cols-1 gap-3">
+              {availableTemplates.map((template) => (
                 <label
-                  key={key}
-                  className={`relative flex items-center p-3 border rounded-lg cursor-pointer hover:bg-anti-flash-white/50 transition-colors ${
-                    newPage.template_type === key
+                  key={template.id}
+                  className={`relative flex items-start p-4 border rounded-lg cursor-pointer hover:bg-anti-flash-white/50 transition-colors ${
+                    newPage.template_type === template.id
                       ? 'border-picton-blue bg-picton-blue/5'
                       : 'border-gray-200'
                   }`}
@@ -214,18 +224,16 @@ const MyLandingPages = () => {
                   <input
                     type="radio"
                     name="template_type"
-                    value={key}
-                    checked={newPage.template_type === key}
-                    onChange={(e) =>
-                      setNewPage(prev => ({ ...prev, template_type: e.target.value }))
-                    }
+                    value={template.id}
+                    checked={newPage.template_type === template.id}
+                    onChange={(e) => setNewPage(prev => ({ ...prev, template_type: e.target.value }))}
                     className="sr-only"
                   />
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${template.color}`} />
-                    <div>
+                  <div className="flex items-start space-x-3 w-full">
+                    <div className={`w-4 h-4 rounded-full ${template.color} flex-shrink-0 mt-1`} />
+                    <div className="flex-1">
                       <p className="font-medium text-polynesian-blue">{template.name}</p>
-                      <p className="text-sm text-polynesian-blue/70">{template.description}</p>
+                      <p className="text-sm text-polynesian-blue/70 mt-1">{template.description}</p>
                     </div>
                   </div>
                 </label>
@@ -236,9 +244,7 @@ const MyLandingPages = () => {
           <Input
             label="Custom URL Path"
             value={newPage.custom_username}
-            onChange={(e) =>
-              setNewPage(prev => ({ ...prev, custom_username: e.target.value }))
-            }
+            onChange={(e) => setNewPage(prev => ({ ...prev, custom_username: e.target.value }))}
             placeholder={`${user?.username}-${newPage.template_type}`}
             required
           />
@@ -247,7 +253,7 @@ const MyLandingPages = () => {
             label="Page Title (Optional)"
             value={newPage.title}
             onChange={(e) => setNewPage(prev => ({ ...prev, title: e.target.value }))}
-            placeholder={`${templateTypes[newPage.template_type].name} Page`}
+            placeholder={availableTemplates.find(t => t.id === newPage.template_type)?.name}
           />
 
           {(newPage.custom_username || user?.username) && (
@@ -256,7 +262,9 @@ const MyLandingPages = () => {
                 Your landing page will be available at:
               </p>
               <p className="font-medium text-picton-blue">
-                {generatePageUrl(newPage.custom_username || `${user?.username}-${newPage.template_type}`)}
+                {generatePageUrl(
+                  newPage.custom_username || `${user?.username}-${newPage.template_type}`
+                )}
               </p>
             </div>
           )}
@@ -269,10 +277,7 @@ const MyLandingPages = () => {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={creating}
-            >
+            <Button type="submit" disabled={creating}>
               {creating ? 'Creating...' : 'Create Page'}
             </Button>
           </div>
