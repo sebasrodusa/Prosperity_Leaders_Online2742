@@ -25,6 +25,7 @@ const ResourcesCenter = () => {
   const [showResourceViewer, setShowResourceViewer] = useState(false)
   const [selectedResource, setSelectedResource] = useState(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState(null)
+  const [editingResource, setEditingResource] = useState(null)
   
   // Filters
   const [filters, setFilters] = useState({
@@ -222,10 +223,7 @@ const ResourcesCenter = () => {
                 onView={() => handleResourceClick(resource)}
                 onDownload={() => handleResourceDownload(resource)}
                 isAdmin={isAdmin}
-                onEdit={() => {
-                  // TODO: Implement edit
-                  alert('Edit functionality coming soon')
-                }}
+                onEdit={() => setEditingResource(resource)}
                 onDelete={() => handleDeleteResource(resource)}
               />
             ))}
@@ -293,10 +291,7 @@ const ResourcesCenter = () => {
                           onView={() => handleResourceClick(resource)}
                           onDownload={() => handleResourceDownload(resource)}
                           isAdmin={isAdmin}
-                          onEdit={() => {
-                            // TODO: Implement edit
-                            alert('Edit functionality coming soon')
-                          }}
+                          onEdit={() => setEditingResource(resource)}
                           onDelete={() => handleDeleteResource(resource)}
                         />
                       ))}
@@ -322,10 +317,10 @@ const ResourcesCenter = () => {
           }}
           onCancel={() => setShowUploadModal(false)}
         />
-      </Modal>
-      
-      {/* Resource Viewer */}
-      <Modal
+        </Modal>
+
+        {/* Resource Viewer */}
+        <Modal
         isOpen={showResourceViewer}
         onClose={() => setShowResourceViewer(false)}
         title={selectedResource?.title}
@@ -338,7 +333,26 @@ const ResourcesCenter = () => {
             onDownload={() => handleResourceDownload(selectedResource)}
           />
         )}
-      </Modal>
+        </Modal>
+
+        {/* Edit Resource Modal */}
+        <Modal
+          isOpen={!!editingResource}
+          onClose={() => setEditingResource(null)}
+          title="Edit Resource"
+          size="lg"
+        >
+          {editingResource && (
+            <ResourceUpload
+              resource={editingResource}
+              onSuccess={() => {
+                setEditingResource(null)
+                loadResources()
+              }}
+              onCancel={() => setEditingResource(null)}
+            />
+          )}
+        </Modal>
       
       {/* Delete Confirmation Modal */}
       <Modal

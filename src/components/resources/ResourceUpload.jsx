@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { uploadResourceFile, createResource, RESOURCE_CATEGORIES, RESOURCE_TYPES, ALLOWED_FILE_TYPES } from '../../lib/resources'
+import { uploadResourceFile, createResource, updateResource, RESOURCE_CATEGORIES, RESOURCE_TYPES, ALLOWED_FILE_TYPES } from '../../lib/resources'
 import { validateFile } from '../../lib/publitio'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
@@ -11,7 +11,7 @@ import SafeIcon from '../../common/SafeIcon'
 
 const { FiUpload, FiX, FiCheck, FiCode, FiImage, FiVideo, FiFile } = FiIcons
 
-const ResourceUpload = ({ onSuccess, onCancel }) => {
+const ResourceUpload = ({ onSuccess, onCancel, resource = null }) => {
   const { user } = useAuth()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -29,6 +29,26 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
     is_pinned: false,
     role_restrictions: []
   })
+
+  const editing = !!resource
+
+  useEffect(() => {
+    if (resource) {
+      setFormData({
+        title: resource.title || '',
+        description: resource.description || '',
+        category: resource.category || 'getting_started',
+        resource_type: resource.resource_type || 'pdf',
+        language: resource.language || 'en',
+        external_url: resource.external_url || '',
+        embed_code: resource.embed_code || '',
+        content: resource.content || '',
+        tags: resource.tags ? resource.tags.join(', ') : '',
+        is_pinned: resource.is_pinned || false,
+        role_restrictions: resource.role_restrictions || []
+      })
+    }
+  }, [resource])
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -85,11 +105,18 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
 
       setUploadProgress(30)
 
-      if (selectedFile) {
-        // Upload file to Publit.io
-        const resource = await uploadResourceFile(selectedFile, resourceData, user.id, user.role)
+      if (editing) {
+        await updateResource(resource.id, resourceData, user.id)
         setUploadProgress(100)
-        
+
+        setTimeout(() => {
+          onSuccess()
+        }, 500)
+      } else if (selectedFile) {
+        // Upload file to Publit.io
+        await uploadResourceFile(selectedFile, resourceData, user.id, user.role)
+        setUploadProgress(100)
+
         setTimeout(() => {
           onSuccess()
         }, 500)
@@ -98,7 +125,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
         setUploadProgress(80)
         await createResource(resourceData, user.id, user.role)
         setUploadProgress(100)
-        
+
         setTimeout(() => {
           onSuccess()
         }, 500)
@@ -125,7 +152,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
     }
   }
 
-  const requiresFile = ['pdf', 'video', 'image'].includes(formData.resource_type)
+  const requiresFile = !editing && ['pdf', 'video', 'image'].includes(formData.resource_type)
   const requiresUrl = formData.resource_type === 'link'
   const requiresEmbed = formData.resource_type === 'embed'
   const requiresContent = formData.resource_type === 'guide'
@@ -376,7 +403,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
           disabled={uploading || (requiresFile && !selectedFile) || (requiresUrl && !formData.external_url) || (requiresEmbed && !formData.embed_code) || (requiresContent && !formData.content)}
           loading={uploading}
         >
-          {uploading ? 'Uploading...' : 'Create Resource'}
+          {uploading ? (editing ? 'Saving...' : 'Uploading...') : editing ? 'Update Resource' : 'Create Resource'}
         </Button>
       </div>
     </form>

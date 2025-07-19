@@ -121,6 +121,28 @@ export async function uploadResourceFile(file, resourceData, userId) {
   }
 }
 
+// Update an existing resource
+export async function updateResource(resourceId, updates, userId) {
+  try {
+    await setUserContext(userId)
+    const { data, error } = await supabase
+      .from('resources_12345')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', resourceId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('Error updating resource:', error)
+    throw error
+  }
+}
+
 export async function deleteResource(resourceId, userId) {
   try {
     await setUserContext(userId)
