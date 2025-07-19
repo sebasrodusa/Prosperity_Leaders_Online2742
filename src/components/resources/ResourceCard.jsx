@@ -5,13 +5,21 @@ import Button from '../ui/Button'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import { RESOURCE_TYPES } from '../../lib/resources'
-import { getOptimizedImageUrl } from '../../lib/publit'
+import { getOptimizedImageUrl } from '../../lib/publitio'
 
 const { FiDownload, FiEye, FiEdit3, FiTrash2, FiStar, FiExternalLink, FiCode } = FiIcons
 
-const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit, onDelete, isAdmin = false }) => {
+const ResourceCard = ({
+  resource,
+  viewMode = 'grid',
+  onView,
+  onDownload,
+  onEdit,
+  onDelete,
+  isAdmin = false
+}) => {
   const resourceType = RESOURCE_TYPES.find(t => t.id === resource.resource_type)
-  
+
   const formatFileSize = (bytes) => {
     if (!bytes) return ''
     const sizes = ['B', 'KB', 'MB', 'GB']
@@ -47,14 +55,14 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
 
   const getThumbnailUrl = () => {
     if (resource.thumbnail_url) {
-      return getOptimizedImageUrl(resource.thumbnail_url, {
+      return getOptimizedImageUrl(resource.publit_id, {
         width: 300,
         height: 200,
         crop: 'fill',
         quality: 80
-      })
+      }) || resource.thumbnail_url;
     }
-    return null
+    return null;
   }
 
   const getActionButton = () => {
@@ -116,7 +124,10 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
                   />
                 ) : (
                   <div className="w-12 h-12 bg-picton-blue/10 rounded-lg flex items-center justify-center">
-                    <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-6 h-6 text-picton-blue" />
+                    <SafeIcon
+                      icon={FiIcons[resourceType?.icon]}
+                      className="w-6 h-6 text-picton-blue"
+                    />
                   </div>
                 )}
               </div>
@@ -199,7 +210,10 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-12 h-12 text-picton-blue" />
+              <SafeIcon
+                icon={FiIcons[resourceType?.icon]}
+                className="w-12 h-12 text-picton-blue"
+              />
             </div>
           )}
           {resource.is_pinned && (
@@ -218,18 +232,15 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
             </div>
           )}
         </div>
-        
         <div className="p-4 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-2">
             <h3 className="font-semibold text-polynesian-blue dark:text-white line-clamp-2 flex-1">
               {resource.title}
             </h3>
           </div>
-          
           <p className="text-sm text-polynesian-blue/70 dark:text-white/70 line-clamp-3 flex-1 mb-4">
             {resource.description}
           </p>
-          
           <div className="space-y-2 text-xs text-polynesian-blue/50 dark:text-white/50 mb-4">
             <div className="flex items-center justify-between">
               <span>{resourceType?.name}</span>
@@ -239,7 +250,6 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
               {formatRelativeTime(resource.created_at)}
             </div>
           </div>
-          
           <div className="flex items-center space-x-2 mt-auto">
             {getActionButton()}
             {(resource.file_url || resource.download_url) && (
@@ -251,7 +261,6 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
               />
             )}
           </div>
-          
           {isAdmin && (
             <div className="flex items-center space-x-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
               <Button
