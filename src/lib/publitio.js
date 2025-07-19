@@ -5,7 +5,7 @@ const PUBLIC_KEY = import.meta.env.VITE_PUBLITIO_PUBLIC_KEY;
 const SECRET_KEY = import.meta.env.VITE_PUBLITIO_SECRET_KEY;
 
 if (!PUBLIC_KEY || !SECRET_KEY) {
-  throw new Error('Missing Publit.io credentials in environment variables');
+  console.warn('Missing Publit.io credentials in environment variables');
 }
 
 // Create and configure the Publit.io SDK instance
@@ -25,11 +25,6 @@ export class PublitioError extends Error {
  * Upload a file to Publit.io
  * @param {File} file - The file to upload
  * @param {Object} options - Upload options
- * @param {string} options.title - File title
- * @param {string} options.description - File description
- * @param {string[]} options.tags - Array of tags
- * @param {string} options.folder - Destination folder
- * @param {boolean} options.private - Whether the file should be private
  * @returns {Promise<Object>} Upload response
  */
 export const uploadFile = async (file, options = {}) => {
@@ -37,7 +32,6 @@ export const uploadFile = async (file, options = {}) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Add optional parameters
     if (options.title) formData.append('title', options.title);
     if (options.description) formData.append('description', options.description);
     if (options.tags) formData.append('tags', options.tags.join(','));
@@ -108,10 +102,6 @@ export const getFileInfo = async (fileId) => {
  * Generate an optimized URL for an image with transformations
  * @param {string} fileId - The ID of the file
  * @param {Object} options - Transformation options
- * @param {number} options.width - Desired width
- * @param {number} options.height - Desired height
- * @param {string} options.crop - Crop mode (fit, fill, scale)
- * @param {number} options.quality - Image quality (1-100)
  * @returns {string} Transformed image URL
  */
 export const getOptimizedUrl = (fileId, options = {}) => {
@@ -119,7 +109,6 @@ export const getOptimizedUrl = (fileId, options = {}) => {
 
   try {
     const transformations = [];
-
     if (options.width) transformations.push(`w_${options.width}`);
     if (options.height) transformations.push(`h_${options.height}`);
     if (options.crop) transformations.push(`c_${options.crop}`);
@@ -135,10 +124,6 @@ export const getOptimizedUrl = (fileId, options = {}) => {
 /**
  * List files in a folder
  * @param {Object} options - List options
- * @param {string} options.folder - Folder path
- * @param {number} options.limit - Number of items per page
- * @param {number} options.offset - Pagination offset
- * @param {string} options.filter - Filter by file type
  * @returns {Promise<Object>} List response
  */
 export const listFiles = async (options = {}) => {
@@ -150,7 +135,7 @@ export const listFiles = async (options = {}) => {
     if (options.filter) params.append('filter', options.filter);
 
     const response = await publitio.call(`/files/list?${params.toString()}`, 'GET');
-    
+
     if (response.success) {
       return {
         files: response.files,
@@ -214,6 +199,10 @@ export const updateFileMetadata = async (fileId, metadata = {}) => {
   } catch (error) {
     throw new PublitioError('Failed to update file metadata', error.status || 500, error);
   }
+};
+
+export {
+  getOptimizedUrl as getOptimizedImageUrl
 };
 
 export default publitio;
