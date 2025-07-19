@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { mockUsers } from '../../data/mockUsers'
+import { searchProfessionals } from '../../lib/directory'
 import Card from '../ui/Card'
 import Input from '../ui/Input'
 import * as FiIcons from 'react-icons/fi'
@@ -19,8 +19,16 @@ const ProfessionalDirectory = () => {
   })
 
   useEffect(() => {
-    // In a real app, fetch from API with filters
-    setProfessionals(mockUsers)
+    const loadProfessionals = async () => {
+      try {
+        const { professionals } = await searchProfessionals()
+        setProfessionals(professionals)
+      } catch (error) {
+        console.error('Error loading professionals:', error)
+      }
+    }
+
+    loadProfessionals()
   }, [])
 
   const filteredProfessionals = professionals.filter(professional => {
@@ -135,3 +143,4 @@ const ProfessionalDirectory = () => {
 }
 
 export default ProfessionalDirectory
+

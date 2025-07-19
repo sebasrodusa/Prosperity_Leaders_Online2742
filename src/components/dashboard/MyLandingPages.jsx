@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { mockPages } from '../../data/mockUsers'
+import { getUserPages, createPage, deletePage } from '../../lib/supabase'
 import { getAllTemplates } from '../../data/landingPageTemplates'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -26,11 +26,16 @@ const MyLandingPages = () => {
 
   useEffect(() => {
     if (user) {
-      // Get all landing pages (not the main profile page)
-      const userLandingPages = mockPages.filter(
-        page => page.user_id === user.id
-      )
-      setPages(userLandingPages)
+      const loadPages = async () => {
+        try {
+          const data = await getUserPages(user.id)
+          setPages(data)
+        } catch (error) {
+          console.error('Error loading pages:', error)
+        }
+      }
+
+      loadPages()
     }
   }, [user])
 
@@ -52,21 +57,18 @@ const MyLandingPages = () => {
         customUsername = `${user.username}-${newPage.template_type}`
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       const selectedTemplate = availableTemplates.find(t => t.id === newPage.template_type)
-      
+
       const pageData = {
-        id: `page_${Date.now()}`,
         user_id: user.id,
         template_type: newPage.template_type,
         custom_username: customUsername,
-        title: newPage.title || selectedTemplate.name,
+        title: newPage.title || selectedTemplate?.name,
         created_at: new Date().toISOString()
       }
 
-      setPages(prev => [...prev, pageData])
+      const created = await createPage(pageData)
+      setPages(prev => [...prev, created])
       setShowCreateModal(false)
       setNewPage({
         template_type: 'recruiting',
@@ -84,6 +86,7 @@ const MyLandingPages = () => {
   const handleDeletePage = async (pageId) => {
     if (window.confirm('Are you sure you want to delete this landing page?')) {
       try {
+        await deletePage(pageId)
         setPages(prev => prev.filter(page => page.id !== pageId))
       } catch (error) {
         console.error('Error deleting page:', error)
@@ -288,3 +291,4 @@ const MyLandingPages = () => {
 }
 
 export default MyLandingPages
+
