@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { mockPages, templateTypes } from '../../data/mockUsers'
+import { getUserPages, createPage, deletePage } from '../../lib/supabase'
+import { getTemplateById, getAllTemplates } from '../../data/landingPageTemplates'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Modal from '../ui/Modal'
@@ -14,6 +15,7 @@ const { FiPlus, FiEye, FiTrash2, FiEdit3, FiExternalLink, FiGlobe } = FiIcons
 const PagesManager = () => {
   const { user } = useAuth()
   const [pages, setPages] = useState([])
+  const availableTemplates = getAllTemplates()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newPage, setNewPage] = useState({
     template_type: 'standard',
@@ -24,8 +26,16 @@ const PagesManager = () => {
 
   useEffect(() => {
     if (user) {
-      const userPages = mockPages.filter(page => page.user_id === user.id)
-      setPages(userPages)
+      const loadPages = async () => {
+        try {
+          const data = await getUserPages(user.id)
+          setPages(data)
+        } catch (error) {
+          console.error('Error loading pages:', error)
+        }
+      }
+
+      loadPages()
     }
   }, [user])
 
@@ -34,17 +44,14 @@ const PagesManager = () => {
     setCreating(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
       const pageData = {
-        id: `page_${Date.now()}`,
         user_id: user.id,
         ...newPage,
         created_at: new Date().toISOString()
       }
-      
-      setPages(prev => [...prev, pageData])
+
+      const created = await createPage(pageData)
+      setPages(prev => [...prev, created])
       setShowCreateModal(false)
       setNewPage({
         template_type: 'standard',
@@ -62,6 +69,7 @@ const PagesManager = () => {
   const handleDeletePage = async (pageId) => {
     if (window.confirm('Are you sure you want to delete this page?')) {
       try {
+        await deletePage(pageId)
         setPages(prev => prev.filter(page => page.id !== pageId))
       } catch (error) {
         console.error('Error deleting page:', error)
@@ -108,13 +116,20 @@ const PagesManager = () => {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-3 h-3 rounded-full ${templateTypes[page.template_type].color}`} />
-                    <h3 className="font-medium text-polynesian-blue">
-                      {page.title || `${templateTypes[page.template_type].name} Page`}
-                    </h3>
-                    <span className="text-sm text-polynesian-blue/60">
-                      ({templateTypes[page.template_type].name})
-                    </span>
+                  {(() => {
+                    const template = getTemplateById(page.template_type)
+                    return (
+                      <>
+                        <div className={`w-3 h-3 rounded-full ${template?.color || 'bg-gray-500'}`} />
+                        <h3 className="font-medium text-polynesian-blue">
+                          {page.title || `${template?.name} Page`}
+                        </h3>
+                        <span className="text-sm text-polynesian-blue/60">
+                          ({template?.name})
+                        </span>
+                      </>
+                    )
+                  })()}
                   </div>
                   <p className="text-sm text-polynesian-blue/70 mt-1">
                     {generatePageUrl(page.custom_username)}
@@ -170,18 +185,18 @@ const PagesManager = () => {
               Template Type
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Object.entries(templateTypes).map(([key, template]) => (
+              {availableTemplates.map((template) => (
                 <label
-                  key={key}
+                  key={template.id}
                   className={`relative flex items-center p-3 border rounded-lg cursor-pointer hover:bg-anti-flash-white/50 transition-colors ${
-                    newPage.template_type === key ? 'border-picton-blue bg-picton-blue/5' : 'border-gray-200'
+                    newPage.template_type === template.id ? 'border-picton-blue bg-picton-blue/5' : 'border-gray-200'
                   }`}
                 >
                   <input
                     type="radio"
                     name="template_type"
-                    value={key}
-                    checked={newPage.template_type === key}
+                    value={template.id}
+                    checked={newPage.template_type === template.id}
                     onChange={(e) => setNewPage(prev => ({ ...prev, template_type: e.target.value }))}
                     className="sr-only"
                   />
@@ -245,3 +260,4 @@ const PagesManager = () => {
 }
 
 export default PagesManager
+

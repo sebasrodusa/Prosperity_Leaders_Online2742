@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useParams, Link } from 'react-router-dom'
-import { mockUsers } from '../../data/mockUsers'
+import { getUserByUsername } from '../../lib/supabase'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import ReviewsSection from '../reviews/ReviewsSection'
@@ -34,9 +34,9 @@ const ProfilePage = () => {
     const loadProfile = async () => {
       try {
         setIsLoading(true)
-        // Find the user by username
-        const user = mockUsers.find(u => u.username === username)
-        
+        // Fetch user by username from Supabase
+        const user = await getUserByUsername(username)
+
         if (user) {
           setProfile({
             ...user,
@@ -273,3 +273,4 @@ const ProfilePage = () => {
 }
 
 export default ProfilePage
+

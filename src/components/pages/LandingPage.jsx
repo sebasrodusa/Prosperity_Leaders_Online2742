@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { mockUsers, mockPages } from '../../data/mockUsers'
 import { getTemplateById } from '../../data/landingPageTemplates'
+import { getPageByCustomUsername } from '../../lib/supabase'
 import LandingPageTemplate from '../landingPages/LandingPageTemplate'
 import MainNav from '../layout/MainNav'
 import * as FiIcons from 'react-icons/fi'
@@ -21,24 +21,23 @@ const LandingPage = () => {
     const loadPage = async () => {
       try {
         setIsLoading(true)
-        
-        // Find the landing page by full path (username + custom segment)
+
+        // Build the full custom username path
         const fullPath = custom ? `${username}-${custom}` : username
-        
-        // Get the landing page
-        const landingPage = mockPages.find(p => p.custom_username === fullPath)
-        
+
+        // Fetch page from Supabase
+        const landingPage = await getPageByCustomUsername(fullPath)
+
         if (landingPage) {
-          const pageUser = mockUsers.find(u => u.id === landingPage.user_id)
           const template = getTemplateById(landingPage.template_type)
-          
+
           if (!template) {
             throw new Error('Template not found')
           }
-          
+
           setPageData({
             page: landingPage,
-            user: pageUser,
+            user: landingPage.users,
             template,
             content: template.defaultContent // In production, this would be user-customized content
           })
@@ -215,3 +214,4 @@ const LandingPage = () => {
 }
 
 export default LandingPage
+
