@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { mockUsers } from '../../data/mockUsers'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiUser, FiLogOut, FiUsers, FiChevronDown } = FiIcons
+const { FiUser, FiLogOut, FiChevronDown } = FiIcons
 
 const Header = () => {
-  const { user, logout, switchUser } = useAuth()
+  const { user, logout } = useAuth()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   return (
@@ -27,21 +26,6 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* User Switcher (Demo Only) */}
-            <div className="relative">
-              <select
-                value={user?.id || ''}
-                onChange={(e) => switchUser(e.target.value)}
-                className="appearance-none bg-white/10 border border-white/20 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-picton-blue"
-              >
-                <option value="" className="text-polynesian-blue">Switch User (Demo)</option>
-                {mockUsers.map(mockUser => (
-                  <option key={mockUser.id} value={mockUser.id} className="text-polynesian-blue">
-                    {mockUser.full_name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             {user && (
               <div className="flex items-center space-x-3 relative">

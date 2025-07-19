@@ -21,6 +21,7 @@ import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
 import Login from './components/pages/Login'
+import Signup from './components/pages/Signup'
 import './App.css'
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -47,6 +48,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+      <Route path="/signup" element={<Signup />} />
       
       {/* Public Routes */}
       <Route path="/blog" element={<BlogList />} />

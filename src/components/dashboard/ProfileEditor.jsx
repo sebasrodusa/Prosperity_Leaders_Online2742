@@ -11,7 +11,7 @@ import SafeIcon from '../../common/SafeIcon'
 const { FiSave, FiUser, FiMail, FiPhone, FiInstagram, FiFacebook, FiLinkedin, FiYoutube } = FiIcons
 
 const ProfileEditor = () => {
-  const { user, login } = useAuth()
+  const { user, updateUser } = useAuth()
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
     username: user?.username || '',
@@ -59,7 +59,7 @@ const ProfileEditor = () => {
       
       // Update user context
       const updatedUser = { ...user, ...formData }
-      await login(updatedUser)
+      updateUser(updatedUser)
       
       alert('Profile updated successfully!')
     } catch (error) {

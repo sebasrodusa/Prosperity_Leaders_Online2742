@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { mockUsers } from '../data/mockUsers'
+import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react'
 
 const AuthContext = createContext()
 
@@ -12,49 +12,27 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user: clerkUser, isLoaded } = useUser()
+  const { signOut } = useClerkAuth()
+  const [userData, setUserData] = useState(null)
 
   useEffect(() => {
-    // Simulate Clerk authentication check
-    const checkAuth = async () => {
-      try {
-        // For demo purposes, auto-login with first mock admin user
-        const mockUser = { ...mockUsers[0], role: 'admin' }
-        setUser(mockUser)
-      } catch (error) {
-        console.error('Auth check failed:', error)
-      } finally {
-        setLoading(false)
-      }
+    if (isLoaded) {
+      const role = clerkUser?.publicMetadata?.role || 'visitor'
+      setUserData(clerkUser ? { ...clerkUser, role } : null)
     }
-    
-    checkAuth()
-  }, [])
+  }, [clerkUser, isLoaded])
 
-  const login = async (userData) => {
-    setUser(userData)
-    return userData
-  }
-
-  const logout = async () => {
-    setUser(null)
-  }
-
-  const switchUser = (userId) => {
-    const mockUser = mockUsers.find(u => u.id === userId)
-    if (mockUser) {
-      setUser({ ...mockUser, role: 'admin' })
-    }
+  const updateUser = (updates) => {
+    setUserData(prev => (prev ? { ...prev, ...updates } : prev))
   }
 
   const value = {
-    user,
-    loading,
-    login,
-    logout,
-    switchUser,
-    isAuthenticated: !!user
+    user: userData,
+    loading: !isLoaded,
+    logout: signOut,
+    updateUser,
+    isAuthenticated: !!clerkUser
   }
 
   return (
