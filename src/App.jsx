@@ -10,6 +10,10 @@ import LeadsLayout from './components/leads/LeadsLayout'
 import LeadsDashboard from './components/leads/LeadsDashboard'
 import CreateLead from './components/leads/CreateLead'
 import LeadDetails from './components/leads/LeadDetails'
+import BlogManager from './components/blog/BlogManager'
+import AgentBlogSubmission from './components/blog/AgentBlogSubmission'
+import BlogList from './components/blog/BlogList'
+import BlogPost from './components/blog/BlogPost'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
@@ -41,15 +45,23 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       
+      {/* Public Blog Routes */}
+      <Route path="/blog" element={<BlogList />} />
+      <Route path="/blog/:slug" element={<BlogPost />} />
+
       {/* Dashboard Routes */}
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <DashboardLayout />
-        </ProtectedRoute>
-      }>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Dashboard />} />
         <Route path="professional-profile" element={<ProfessionalProfile />} />
         <Route path="landing-pages" element={<MyLandingPages />} />
+        <Route path="blog-submission" element={<AgentBlogSubmission />} />
         
         {/* Leads Routes */}
         <Route path="leads" element={<LeadsLayout />}>
@@ -57,12 +69,24 @@ const AppRoutes = () => {
           <Route path="new" element={<CreateLead />} />
           <Route path=":id" element={<LeadDetails />} />
         </Route>
-        
-        <Route path="cms" element={
-          <ProtectedRoute requireAdmin>
-            <ContentManager />
-          </ProtectedRoute>
-        } />
+
+        {/* Admin Only Routes */}
+        <Route
+          path="blog-manager"
+          element={
+            <ProtectedRoute requireAdmin>
+              <BlogManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="cms"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ContentManager />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Public Profile & Landing Pages Routes */}

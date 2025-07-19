@@ -6,8 +6,24 @@ import { getSiteContent, submitContactForm, findProfessional } from '../../lib/s
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import MainNav from '../layout/MainNav'
+import LatestPostsWidget from '../blog/LatestPostsWidget'
 
-const { FiShield, FiDollarSign, FiBriefcase, FiHeart, FiPieChart, FiTrendingUp, FiBookOpen, FiUmbrella, FiGift, FiTarget, FiBook, FiUsers, FiSearch, FiArrowRight } = FiIcons
+const {
+  FiShield,
+  FiDollarSign,
+  FiBriefcase,
+  FiHeart,
+  FiPieChart,
+  FiTrendingUp,
+  FiBookOpen,
+  FiUmbrella,
+  FiGift,
+  FiTarget,
+  FiBook,
+  FiUsers,
+  FiSearch,
+  FiArrowRight
+} = FiIcons
 
 const Home = () => {
   const [content, setContent] = useState({})
@@ -30,7 +46,6 @@ const Home = () => {
         setLoading(false)
       }
     }
-
     loadContent()
   }, [])
 
@@ -82,6 +97,7 @@ const Home = () => {
   const [joinTeamRef, joinTeamInView] = useInView({ triggerOnce: true, threshold: 0.1 })
   const [findProRef, findProInView] = useInView({ triggerOnce: true, threshold: 0.1 })
   const [contactRef, contactInView] = useInView({ triggerOnce: true, threshold: 0.1 })
+  const [blogRef, blogInView] = useInView({ triggerOnce: true, threshold: 0.1 })
 
   // Service icons mapping
   const serviceIcons = [
@@ -96,13 +112,13 @@ const Home = () => {
   // Function to render formatted content
   const renderFormattedContent = (text) => {
     if (!text) return null;
-
+    
     // Simple markdown-like parsing
     const formattedText = text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br />');
-
+    
     return <div dangerouslySetInnerHTML={{ __html: formattedText }} />;
   };
 
@@ -147,7 +163,6 @@ const Home = () => {
             <circle cx="200" cy="600" r="120" fill="#3AA0FF" opacity="0.1" />
           </svg>
         </div>
-
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -196,7 +211,6 @@ const Home = () => {
               </h2>
               <div className="h-1 w-24 bg-[#3AA0FF] mx-auto"></div>
             </motion.div>
-
             <motion.div
               className="max-w-3xl mx-auto text-center"
               initial="hidden"
@@ -206,7 +220,6 @@ const Home = () => {
               <div className="text-gray-600 prose prose-lg mx-auto">
                 {renderFormattedContent(content.about?.body || 'Prosperity Leaders™ is a platform dedicated to helping individuals and families achieve financial independence through personalized strategies and expert guidance.')}
               </div>
-
               {content.about?.image_url && (
                 <div className="mt-12">
                   <img
@@ -235,7 +248,6 @@ const Home = () => {
             </h2>
             <div className="h-1 w-24 bg-[#3AA0FF] mx-auto"></div>
           </motion.div>
-
           <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
             initial="hidden"
@@ -299,8 +311,46 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Rest of the sections remain unchanged */}
-      {/* ... */}
+      {/* Blog Section */}
+      <section ref={blogRef} className="py-20 bg-[#F5F7FA]">
+        <div className="container mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial="hidden"
+            animate={blogInView ? "visible" : "hidden"}
+            variants={fadeIn}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
+              Latest Financial Insights
+            </h2>
+            <div className="h-1 w-24 bg-[#3AA0FF] mx-auto mb-4"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Stay informed with expert advice and insights from our team of financial professionals
+            </p>
+          </motion.div>
+          
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial="hidden"
+            animate={blogInView ? "visible" : "hidden"}
+            variants={fadeIn}
+          >
+            <LatestPostsWidget limit={3} showHeader={false} />
+            
+            <div className="text-center mt-8">
+              <motion.a
+                href="/blog"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-6 rounded-md font-medium shadow-lg transition-colors"
+              >
+                <span>Read All Articles</span>
+                <SafeIcon icon={FiArrowRight} className="w-4 h-4 ml-2" />
+              </motion.a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Footer Section */}
       <footer className="bg-[#1C1F2A] text-white py-12">
@@ -335,7 +385,7 @@ const Home = () => {
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Services</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Resources</a></li>
+                <li><a href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
