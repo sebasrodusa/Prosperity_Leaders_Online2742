@@ -201,6 +201,18 @@ export const updateFileMetadata = async (fileId, metadata = {}) => {
   }
 };
 
+// Simple client side file validation helper
+export const validateFile = (file, allowedTypes = [], maxSize = 0) => {
+  const errors = [];
+  if (allowedTypes.length && !allowedTypes.includes(file.type)) {
+    errors.push('Invalid file type');
+  }
+  if (maxSize && file.size > maxSize) {
+    errors.push('File is too large');
+  }
+  return { isValid: errors.length === 0, errors };
+};
+
 export {
   getOptimizedUrl as getOptimizedImageUrl
 };
