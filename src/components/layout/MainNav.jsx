@@ -5,7 +5,19 @@ import { useAuth } from '../../context/AuthContext'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiUser, FiLogOut, FiUsers, FiChevronDown, FiMenu, FiX, FiHome, FiLayout, FiSettings, FiEdit3, FiBox } = FiIcons
+const {
+  FiUser,
+  FiLogOut,
+  FiUsers,
+  FiChevronDown,
+  FiMenu,
+  FiX,
+  FiHome,
+  FiLayout,
+  FiSettings,
+  FiEdit3,
+  FiBox
+} = FiIcons
 
 const MainNav = ({ variant = 'public' }) => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -13,9 +25,8 @@ const MainNav = ({ variant = 'public' }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { user, logout, switchUser } = useAuth()
   const location = useLocation()
-  
   const isAdmin = user?.role === 'admin'
-  
+
   const dashboardMenuItems = [
     { name: 'Dashboard', icon: FiHome, path: '/dashboard' },
     { name: 'My Pages', icon: FiLayout, path: '/dashboard/pages' },
@@ -115,7 +126,7 @@ const MainNav = ({ variant = 'public' }) => {
 
               {user && (
                 <div className="flex items-center space-x-3 relative">
-                  <div 
+                  <div
                     className="flex items-center space-x-2 cursor-pointer"
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                   >
@@ -127,26 +138,26 @@ const MainNav = ({ variant = 'public' }) => {
                     <span className="text-sm font-medium text-white">
                       {user.full_name}
                     </span>
-                    <SafeIcon 
-                      icon={userMenuOpen ? FiIcons.FiChevronUp : FiChevronDown} 
+                    <SafeIcon
+                      icon={userMenuOpen ? FiIcons.FiChevronUp : FiChevronDown}
                       className="w-4 h-4 text-white/70"
                     />
                   </div>
 
                   {userMenuOpen && (
-                    <div 
+                    <div
                       className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      <Link 
-                        to="/profile" 
+                      <Link
+                        to="/profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         <SafeIcon icon={FiUser} className="inline-block mr-2 w-4 h-4" />
                         Profile Settings
                       </Link>
-                      <button 
-                        onClick={logout} 
+                      <button
+                        onClick={logout}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         <SafeIcon icon={FiLogOut} className="inline-block mr-2 w-4 h-4" />
@@ -182,46 +193,47 @@ const MainNav = ({ variant = 'public' }) => {
             <Link to="/" className="text-white hover:text-[#3AA0FF] transition-colors">Home</Link>
             <Link to="/about" className="text-white hover:text-[#3AA0FF] transition-colors">About</Link>
             <Link to="/services" className="text-white hover:text-[#3AA0FF] transition-colors">Services</Link>
-            <Link to="/careers" className="text-white hover:text-[#3AA0FF] transition-colors">Careers</Link>
+            <Link to="/find-a-professional" className="text-white hover:text-[#3AA0FF] transition-colors">Find a Professional</Link>
+            <Link to="/blog" className="text-white hover:text-[#3AA0FF] transition-colors">Blog</Link>
             <Link to="/contact" className="text-white hover:text-[#3AA0FF] transition-colors">Contact</Link>
 
             {user ? (
               <div className="relative">
-                <button 
+                <button
                   className="flex items-center text-white hover:text-[#3AA0FF] transition-colors focus:outline-none"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  <img 
-                    src={user.profile_photo_url || 'https://via.placeholder.com/40'} 
-                    alt={user.full_name} 
+                  <img
+                    src={user.profile_photo_url || 'https://via.placeholder.com/40'}
+                    alt={user.full_name}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
                   <span>{user.full_name}</span>
-                  <SafeIcon 
-                    icon={userMenuOpen ? FiIcons.FiChevronUp : FiChevronDown} 
+                  <SafeIcon
+                    icon={userMenuOpen ? FiIcons.FiChevronUp : FiChevronDown}
                     className="ml-1 w-4 h-4"
                   />
                 </button>
-                
+
                 {/* User dropdown menu */}
                 {userMenuOpen && (
-                  <div 
+                  <div
                     className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
                     onClick={() => setUserMenuOpen(false)}
                   >
-                    <Link 
-                      to="/dashboard" 
+                    <Link
+                      to="/dashboard"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Dashboard
                     </Link>
-                    <Link 
-                      to="/profile" 
+                    <Link
+                      to="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Profile
                     </Link>
-                    <button 
+                    <button
                       onClick={logout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
@@ -231,7 +243,10 @@ const MainNav = ({ variant = 'public' }) => {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors">
+              <Link
+                to="/login"
+                className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors"
+              >
                 Login
               </Link>
             )}
@@ -280,11 +295,18 @@ const MainNav = ({ variant = 'public' }) => {
                   Services
                 </Link>
                 <Link
-                  to="/careers"
+                  to="/find-a-professional"
                   className="text-white hover:text-[#3AA0FF] transition-colors py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Careers
+                  Find a Professional
+                </Link>
+                <Link
+                  to="/blog"
+                  className="text-white hover:text-[#3AA0FF] transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Blog
                 </Link>
                 <Link
                   to="/contact"

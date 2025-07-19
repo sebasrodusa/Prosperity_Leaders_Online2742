@@ -14,6 +14,7 @@ import BlogManager from './components/blog/BlogManager'
 import AgentBlogSubmission from './components/blog/AgentBlogSubmission'
 import BlogList from './components/blog/BlogList'
 import BlogPost from './components/blog/BlogPost'
+import ProfessionalDirectory from './components/professional-directory/ProfessionalDirectory'
 import Home from './components/pages/Home'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
@@ -45,9 +46,10 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       
-      {/* Public Blog Routes */}
+      {/* Public Routes */}
       <Route path="/blog" element={<BlogList />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
+      <Route path="/find-a-professional" element={<ProfessionalDirectory />} />
 
       {/* Dashboard Routes */}
       <Route

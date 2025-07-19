@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { useForm } from 'react-hook-form'
@@ -22,7 +23,8 @@ const {
   FiBook,
   FiUsers,
   FiSearch,
-  FiArrowRight
+  FiArrowRight,
+  FiChevronRight
 } = FiIcons
 
 const Home = () => {
@@ -68,10 +70,7 @@ const Home = () => {
 
     setSearchSubmitting(true)
     try {
-      const result = await findProfessional(searchQuery)
-      if (result.success && result.redirectUrl) {
-        window.location.href = result.redirectUrl
-      }
+      window.location.href = `/find-a-professional?search=${encodeURIComponent(searchQuery)}`
     } catch (error) {
       console.error('Error searching for professional:', error)
     } finally {
@@ -176,14 +175,35 @@ const Home = () => {
             <p className="text-lg md:text-xl text-gray-200 mb-10">
               {content.hero?.subheadline || 'Empowering families and professionals to grow, protect, and multiply their wealth — with clarity and purpose.'}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-8 rounded-md font-medium shadow-lg"
+            
+            {/* Hero Search Box */}
+            <form onSubmit={handleFindProfessional} className="max-w-lg mx-auto mb-10 relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Find a financial professional..."
+                className="w-full py-3 px-5 pr-16 rounded-lg text-polynesian-blue focus:outline-none focus:ring-2 focus:ring-picton-blue"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-picton-blue text-white py-2 px-4 rounded-md hover:bg-picton-blue/90 transition-colors"
               >
-                {content.hero?.cta_primary || 'Start Your Financial Plan'}
-              </motion.button>
+                <SafeIcon icon={FiSearch} className="w-5 h-5" />
+              </button>
+            </form>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/find-a-professional">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-8 rounded-md font-medium shadow-lg flex items-center justify-center space-x-2"
+                >
+                  <span>Find a Professional</span>
+                  <SafeIcon icon={FiChevronRight} className="w-5 h-5" />
+                </motion.button>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
@@ -233,6 +253,35 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      {/* Find a Professional CTA Section */}
+      <section ref={findProRef} className="py-16 bg-gradient-to-r from-[#1C1F2A] to-[#2A3042] text-white">
+        <div className="container mx-auto px-6">
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
+            initial="hidden"
+            animate={findProInView ? "visible" : "hidden"}
+            variants={fadeIn}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Find Your Perfect Financial Professional
+            </h2>
+            <p className="text-lg text-white/80 mb-8">
+              Connect with experienced financial professionals who can help you achieve your financial goals.
+              Our directory makes it easy to find the right match for your needs.
+            </p>
+            <Link to="/find-a-professional">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-8 rounded-md font-medium shadow-lg"
+              >
+                Browse Professional Directory
+              </motion.button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
 
       {/* What We Do Section */}
       <section ref={whatWeDoRef} className="py-20 bg-white">
@@ -384,8 +433,8 @@ const Home = () => {
               <ul className="space-y-2">
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Services</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-                <li><a href="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
+                <li><Link to="/find-a-professional" className="text-gray-400 hover:text-white transition-colors">Find a Professional</Link></li>
+                <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors">Blog</Link></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
