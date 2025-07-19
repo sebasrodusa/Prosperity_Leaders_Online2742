@@ -1,4 +1,5 @@
 import supabase from './supabase'
+import { uploadToPublit, deleteFromPublit } from './publit'
 
 // Helper function to set user context for RLS
 const setUserContext = async (userId, userRole = 'professional') => {
@@ -28,9 +29,18 @@ export const RESOURCE_CATEGORIES = [
 export const RESOURCE_TYPES = [
   { id: 'pdf', name: 'PDF Document', icon: 'FiFile' },
   { id: 'video', name: 'Video', icon: 'FiVideo' },
+  { id: 'image', name: 'Image', icon: 'FiImage' },
   { id: 'link', name: 'External Link', icon: 'FiExternalLink' },
+  { id: 'embed', name: 'Embedded Content', icon: 'FiCode' },
   { id: 'guide', name: 'Text Guide', icon: 'FiBookOpen' }
 ]
+
+// Allowed file types for upload
+export const ALLOWED_FILE_TYPES = {
+  pdf: ['application/pdf'],
+  video: ['video/mp4', 'video/mov', 'video/avi', 'video/quicktime'],
+  image: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+}
 
 // Get all resources with filters
 export const getResources = async (userId, userRole = 'professional', filters = {}) => {
@@ -43,27 +53,24 @@ export const getResources = async (userId, userRole = 'professional', filters = 
       .eq('is_active', true)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
-
+    
     // Apply filters
     if (filters.category) {
       query = query.eq('category', filters.category)
     }
-    
     if (filters.type) {
       query = query.eq('resource_type', filters.type)
     }
-    
     if (filters.language) {
       query = query.eq('language', filters.language)
     }
-    
     if (filters.search) {
       query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,tags.ilike.%${filters.search}%`)
     }
-
+    
     const { data, error } = await query
-
     if (error) throw error
+    
     return data || []
   } catch (error) {
     console.error('Error fetching resources:', error)
@@ -82,7 +89,7 @@ export const getResource = async (resourceId, userId, userRole = 'professional')
       .eq('id', resourceId)
       .eq('is_active', true)
       .single()
-
+    
     if (error) throw error
     return data
   } catch (error) {
@@ -106,7 +113,7 @@ export const createResource = async (resourceData, userId, userRole = 'admin') =
       }])
       .select()
       .single()
-
+    
     if (error) throw error
     return data
   } catch (error) {
@@ -129,7 +136,7 @@ export const updateResource = async (resourceId, updates, userId, userRole = 'ad
       .eq('id', resourceId)
       .select()
       .single()
-
+    
     if (error) throw error
     return data
   } catch (error) {
@@ -143,11 +150,25 @@ export const deleteResource = async (resourceId, userId, userRole = 'admin') => 
   try {
     await setUserContext(userId, userRole)
     
+    // Get resource to delete associated Publit file
+    const resource = await getResource(resourceId, userId, userRole)
+    
+    // Delete from Publit.io if it has a publit_id
+    if (resource.publit_id) {
+      try {
+        await deleteFromPublit(resource.publit_id)
+      } catch (publitError) {
+        console.warn('Failed to delete from Publit.io:', publitError)
+        // Continue with database deletion even if Publit deletion fails
+      }
+    }
+    
+    // Soft delete from database
     const { error } = await supabase
       .from('resources_12345')
       .update({ is_active: false })
       .eq('id', resourceId)
-
+    
     if (error) throw error
     return true
   } catch (error) {
@@ -156,48 +177,37 @@ export const deleteResource = async (resourceId, userId, userRole = 'admin') => 
   }
 }
 
-// Upload file to Supabase storage
-export const uploadResourceFile = async (file, folder = 'resources') => {
+// Upload file to Publit.io and create resource
+export const uploadResourceFile = async (file, resourceData, userId, userRole = 'admin') => {
   try {
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `${folder}/${fileName}`
-
-    const { data, error } = await supabase.storage
-      .from('resources')
-      .upload(filePath, file)
-
-    if (error) throw error
-
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('resources')
-      .getPublicUrl(filePath)
-
-    return {
-      path: filePath,
-      url: urlData.publicUrl,
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type
-    }
+    // Upload to Publit.io
+    const publitData = await uploadToPublit(file, {
+      title: resourceData.title,
+      description: resourceData.description,
+      tags: resourceData.tags,
+      folder: `resources/${resourceData.category}`
+    })
+    
+    // Create resource with Publit data
+    const resource = await createResource({
+      ...resourceData,
+      publit_id: publitData.id,
+      file_url: publitData.url,
+      download_url: publitData.downloadUrl,
+      thumbnail_url: publitData.thumbnailUrl,
+      preview_url: publitData.previewUrl,
+      file_name: publitData.fileName,
+      file_size: publitData.fileSize,
+      file_type: publitData.fileType,
+      width: publitData.width,
+      height: publitData.height,
+      duration: publitData.duration,
+      publit_metadata: publitData.metadata
+    }, userId, userRole)
+    
+    return resource
   } catch (error) {
-    console.error('Error uploading file:', error)
-    throw error
-  }
-}
-
-// Delete file from Supabase storage
-export const deleteResourceFile = async (filePath) => {
-  try {
-    const { error } = await supabase.storage
-      .from('resources')
-      .remove([filePath])
-
-    if (error) throw error
-    return true
-  } catch (error) {
-    console.error('Error deleting file:', error)
+    console.error('Error uploading resource file:', error)
     throw error
   }
 }
@@ -213,7 +223,7 @@ export const trackResourceAccess = async (resourceId, userId, actionType = 'view
         action_type: actionType,
         accessed_at: new Date().toISOString()
       }])
-
+    
     if (error) throw error
   } catch (error) {
     console.error('Error tracking resource access:', error)
@@ -228,7 +238,7 @@ export const getResourceAnalytics = async (userId, userRole = 'admin') => {
     
     const { data, error } = await supabase
       .rpc('get_resource_analytics')
-
+    
     if (error) throw error
     return data || []
   } catch (error) {

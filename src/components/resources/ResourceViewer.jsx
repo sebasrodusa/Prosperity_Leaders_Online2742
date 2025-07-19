@@ -5,7 +5,7 @@ import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import { RESOURCE_TYPES } from '../../lib/resources'
 
-const { FiDownload, FiExternalLink, FiFile, FiVideo, FiBookOpen } = FiIcons
+const { FiDownload, FiExternalLink, FiFile, FiVideo, FiBookOpen, FiImage, FiCode } = FiIcons
 
 const ResourceViewer = ({ resource, onClose, onDownload }) => {
   const resourceType = RESOURCE_TYPES.find(t => t.id === resource.resource_type)
@@ -44,13 +44,23 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
               <SafeIcon icon={FiFile} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
               <p className="text-polynesian-blue/70 mb-4">PDF Document</p>
               {resource.file_url && (
-                <Button
-                  onClick={onDownload}
-                  className="flex items-center space-x-2"
-                >
-                  <SafeIcon icon={FiDownload} className="w-4 h-4" />
-                  <span>Download PDF</span>
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => window.open(resource.file_url, '_blank')}
+                    className="flex items-center space-x-2 mr-2"
+                  >
+                    <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
+                    <span>Open in New Tab</span>
+                  </Button>
+                  <Button
+                    onClick={onDownload}
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                  >
+                    <SafeIcon icon={FiDownload} className="w-4 h-4" />
+                    <span>Download PDF</span>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
@@ -79,6 +89,26 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
           </div>
         )
       
+      case 'image':
+        return (
+          <div className="bg-gray-50 rounded-lg p-4">
+            {resource.file_url ? (
+              <img
+                src={resource.file_url}
+                alt={resource.title}
+                className="w-full max-h-96 object-contain rounded-lg mx-auto"
+              />
+            ) : (
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                  <SafeIcon icon={FiImage} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
+                  <p className="text-polynesian-blue/70">Image not available</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      
       case 'link':
         return (
           <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
@@ -93,6 +123,25 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
                 <span>Visit Resource</span>
               </Button>
             </div>
+          </div>
+        )
+      
+      case 'embed':
+        return (
+          <div className="bg-gray-50 rounded-lg p-4">
+            {resource.embed_code ? (
+              <div 
+                className="w-full"
+                dangerouslySetInnerHTML={{ __html: resource.embed_code }}
+              />
+            ) : (
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                  <SafeIcon icon={FiCode} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
+                  <p className="text-polynesian-blue/70">Embedded content not available</p>
+                </div>
+              </div>
+            )}
           </div>
         )
       
@@ -128,10 +177,13 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
             {resource.file_size && (
               <span>{formatFileSize(resource.file_size)}</span>
             )}
+            {resource.duration && (
+              <span>{Math.ceil(resource.duration / 60)} min</span>
+            )}
             <span>Added {formatRelativeTime(resource.created_at)}</span>
           </div>
         </div>
-        {resource.file_url && (
+        {(resource.file_url || resource.download_url) && (
           <Button
             onClick={onDownload}
             className="flex items-center space-x-2"

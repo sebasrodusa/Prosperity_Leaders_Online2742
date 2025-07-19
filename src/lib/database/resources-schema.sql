@@ -1,4 +1,4 @@
--- Resources Center Database Schema
+-- Resources Center Database Schema with Publit.io Integration
 
 -- Main resources table
 CREATE TABLE IF NOT EXISTS resources_12345 (
@@ -6,25 +6,34 @@ CREATE TABLE IF NOT EXISTS resources_12345 (
   title TEXT NOT NULL,
   description TEXT,
   category TEXT NOT NULL CHECK (category IN (
-    'getting_started', 
+    'getting_started',
     'product_knowledge', 
-    'sales_scripts', 
-    'marketing_branding', 
-    'video_trainings', 
+    'sales_scripts',
+    'marketing_branding',
+    'video_trainings',
     'forms_disclosures'
   )),
-  resource_type TEXT NOT NULL CHECK (resource_type IN ('pdf', 'video', 'link', 'guide')),
+  resource_type TEXT NOT NULL CHECK (resource_type IN ('pdf', 'video', 'image', 'link', 'embed', 'guide')),
   language TEXT DEFAULT 'en' CHECK (language IN ('en', 'es')),
   
+  -- Publit.io integration
+  publit_id TEXT, -- Publit.io file ID
+  file_url TEXT, -- Main file URL
+  download_url TEXT, -- Download URL (may be different from view URL)
+  thumbnail_url TEXT, -- Thumbnail/preview image
+  preview_url TEXT, -- Preview URL for supported formats
+  
   -- File information
-  file_url TEXT,
-  file_path TEXT,
   file_name TEXT,
   file_size BIGINT,
   file_type TEXT,
+  width INTEGER, -- For images/videos
+  height INTEGER, -- For images/videos  
+  duration REAL, -- For videos (in seconds)
   
   -- External content
-  external_url TEXT,
+  external_url TEXT, -- For external links
+  embed_code TEXT, -- For embedded content (YouTube, Vimeo, etc.)
   content TEXT, -- For text guides
   
   -- Metadata
@@ -32,6 +41,7 @@ CREATE TABLE IF NOT EXISTS resources_12345 (
   is_pinned BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   role_restrictions TEXT[], -- Optional role-based access
+  publit_metadata JSONB, -- Store additional Publit.io metadata
   
   -- Tracking
   created_by UUID REFERENCES auth.users(id),
@@ -39,9 +49,10 @@ CREATE TABLE IF NOT EXISTS resources_12345 (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
   -- Constraints
-  CONSTRAINT valid_file_or_url CHECK (
-    (resource_type IN ('pdf', 'video') AND file_url IS NOT NULL) OR
+  CONSTRAINT valid_content CHECK (
+    (resource_type IN ('pdf', 'video', 'image') AND publit_id IS NOT NULL) OR
     (resource_type = 'link' AND external_url IS NOT NULL) OR
+    (resource_type = 'embed' AND embed_code IS NOT NULL) OR
     (resource_type = 'guide' AND content IS NOT NULL)
   )
 );
@@ -60,30 +71,30 @@ ALTER TABLE resources_12345 ENABLE ROW LEVEL SECURITY;
 ALTER TABLE resource_analytics_12345 ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for resources_12345
-CREATE POLICY "Users can view active resources" ON resources_12345
-FOR SELECT USING (is_active = true);
+CREATE POLICY "Users can view active resources" ON resources_12345 
+  FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Admins can manage all resources" ON resources_12345
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM auth.users 
-    WHERE auth.users.id = auth.uid() 
-    AND (auth.users.raw_user_meta_data->>'role' = 'admin')
-  )
-);
+CREATE POLICY "Admins can manage all resources" ON resources_12345 
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM auth.users 
+      WHERE auth.users.id = auth.uid() 
+      AND (auth.users.raw_user_meta_data->>'role' = 'admin')
+    )
+  );
 
--- RLS Policies for resource_analytics_12345
-CREATE POLICY "Users can insert their own analytics" ON resource_analytics_12345
-FOR INSERT WITH CHECK (user_id = auth.uid());
+-- RLS Policies for resource_analytics_12345  
+CREATE POLICY "Users can insert their own analytics" ON resource_analytics_12345 
+  FOR INSERT WITH CHECK (user_id = auth.uid());
 
-CREATE POLICY "Admins can view all analytics" ON resource_analytics_12345
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM auth.users 
-    WHERE auth.users.id = auth.uid() 
-    AND (auth.users.raw_user_meta_data->>'role' = 'admin')
-  )
-);
+CREATE POLICY "Admins can view all analytics" ON resource_analytics_12345 
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM auth.users 
+      WHERE auth.users.id = auth.uid() 
+      AND (auth.users.raw_user_meta_data->>'role' = 'admin')
+    )
+  );
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_resources_category ON resources_12345(category) WHERE is_active = true;
@@ -91,6 +102,7 @@ CREATE INDEX IF NOT EXISTS idx_resources_type ON resources_12345(resource_type) 
 CREATE INDEX IF NOT EXISTS idx_resources_language ON resources_12345(language) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_resources_pinned ON resources_12345(is_pinned, created_at) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_resources_tags ON resources_12345 USING GIN(tags) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_publit ON resources_12345(publit_id) WHERE publit_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_analytics_resource_user ON resource_analytics_12345(resource_id, user_id);
 
 -- Function to get resource analytics
@@ -101,10 +113,7 @@ RETURNS TABLE (
   total_views BIGINT,
   total_downloads BIGINT,
   unique_users BIGINT
-)
-LANGUAGE SQL
-SECURITY DEFINER
-AS $$
+) LANGUAGE SQL SECURITY DEFINER AS $$
   SELECT 
     r.id as resource_id,
     r.title as resource_title,
@@ -118,32 +127,17 @@ AS $$
   ORDER BY total_views DESC;
 $$;
 
--- Storage bucket for resources (run this in Supabase dashboard)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('resources', 'resources', true);
-
--- Storage policies (run this in Supabase dashboard)
--- CREATE POLICY "Users can view resources" ON storage.objects FOR SELECT USING (bucket_id = 'resources');
--- CREATE POLICY "Admins can upload resources" ON storage.objects FOR INSERT WITH CHECK (
---   bucket_id = 'resources' AND 
---   EXISTS (
---     SELECT 1 FROM auth.users 
---     WHERE auth.users.id = auth.uid() 
---     AND (auth.users.raw_user_meta_data->>'role' = 'admin')
---   )
--- );
--- CREATE POLICY "Admins can update resources" ON storage.objects FOR UPDATE USING (
---   bucket_id = 'resources' AND 
---   EXISTS (
---     SELECT 1 FROM auth.users 
---     WHERE auth.users.id = auth.uid() 
---     AND (auth.users.raw_user_meta_data->>'role' = 'admin')
---   )
--- );
--- CREATE POLICY "Admins can delete resources" ON storage.objects FOR DELETE USING (
---   bucket_id = 'resources' AND 
---   EXISTS (
---     SELECT 1 FROM auth.users 
---     WHERE auth.users.id = auth.uid() 
---     AND (auth.users.raw_user_meta_data->>'role' = 'admin')
---   )
--- );
+-- Function to clean up orphaned Publit files (admin use)
+CREATE OR REPLACE FUNCTION cleanup_orphaned_publit_files()
+RETURNS TABLE (
+  publit_id TEXT,
+  file_name TEXT
+) LANGUAGE SQL SECURITY DEFINER AS $$
+  SELECT 
+    r.publit_id,
+    r.file_name
+  FROM resources_12345 r
+  WHERE r.publit_id IS NOT NULL 
+  AND r.is_active = false
+  AND r.updated_at < NOW() - INTERVAL '30 days';
+$$;

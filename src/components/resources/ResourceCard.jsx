@@ -5,18 +5,11 @@ import Button from '../ui/Button'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import { RESOURCE_TYPES } from '../../lib/resources'
+import { getOptimizedImageUrl } from '../../lib/publit'
 
-const { FiDownload, FiEye, FiEdit3, FiTrash2, FiStar, FiExternalLink } = FiIcons
+const { FiDownload, FiEye, FiEdit3, FiTrash2, FiStar, FiExternalLink, FiCode } = FiIcons
 
-const ResourceCard = ({ 
-  resource, 
-  viewMode = 'grid', 
-  onView, 
-  onDownload, 
-  onEdit, 
-  onDelete, 
-  isAdmin = false 
-}) => {
+const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit, onDelete, isAdmin = false }) => {
   const resourceType = RESOURCE_TYPES.find(t => t.id === resource.resource_type)
   
   const formatFileSize = (bytes) => {
@@ -52,12 +45,56 @@ const ResourceCard = ({
     return 'just now'
   }
 
-  // Rest of the component code remains the same, just update the date formatting:
-  // Replace instances of formatDistanceToNow with formatRelativeTime
-  // For example:
-  // <span>{formatDistanceToNow(new Date(resource.created_at))} ago</span>
-  // becomes:
-  // <span>{formatRelativeTime(resource.created_at)}</span>
+  const getThumbnailUrl = () => {
+    if (resource.thumbnail_url) {
+      return getOptimizedImageUrl(resource.thumbnail_url, {
+        width: 300,
+        height: 200,
+        crop: 'fill',
+        quality: 80
+      })
+    }
+    return null
+  }
+
+  const getActionButton = () => {
+    switch (resource.resource_type) {
+      case 'link':
+        return (
+          <Button
+            size="sm"
+            onClick={() => window.open(resource.external_url, '_blank')}
+            className="flex items-center space-x-1"
+          >
+            <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
+            <span className="hidden sm:inline">Open</span>
+          </Button>
+        )
+      case 'embed':
+        return (
+          <Button
+            size="sm"
+            onClick={onView}
+            className="flex items-center space-x-1"
+          >
+            <SafeIcon icon={FiCode} className="w-4 h-4" />
+            <span className="hidden sm:inline">View</span>
+          </Button>
+        )
+      default:
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onView}
+            className="flex items-center space-x-1"
+          >
+            <SafeIcon icon={FiEye} className="w-4 h-4" />
+            <span className="hidden sm:inline">View</span>
+          </Button>
+        )
+    }
+  }
 
   if (viewMode === 'list') {
     return (
@@ -71,11 +108,18 @@ const ResourceCard = ({
           <div className="flex items-center justify-between">
             <div className="flex items-start space-x-4 flex-1">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-picton-blue/10 rounded-lg flex items-center justify-center">
-                  <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-6 h-6 text-picton-blue" />
-                </div>
+                {getThumbnailUrl() ? (
+                  <img
+                    src={getThumbnailUrl()}
+                    alt={resource.title}
+                    className="w-16 h-12 object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-picton-blue/10 rounded-lg flex items-center justify-center">
+                    <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-6 h-6 text-picton-blue" />
+                  </div>
+                )}
               </div>
-              
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-polynesian-blue truncate">
@@ -90,31 +134,20 @@ const ResourceCard = ({
                     </span>
                   )}
                 </div>
-                
                 <p className="text-sm text-polynesian-blue/70 mt-1 line-clamp-2">
                   {resource.description}
                 </p>
-                
                 <div className="flex items-center space-x-4 mt-2 text-xs text-polynesian-blue/50">
                   <span>{resourceType?.name}</span>
                   {resource.file_size && <span>{formatFileSize(resource.file_size)}</span>}
+                  {resource.duration && <span>{Math.ceil(resource.duration / 60)}min</span>}
                   <span>{formatRelativeTime(resource.created_at)}</span>
                 </div>
               </div>
             </div>
-            
             <div className="flex items-center space-x-2 ml-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onView}
-                className="flex items-center space-x-1"
-              >
-                <SafeIcon icon={FiEye} className="w-4 h-4" />
-                <span className="hidden sm:inline">View</span>
-              </Button>
-              
-              {resource.file_url && (
+              {getActionButton()}
+              {(resource.file_url || resource.download_url) && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -125,7 +158,6 @@ const ResourceCard = ({
                   <span className="hidden sm:inline">Download</span>
                 </Button>
               )}
-              
               {isAdmin && (
                 <>
                   <Button
@@ -163,19 +195,30 @@ const ResourceCard = ({
       <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
         {/* Thumbnail/Preview */}
         <div className="h-32 bg-gradient-to-br from-picton-blue/20 to-polynesian-blue/20 relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-12 h-12 text-picton-blue" />
-          </div>
-          
+          {getThumbnailUrl() ? (
+            <img
+              src={getThumbnailUrl()}
+              alt={resource.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-12 h-12 text-picton-blue" />
+            </div>
+          )}
           {resource.is_pinned && (
             <div className="absolute top-2 right-2">
               <SafeIcon icon={FiStar} className="w-5 h-5 text-yellow-500" />
             </div>
           )}
-          
           {resource.language && (
             <div className="absolute top-2 left-2 text-lg">
               {getLanguageFlag(resource.language)}
+            </div>
+          )}
+          {resource.duration && (
+            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+              {Math.ceil(resource.duration / 60)}min
             </div>
           )}
         </div>
@@ -202,17 +245,8 @@ const ResourceCard = ({
           </div>
           
           <div className="flex items-center space-x-2 mt-auto">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onView}
-              className="flex-1 flex items-center justify-center space-x-1"
-            >
-              <SafeIcon icon={FiEye} className="w-4 h-4" />
-              <span>View</span>
-            </Button>
-            
-            {resource.file_url && (
+            {getActionButton()}
+            {(resource.file_url || resource.download_url) && (
               <Button
                 variant="outline"
                 size="sm"
