@@ -12,7 +12,7 @@ const MainNav = ({ variant = 'public' }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const { user, logout, switchUser } = useAuth()
+  const { user, logout } = useAuth()
   const location = useLocation()
   const isAdmin = user?.role === 'admin'
 
@@ -108,17 +108,7 @@ const MainNav = ({ variant = 'public' }) => {
               {/* Theme Toggle */}
               <ThemeToggle className="border border-white/20" />
               
-              {/* User Switcher (Demo Only) */}
-              <div className="relative">
-                <select
-                  value={user?.id || ''}
-                  onChange={(e) => switchUser(e.target.value)}
-                  className="appearance-none bg-white/10 border border-white/20 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-picton-blue/50"
-                >
-                  <option value="" className="text-polynesian-blue">Switch User (Demo)</option>
-                  {/* This would come from mockUsers, but we'll keep it simple here */}
-                </select>
-              </div>
+
               
               {user && (
                 <div className="flex items-center space-x-3 relative">

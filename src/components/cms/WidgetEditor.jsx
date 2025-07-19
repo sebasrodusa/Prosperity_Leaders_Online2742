@@ -17,7 +17,7 @@ const widgetComponents = {
   faqAccordion: React.lazy(() => import('../widgets/FaqAccordionWidget'))
 }
 
-const WidgetEditor = ({ widget, onSave, onDelete }) => {
+const WidgetEditor = ({ widget, onSave, onDelete, onCancel }) => {
   const [config, setConfig] = useState(widget.config)
   const [showPreview, setShowPreview] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)

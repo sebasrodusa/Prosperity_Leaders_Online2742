@@ -10,16 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.35.3",
     "@supabase/supabase-js": "^2.39.0",
     "date-fns": "^2.30.0",
+    "framer-motion": "^11.0.8",
     "publitio_js_sdk": "^1.1.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.1.0",
-    "framer-motion": "^11.0.8",
-    "react-icons": "^5.4.0",
     "react-hook-form": "^7.49.2",
+    "react-icons": "^5.4.0",
     "react-intersection-observer": "^9.5.3",
+    "react-router-dom": "^7.1.0",
     "react-select": "^5.7.4"
   },
   "devDependencies": {

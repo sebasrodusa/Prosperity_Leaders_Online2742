@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { getResources, RESOURCE_CATEGORIES, RESOURCE_TYPES, trackResourceAccess } from '../../lib/resources'
+import { getResources, RESOURCE_CATEGORIES, RESOURCE_TYPES, trackResourceAccess, deleteResource } from '../../lib/resources'
 import Card from '../ui/Card'
 import Button from '../ui/Button'
 import Input from '../ui/Input'

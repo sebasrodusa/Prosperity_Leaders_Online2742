@@ -20,7 +20,8 @@ const {
   FiTrendingUp,
   FiClock,
   FiCheckCircle,
-  FiXCircle
+  FiXCircle,
+  FiUsers
 } = FiIcons
 
 const LeadsDashboard = () => {
