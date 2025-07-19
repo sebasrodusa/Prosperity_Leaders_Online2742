@@ -2,46 +2,55 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useForm } from 'react-hook-form'
-import { getSiteContent, submitContactForm, findProfessional } from '../../lib/supabase'
+import DirectorySearchWidget from '../professional-directory/DirectorySearchWidget'
+import SectionAbout from '../sections/SectionAbout'
+import SectionHowItWorks from '../sections/SectionHowItWorks'
+import SectionServices from '../sections/SectionServices'
+import SectionFeaturedProfessionals from '../sections/SectionFeaturedProfessionals'
+import SectionTestimonials from '../sections/SectionTestimonials'
+import SectionBlogHighlights from '../sections/SectionBlogHighlights'
+import MainNav from '../layout/MainNav'
+import Loader from '../ui/Loader'
+import { getSiteContent } from '../../lib/supabase'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
-import MainNav from '../layout/MainNav'
-import LatestPostsWidget from '../blog/LatestPostsWidget'
 
-const {
-  FiShield,
-  FiDollarSign,
-  FiBriefcase,
-  FiHeart,
-  FiPieChart,
-  FiTrendingUp,
-  FiBookOpen,
-  FiUmbrella,
-  FiGift,
-  FiTarget,
-  FiBook,
-  FiUsers,
-  FiSearch,
-  FiArrowRight,
-  FiChevronRight
-} = FiIcons
+const { FiChevronRight } = FiIcons
 
 const Home = () => {
   const [content, setContent] = useState({})
   const [loading, setLoading] = useState(true)
-  const [contactSubmitting, setContactSubmitting] = useState(false)
-  const [contactSuccess, setContactSuccess] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchSubmitting, setSearchSubmitting] = useState(false)
+  const [visibleSections, setVisibleSections] = useState({})
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm()
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+  }
+
+  // Intersection observer hooks for animations
+  const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 })
 
   useEffect(() => {
     async function loadContent() {
       try {
         const siteContent = await getSiteContent()
         setContent(siteContent)
+        
+        // Set visible sections based on CMS configuration
+        if (siteContent.homepage_sections) {
+          setVisibleSections(siteContent.homepage_sections)
+        } else {
+          // Default visibility if not configured in CMS
+          setVisibleSections({
+            about: true,
+            how_it_works: true,
+            services: true,
+            featured_professionals: true,
+            testimonials: true,
+            blog: true
+          })
+        }
       } catch (error) {
         console.error("Error loading content:", error)
       } finally {
@@ -51,94 +60,20 @@ const Home = () => {
     loadContent()
   }, [])
 
-  const handleContactSubmit = async (data) => {
-    setContactSubmitting(true)
-    try {
-      await submitContactForm(data)
-      setContactSuccess(true)
-      reset()
-    } catch (error) {
-      console.error('Error submitting form:', error)
-    } finally {
-      setContactSubmitting(false)
-    }
-  }
-
-  const handleFindProfessional = async (e) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
-
-    setSearchSubmitting(true)
-    try {
-      window.location.href = `/find-a-professional?search=${encodeURIComponent(searchQuery)}`
-    } catch (error) {
-      console.error('Error searching for professional:', error)
-    } finally {
-      setSearchSubmitting(false)
-    }
-  }
-
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  }
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
-  }
-
-  // Intersection observer hooks for animations
-  const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [whatWeDoRef, whatWeDoInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [servicesRef, servicesInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [joinTeamRef, joinTeamInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [findProRef, findProInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [contactRef, contactInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-  const [blogRef, blogInView] = useInView({ triggerOnce: true, threshold: 0.1 })
-
-  // Service icons mapping
-  const serviceIcons = [
-    FiHeart, // Life Insurance
-    FiPieChart, // Retirement Planning
-    FiTrendingUp, // Wealth Accumulation
-    FiBookOpen, // College Savings
-    FiUmbrella, // Income Protection
-    FiGift // Legacy Transfer
-  ]
-
-  // Function to render formatted content
-  const renderFormattedContent = (text) => {
-    if (!text) return null;
-    
-    // Simple markdown-like parsing
-    const formattedText = text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br />');
-    
-    return <div dangerouslySetInnerHTML={{ __html: formattedText }} />;
-  };
-
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-[#F5F7FA]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3AA0FF]"></div>
-      </div>
-    )
+    return <Loader />
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
-      {/* Add Navigation */}
+    <div className="min-h-screen bg-anti-flash-white">
       <MainNav variant="public" />
 
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative bg-gradient-to-r from-[#1C1F2A] to-[#2A3042] text-white py-24 md:py-32"
+        className="relative bg-gradient-to-br from-primary-bg to-polynesian-blue text-white pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden"
       >
+        {/* Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <svg
             className="absolute right-0 top-0 h-full w-full opacity-10"
@@ -146,22 +81,23 @@ const Home = () => {
             height="100%"
             viewBox="0 0 800 800"
             xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
           >
             <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="hero-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#3AA0FF" stopOpacity="0.8" />
                 <stop offset="100%" stopColor="#26B4A3" stopOpacity="0.4" />
               </linearGradient>
             </defs>
             <path
-              d="M400,400 Q600,200 800,400 T1200,400 T1600,400 T2000,400 T2400,400 V800 H0 V400 Q200,600 400,400"
-              fill="url(#gradient)"
+              d="M0,160 C320,300 420,0 800,180 L800,800 L0,800 Z"
+              fill="url(#hero-gradient)"
             />
-            <circle cx="400" cy="300" r="100" fill="#3AA0FF" opacity="0.1" />
-            <circle cx="600" cy="500" r="150" fill="#26B4A3" opacity="0.1" />
-            <circle cx="200" cy="600" r="120" fill="#3AA0FF" opacity="0.1" />
+            <circle cx="220" cy="220" r="140" fill="#3AA0FF" opacity="0.1" />
+            <circle cx="550" cy="520" r="180" fill="#26B4A3" opacity="0.1" />
           </svg>
         </div>
+
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -169,240 +105,87 @@ const Home = () => {
             animate={heroInView ? "visible" : "hidden"}
             variants={fadeIn}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               {content.hero?.headline || 'Welcome to Prosperity Leaders™'}
             </h1>
-            <p className="text-lg md:text-xl text-gray-200 mb-10">
+            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
               {content.hero?.subheadline || 'Empowering families and professionals to grow, protect, and multiply their wealth — with clarity and purpose.'}
             </p>
             
-            {/* Hero Search Box */}
-            <form onSubmit={handleFindProfessional} className="max-w-lg mx-auto mb-10 relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Find a financial professional..."
-                className="w-full py-3 px-5 pr-16 rounded-lg text-polynesian-blue focus:outline-none focus:ring-2 focus:ring-picton-blue"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-picton-blue text-white py-2 px-4 rounded-md hover:bg-picton-blue/90 transition-colors"
-              >
-                <SafeIcon icon={FiSearch} className="w-5 h-5" />
-              </button>
-            </form>
+            {/* Directory Search Widget */}
+            <div className="max-w-2xl mx-auto mb-12">
+              <DirectorySearchWidget />
+            </div>
             
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/find-a-professional">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-8 rounded-md font-medium shadow-lg flex items-center justify-center space-x-2"
+                  className="bg-primary-cta hover:bg-primary-cta/90 text-white py-3 px-8 rounded-md font-medium shadow-lg flex items-center justify-center space-x-2"
                 >
-                  <span>Find a Professional</span>
+                  <span>{content.hero?.cta_primary || 'Find a Professional'}</span>
                   <SafeIcon icon={FiChevronRight} className="w-5 h-5" />
                 </motion.button>
               </Link>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-transparent hover:bg-white/10 border-2 border-white text-white py-3 px-8 rounded-md font-medium"
-              >
-                {content.hero?.cta_secondary || 'Join the Team'}
-              </motion.button>
+              <Link to="/join">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-transparent hover:bg-white/10 border-2 border-white text-white py-3 px-8 rounded-md font-medium"
+                >
+                  {content.hero?.cta_secondary || 'Join the Team'}
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         </div>
+        
+        {/* Bottom wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg 
+            viewBox="0 0 1440 120" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-auto"
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M0 120L48 108C96 96 192 72 288 60C384 48 480 48 576 54C672 60 768 72 864 78C960 84 1056 84 1152 72C1248 60 1344 36 1392 24L1440 12V0H1392C1344 0 1248 0 1152 0C1056 0 960 0 864 0C768 0 672 0 576 0C480 0 384 0 288 0C192 0 96 0 48 0H0V120Z" 
+              fill="#F5F7FA"
+            />
+          </svg>
+        </div>
       </section>
 
-      {/* About Section */}
-      {content.about && (
-        <section ref={whatWeDoRef} className="py-20 bg-white">
-          <div className="container mx-auto px-6">
-            <motion.div
-              className="text-center mb-16"
-              initial="hidden"
-              animate={whatWeDoInView ? "visible" : "hidden"}
-              variants={fadeIn}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
-                {content.about?.title || 'About Us'}
-              </h2>
-              <div className="h-1 w-24 bg-[#3AA0FF] mx-auto"></div>
-            </motion.div>
-            <motion.div
-              className="max-w-3xl mx-auto text-center"
-              initial="hidden"
-              animate={whatWeDoInView ? "visible" : "hidden"}
-              variants={fadeIn}
-            >
-              <div className="text-gray-600 prose prose-lg mx-auto">
-                {renderFormattedContent(content.about?.body || 'Prosperity Leaders™ is a platform dedicated to helping individuals and families achieve financial independence through personalized strategies and expert guidance.')}
-              </div>
-              {content.about?.image_url && (
-                <div className="mt-12">
-                  <img
-                    src={content.about.image_url}
-                    alt="About Prosperity Leaders"
-                    className="mx-auto rounded-lg shadow-md max-w-full h-auto"
-                  />
-                </div>
-              )}
-            </motion.div>
-          </div>
-        </section>
+      {/* Modular Content Sections */}
+      {visibleSections.about && (
+        <SectionAbout content={content.about || {}} />
+      )}
+      
+      {visibleSections.how_it_works && (
+        <SectionHowItWorks content={content.how_it_works || {}} />
+      )}
+      
+      {visibleSections.services && (
+        <SectionServices content={content.services || {}} />
+      )}
+      
+      {visibleSections.featured_professionals && (
+        <SectionFeaturedProfessionals />
+      )}
+      
+      {visibleSections.testimonials && (
+        <SectionTestimonials />
+      )}
+      
+      {visibleSections.blog && (
+        <SectionBlogHighlights />
       )}
 
-      {/* Find a Professional CTA Section */}
-      <section ref={findProRef} className="py-16 bg-gradient-to-r from-[#1C1F2A] to-[#2A3042] text-white">
-        <div className="container mx-auto px-6">
-          <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial="hidden"
-            animate={findProInView ? "visible" : "hidden"}
-            variants={fadeIn}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Find Your Perfect Financial Professional
-            </h2>
-            <p className="text-lg text-white/80 mb-8">
-              Connect with experienced financial professionals who can help you achieve your financial goals.
-              Our directory makes it easy to find the right match for your needs.
-            </p>
-            <Link to="/find-a-professional">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-8 rounded-md font-medium shadow-lg"
-              >
-                Browse Professional Directory
-              </motion.button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* What We Do Section */}
-      <section ref={whatWeDoRef} className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial="hidden"
-            animate={whatWeDoInView ? "visible" : "hidden"}
-            variants={fadeIn}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
-              {content.what_we_do?.title || 'What We Do'}
-            </h2>
-            <div className="h-1 w-24 bg-[#3AA0FF] mx-auto"></div>
-          </motion.div>
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-            initial="hidden"
-            animate={whatWeDoInView ? "visible" : "hidden"}
-            variants={staggerContainer}
-          >
-            {/* Card 1 */}
-            <motion.div
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              variants={fadeIn}
-            >
-              <div className="bg-[#3AA0FF]/10 p-6 flex justify-center">
-                <SafeIcon icon={FiDollarSign} className="w-16 h-16 text-[#3AA0FF]" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-[#2E2E2E] mb-3">
-                  {content.what_we_do?.card1_title || 'Financial Planning'}
-                </h3>
-                <div className="text-gray-600">
-                  {renderFormattedContent(content.what_we_do?.card1_description || 'Comprehensive financial strategies tailored to your unique goals and circumstances.')}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 2 */}
-            <motion.div
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              variants={fadeIn}
-            >
-              <div className="bg-[#26B4A3]/10 p-6 flex justify-center">
-                <SafeIcon icon={FiShield} className="w-16 h-16 text-[#26B4A3]" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-[#2E2E2E] mb-3">
-                  {content.what_we_do?.card2_title || 'Protection & Security'}
-                </h3>
-                <div className="text-gray-600">
-                  {renderFormattedContent(content.what_we_do?.card2_description || 'Safeguard your family\'s future with our expert protection solutions.')}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Card 3 */}
-            <motion.div
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              variants={fadeIn}
-            >
-              <div className="bg-[#3AA0FF]/10 p-6 flex justify-center">
-                <SafeIcon icon={FiBriefcase} className="w-16 h-16 text-[#3AA0FF]" />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-[#2E2E2E] mb-3">
-                  {content.what_we_do?.card3_title || 'Career & Business Opportunity'}
-                </h3>
-                <div className="text-gray-600">
-                  {renderFormattedContent(content.what_we_do?.card3_description || 'Join our team and build a rewarding career helping others achieve financial independence.')}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Blog Section */}
-      <section ref={blogRef} className="py-20 bg-[#F5F7FA]">
-        <div className="container mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial="hidden"
-            animate={blogInView ? "visible" : "hidden"}
-            variants={fadeIn}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
-              Latest Financial Insights
-            </h2>
-            <div className="h-1 w-24 bg-[#3AA0FF] mx-auto mb-4"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Stay informed with expert advice and insights from our team of financial professionals
-            </p>
-          </motion.div>
-          
-          <motion.div
-            className="max-w-4xl mx-auto"
-            initial="hidden"
-            animate={blogInView ? "visible" : "hidden"}
-            variants={fadeIn}
-          >
-            <LatestPostsWidget limit={3} showHeader={false} />
-            
-            <div className="text-center mt-8">
-              <motion.a
-                href="/blog"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-3 px-6 rounded-md font-medium shadow-lg transition-colors"
-              >
-                <span>Read All Articles</span>
-                <SafeIcon icon={FiArrowRight} className="w-4 h-4 ml-2" />
-              </motion.a>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer Section */}
-      <footer className="bg-[#1C1F2A] text-white py-12">
+      {/* Footer - Kept outside modular sections as it's always present */}
+      <footer className="bg-primary-bg text-white py-12">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="md:col-span-2">
@@ -411,7 +194,7 @@ const Home = () => {
                 {content.footer?.tagline || 'Faith. Family. Finance.'}
               </p>
               <div className="text-gray-400 mb-6 max-w-md">
-                {renderFormattedContent(content.footer?.description || 'Our mission is to empower individuals and families to achieve financial independence through personalized strategies and expert guidance.')}
+                {content.footer?.description || 'Our mission is to empower individuals and families to achieve financial independence through personalized strategies and expert guidance.'}
               </div>
               <div className="flex space-x-4">
                 <a href={content.footer?.facebook_url || '#'} className="text-gray-400 hover:text-white transition-colors">
@@ -450,7 +233,7 @@ const Home = () => {
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-500 text-sm mb-4 md:mb-0">
-              {renderFormattedContent(content.footer?.disclaimer || '© 2023 Prosperity Leaders™. All rights reserved.')}
+              {content.footer?.disclaimer || '© 2023 Prosperity Leaders™. All rights reserved.'}
             </div>
             <div className="flex space-x-4 text-sm">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">English</a>

@@ -9,21 +9,21 @@ export const getApprovedReviews = async (professionalUsername) => {
       .eq('professional_username', professionalUsername)
       .eq('status', 'approved')
       .order('submitted_at', { ascending: false })
-    
+
     if (error) throw error
-    
+
     // Get average rating using the function we created
     const { data: ratingData, error: ratingError } = await supabase
       .rpc('get_professional_rating', { p_username: professionalUsername })
     
     if (ratingError) throw ratingError
-    
+
     // Get review count using the function we created
     const { data: countData, error: countError } = await supabase
       .rpc('count_professional_reviews', { p_username: professionalUsername })
     
     if (countError) throw countError
-    
+
     return {
       reviews: reviews || [],
       averageRating: ratingData || 0,
@@ -35,6 +35,26 @@ export const getApprovedReviews = async (professionalUsername) => {
   }
 }
 
+// Get approved testimonials for homepage
+export const getApprovedTestimonials = async (limit = 5) => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews_12345')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('featured', true)
+      .order('rating', { ascending: false })
+      .limit(limit)
+
+    if (error) throw error
+    
+    return data || []
+  } catch (error) {
+    console.error('Error fetching testimonials:', error)
+    return []
+  }
+}
+
 // Get professional rating summary
 export const getProfessionalRating = async (professionalUsername) => {
   try {
@@ -43,13 +63,13 @@ export const getProfessionalRating = async (professionalUsername) => {
       .rpc('get_professional_rating', { p_username: professionalUsername })
     
     if (ratingError) throw ratingError
-    
+
     // Get review count
     const { data: reviewCount, error: countError } = await supabase
       .rpc('count_professional_reviews', { p_username: professionalUsername })
     
     if (countError) throw countError
-    
+
     return {
       averageRating: averageRating || 0,
       reviewCount: reviewCount || 0
@@ -76,7 +96,7 @@ export const submitReview = async (reviewData) => {
         submitted_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }])
-    
+
     if (error) throw error
     
     return data
@@ -87,6 +107,7 @@ export const submitReview = async (reviewData) => {
 }
 
 // Admin functions
+
 // Get all reviews (admin only)
 export const getAllReviews = async (statusFilter = 'all') => {
   try {
@@ -115,9 +136,9 @@ export const approveReview = async (reviewId) => {
   try {
     const { data, error } = await supabase
       .from('reviews_12345')
-      .update({
-        status: 'approved',
-        updated_at: new Date().toISOString()
+      .update({ 
+        status: 'approved', 
+        updated_at: new Date().toISOString() 
       })
       .eq('id', reviewId)
     
@@ -135,9 +156,9 @@ export const rejectReview = async (reviewId) => {
   try {
     const { data, error } = await supabase
       .from('reviews_12345')
-      .update({
-        status: 'rejected',
-        updated_at: new Date().toISOString()
+      .update({ 
+        status: 'rejected', 
+        updated_at: new Date().toISOString() 
       })
       .eq('id', reviewId)
     
@@ -163,6 +184,26 @@ export const deleteReview = async (reviewId) => {
     return true
   } catch (error) {
     console.error('Error deleting review:', error)
+    throw error
+  }
+}
+
+// Feature or unfeature a review for homepage (admin only)
+export const toggleFeatureReview = async (reviewId, featured) => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews_12345')
+      .update({ 
+        featured,
+        updated_at: new Date().toISOString() 
+      })
+      .eq('id', reviewId)
+    
+    if (error) throw error
+    
+    return data
+  } catch (error) {
+    console.error('Error updating review feature status:', error)
     throw error
   }
 }
