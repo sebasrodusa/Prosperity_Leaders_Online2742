@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
+import { getApprovedTestimonials } from '../../lib/reviews'
 
 const { FiChevronLeft, FiChevronRight, FiStar } = FiIcons
 
@@ -16,25 +17,26 @@ const TestimonialCarouselWidget = ({ config }) => {
     animation,
     autoPlay,
     interval,
-    showRatings
+    showRatings,
+    limit = 5
   } = config
 
   const [testimonials, setTestimonials] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Load testimonials from your API/database
+  // Load testimonials from Supabase
   useEffect(() => {
-    // TODO: Implement testimonial loading
-    setTestimonials([
-      {
-        id: 1,
-        text: "Working with this team has transformed our financial future...",
-        author: "John D.",
-        rating: 5
-      },
-      // Add more testimonials
-    ])
-  }, [])
+    const loadTestimonials = async () => {
+      try {
+        const data = await getApprovedTestimonials(limit)
+        setTestimonials(data)
+      } catch (error) {
+        console.error('Error loading testimonials:', error)
+      }
+    }
+
+    loadTestimonials()
+  }, [limit])
 
   // Auto-play functionality
   useEffect(() => {

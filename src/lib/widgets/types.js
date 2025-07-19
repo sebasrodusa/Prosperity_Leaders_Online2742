@@ -93,7 +93,8 @@ export const WIDGET_LIBRARY = {
       subtitle: 'Hear from the people we\'ve helped',
       autoPlay: true,
       interval: 5000,
-      showRatings: true
+      showRatings: true,
+      limit: 5
     }
   },
   
