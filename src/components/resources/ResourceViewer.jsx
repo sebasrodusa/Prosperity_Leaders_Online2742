@@ -39,26 +39,26 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
     switch (resource.resource_type) {
       case 'pdf':
         return (
-          <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[400px]">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center min-h-[400px]">
             <div className="text-center">
               <SafeIcon icon={FiFile} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
-              <p className="text-polynesian-blue/70 mb-4">PDF Document</p>
+              <p className="text-polynesian-blue/70 dark:text-white/70 mb-6">PDF Document</p>
               {resource.file_url && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Button
                     onClick={() => window.open(resource.file_url, '_blank')}
-                    className="flex items-center space-x-2 mr-2"
+                    icon={<SafeIcon icon={FiExternalLink} className="w-4 h-4" />}
+                    className="w-full sm:w-auto"
                   >
-                    <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
-                    <span>Open in New Tab</span>
+                    Open in New Tab
                   </Button>
                   <Button
                     onClick={onDownload}
                     variant="outline"
-                    className="flex items-center space-x-2"
+                    icon={<SafeIcon icon={FiDownload} className="w-4 h-4" />}
+                    className="w-full sm:w-auto"
                   >
-                    <SafeIcon icon={FiDownload} className="w-4 h-4" />
-                    <span>Download PDF</span>
+                    Download PDF
                   </Button>
                 </div>
               )}
@@ -68,21 +68,23 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
       
       case 'video':
         return (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             {resource.file_url ? (
-              <video
-                controls
-                className="w-full rounded-lg"
-                poster={resource.thumbnail_url}
-              >
-                <source src={resource.file_url} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <div className="aspect-video">
+                <video
+                  controls
+                  className="w-full h-full rounded-lg"
+                  poster={resource.thumbnail_url}
+                >
+                  <source src={resource.file_url} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             ) : (
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                   <SafeIcon icon={FiVideo} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
-                  <p className="text-polynesian-blue/70">Video not available</p>
+                  <p className="text-polynesian-blue/70 dark:text-white/70">Video not available</p>
                 </div>
               </div>
             )}
@@ -91,18 +93,20 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
       
       case 'image':
         return (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             {resource.file_url ? (
-              <img
-                src={resource.file_url}
-                alt={resource.title}
-                className="w-full max-h-96 object-contain rounded-lg mx-auto"
-              />
+              <div className="flex justify-center">
+                <img
+                  src={resource.file_url}
+                  alt={resource.title}
+                  className="max-w-full max-h-[600px] object-contain rounded-lg mx-auto"
+                />
+              </div>
             ) : (
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                   <SafeIcon icon={FiImage} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
-                  <p className="text-polynesian-blue/70">Image not available</p>
+                  <p className="text-polynesian-blue/70 dark:text-white/70">Image not available</p>
                 </div>
               </div>
             )}
@@ -111,16 +115,15 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
       
       case 'link':
         return (
-          <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 flex items-center justify-center min-h-[200px]">
             <div className="text-center">
               <SafeIcon icon={FiExternalLink} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
-              <p className="text-polynesian-blue/70 mb-4">External Resource</p>
+              <p className="text-polynesian-blue/70 dark:text-white/70 mb-6">External Resource</p>
               <Button
                 onClick={() => window.open(resource.external_url, '_blank')}
-                className="flex items-center space-x-2"
+                icon={<SafeIcon icon={FiExternalLink} className="w-4 h-4" />}
               >
-                <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
-                <span>Visit Resource</span>
+                Visit Resource
               </Button>
             </div>
           </div>
@@ -128,17 +131,19 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
       
       case 'embed':
         return (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
             {resource.embed_code ? (
-              <div 
-                className="w-full"
-                dangerouslySetInnerHTML={{ __html: resource.embed_code }}
-              />
+              <div className="aspect-video">
+                <div 
+                  className="w-full h-full"
+                  dangerouslySetInnerHTML={{ __html: resource.embed_code }}
+                />
+              </div>
             ) : (
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                   <SafeIcon icon={FiCode} className="w-16 h-16 text-picton-blue mx-auto mb-4" />
-                  <p className="text-polynesian-blue/70">Embedded content not available</p>
+                  <p className="text-polynesian-blue/70 dark:text-white/70">Embedded content not available</p>
                 </div>
               </div>
             )}
@@ -147,18 +152,26 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
       
       case 'guide':
         return (
-          <div className="bg-white rounded-lg p-6">
-            <div className="prose max-w-none">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+            <div className="prose prose-picton-blue dark:prose-invert max-w-none">
               <SafeIcon icon={FiBookOpen} className="w-8 h-8 text-picton-blue mb-4" />
-              <div dangerouslySetInnerHTML={{ __html: resource.content?.replace(/\n/g, '<br />') }} />
+              <div 
+                className="text-polynesian-blue/90 dark:text-white/90"
+                dangerouslySetInnerHTML={{ 
+                  __html: resource.content
+                    ?.replace(/\n/g, '<br />')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                }} 
+              />
             </div>
           </div>
         )
       
       default:
         return (
-          <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[200px]">
-            <p className="text-polynesian-blue/70">Content not available</p>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 flex items-center justify-center min-h-[200px]">
+            <p className="text-polynesian-blue/70 dark:text-white/70">Content not available</p>
           </div>
         )
     }
@@ -167,13 +180,16 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
   return (
     <div className="space-y-6">
       {/* Resource Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-polynesian-blue mb-2">
+          <h2 className="text-2xl font-bold text-polynesian-blue dark:text-white mb-2">
             {resource.title}
           </h2>
-          <div className="flex items-center space-x-4 text-sm text-polynesian-blue/60">
-            <span>{resourceType?.name}</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-polynesian-blue/60 dark:text-white/60">
+            <span className="flex items-center">
+              <SafeIcon icon={FiIcons[resourceType?.icon]} className="w-4 h-4 mr-1" />
+              {resourceType?.name}
+            </span>
             {resource.file_size && (
               <span>{formatFileSize(resource.file_size)}</span>
             )}
@@ -186,17 +202,16 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
         {(resource.file_url || resource.download_url) && (
           <Button
             onClick={onDownload}
-            className="flex items-center space-x-2"
+            icon={<SafeIcon icon={FiDownload} className="w-4 h-4" />}
           >
-            <SafeIcon icon={FiDownload} className="w-4 h-4" />
-            <span>Download</span>
+            Download
           </Button>
         )}
       </div>
 
       {/* Resource Description */}
       {resource.description && (
-        <p className="text-polynesian-blue/70 bg-anti-flash-white rounded-lg p-4">
+        <p className="text-polynesian-blue/70 dark:text-white/70 bg-anti-flash-white dark:bg-gray-700/30 rounded-lg p-4 border border-ui-divider dark:border-gray-700">
           {resource.description}
         </p>
       )}
@@ -206,17 +221,18 @@ const ResourceViewer = ({ resource, onClose, onDownload }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
+        className="border border-ui-divider dark:border-gray-700 rounded-lg overflow-hidden"
       >
         {renderContent()}
       </motion.div>
 
       {/* Resource Tags */}
       {resource.tags && resource.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-2">
           {resource.tags.map((tag, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-picton-blue/10 text-picton-blue text-sm rounded-full"
+              className="px-3 py-1 bg-picton-blue/10 dark:bg-picton-blue/20 text-picton-blue dark:text-picton-blue/90 text-sm rounded-full"
             >
               {tag}
             </span>

@@ -133,18 +133,18 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Resource Type Selection */}
-      <div>
-        <label className="block text-sm font-medium text-polynesian-blue mb-2">
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-polynesian-blue dark:text-white mb-2">
           Resource Type
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {RESOURCE_TYPES.map(type => (
             <label
               key={type.id}
-              className={`relative flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+              className={`relative flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                 formData.resource_type === type.id
-                  ? 'border-picton-blue bg-picton-blue/5'
-                  : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-picton-blue bg-picton-blue/5 dark:bg-picton-blue/20'
+                  : 'border-ui-divider dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
               }`}
             >
               <input
@@ -156,8 +156,10 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
                 className="sr-only"
               />
               <div className="flex items-center space-x-2">
-                <SafeIcon icon={FiIcons[type.icon]} className="w-4 h-4" />
-                <span className="text-sm font-medium">{type.name}</span>
+                <SafeIcon icon={FiIcons[type.icon]} className={`w-5 h-5 ${formData.resource_type === type.id ? 'text-picton-blue' : 'text-gray-500 dark:text-gray-400'}`} />
+                <span className={`text-sm font-medium ${formData.resource_type === type.id ? 'text-picton-blue dark:text-picton-blue' : 'text-gray-700 dark:text-gray-200'}`}>
+                  {type.name}
+                </span>
               </div>
             </label>
           ))}
@@ -167,16 +169,16 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
       {/* File Upload */}
       {requiresFile && (
         <div>
-          <label className="block text-sm font-medium text-polynesian-blue mb-2">
+          <label className="block text-sm font-medium text-polynesian-blue dark:text-white mb-2">
             Upload File
           </label>
           {!selectedFile ? (
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors relative">
-              <SafeIcon icon={FiUpload} className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600 mb-2">
+            <div className="border-2 border-dashed border-ui-divider dark:border-gray-700 rounded-lg p-8 text-center hover:border-picton-blue dark:hover:border-picton-blue/70 transition-colors duration-200 relative">
+              <SafeIcon icon={FiUpload} className="w-10 h-10 text-ui-muted mx-auto mb-3" />
+              <p className="text-polynesian-blue/70 dark:text-white/70 mb-2">
                 Click to upload or drag and drop
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-polynesian-blue/50 dark:text-white/50">
                 {formData.resource_type === 'pdf' && 'PDF files up to 100MB'}
                 {formData.resource_type === 'video' && 'Video files (MP4, MOV, AVI) up to 100MB'}
                 {formData.resource_type === 'image' && 'Image files (JPG, PNG, GIF, WebP) up to 100MB'}
@@ -193,15 +195,17 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
               />
             </div>
           ) : (
-            <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+            <div className="border border-ui-divider dark:border-gray-700 rounded-lg p-4 bg-anti-flash-white dark:bg-gray-800">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <SafeIcon icon={getFileTypeIcon(formData.resource_type)} className="w-5 h-5 text-picton-blue" />
+                  <div className="p-2 bg-white dark:bg-gray-700 rounded-lg">
+                    <SafeIcon icon={getFileTypeIcon(formData.resource_type)} className="w-6 h-6 text-picton-blue" />
+                  </div>
                   <div>
-                    <p className="text-sm font-medium text-polynesian-blue">
+                    <p className="text-sm font-medium text-polynesian-blue dark:text-white">
                       {selectedFile.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-polynesian-blue/50 dark:text-white/50">
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -211,9 +215,8 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
                   variant="outline"
                   size="sm"
                   onClick={removeFile}
-                >
-                  <SafeIcon icon={FiX} className="w-4 h-4" />
-                </Button>
+                  icon={<SafeIcon icon={FiX} className="w-4 h-4" />}
+                />
               </div>
             </div>
           )}
@@ -228,13 +231,15 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
           onChange={(e) => handleInputChange('external_url', e.target.value)}
           placeholder="https://example.com"
           required
+          prefix={<SafeIcon icon={FiIcons.FiLink} className="w-5 h-5 text-gray-400" />}
+          helperText="Enter the full URL including https://"
         />
       )}
 
       {/* Embed Code */}
       {requiresEmbed && (
         <div>
-          <label className="block text-sm font-medium text-polynesian-blue mb-2">
+          <label className="block text-sm font-medium text-polynesian-blue dark:text-white mb-2">
             Embed Code
           </label>
           <Textarea
@@ -243,29 +248,28 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
             placeholder="<iframe src='...' width='560' height='315'></iframe>"
             rows={4}
             required
+            helperText="Paste iframe embed code from YouTube, Vimeo, or other platforms"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Paste iframe embed code from YouTube, Vimeo, or other platforms
-          </p>
         </div>
       )}
 
       {/* Basic Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
           label="Title"
           value={formData.title}
           onChange={(e) => handleInputChange('title', e.target.value)}
           required
+          placeholder="Resource title"
         />
         <div>
-          <label className="block text-sm font-medium text-polynesian-blue mb-2">
+          <label className="block text-sm font-medium text-polynesian-blue dark:text-white mb-2">
             Category
           </label>
           <select
             value={formData.category}
             onChange={(e) => handleInputChange('category', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-picton-blue focus:border-picton-blue"
+            className="w-full px-3 py-2 border border-ui-divider dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-picton-blue focus:border-picton-blue dark:bg-gray-800 dark:text-white"
             required
           >
             {RESOURCE_CATEGORIES.map(category => (
@@ -283,6 +287,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
         onChange={(e) => handleInputChange('description', e.target.value)}
         rows={3}
         required
+        placeholder="Brief description of this resource"
       />
 
       {/* Text Content (for guide type) */}
@@ -292,20 +297,21 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
           value={formData.content}
           onChange={(e) => handleInputChange('content', e.target.value)}
           rows={8}
-          placeholder="Write your guide content here..."
+          placeholder="Write your guide content here... Use *italic* or **bold** for formatting"
           required
+          helperText="You can use *text* for italic and **text** for bold formatting"
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-polynesian-blue mb-2">
+          <label className="block text-sm font-medium text-polynesian-blue dark:text-white mb-2">
             Language
           </label>
           <select
             value={formData.language}
             onChange={(e) => handleInputChange('language', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-picton-blue focus:border-picton-blue"
+            className="w-full px-3 py-2 border border-ui-divider dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-picton-blue focus:border-picton-blue dark:bg-gray-800 dark:text-white"
           >
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -316,19 +322,20 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
           value={formData.tags}
           onChange={(e) => handleInputChange('tags', e.target.value)}
           placeholder="training, beginner, sales"
+          helperText="Add keywords to help users find this resource"
         />
       </div>
 
       {/* Options */}
       <div className="space-y-3">
-        <label className="flex items-center space-x-2">
+        <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="checkbox"
             checked={formData.is_pinned}
             onChange={(e) => handleInputChange('is_pinned', e.target.checked)}
-            className="rounded border-gray-300 text-picton-blue focus:ring-picton-blue"
+            className="rounded border-ui-divider dark:border-gray-700 text-picton-blue focus:ring-picton-blue h-4 w-4"
           />
-          <span className="text-sm text-polynesian-blue">Pin as featured resource</span>
+          <span className="text-sm text-polynesian-blue dark:text-white">Pin as featured resource</span>
         </label>
       </div>
 
@@ -337,13 +344,13 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="space-y-2"
+          className="space-y-2 bg-anti-flash-white dark:bg-gray-800 p-4 rounded-lg border border-ui-divider dark:border-gray-700"
         >
           <div className="flex items-center justify-between text-sm">
-            <span>Uploading...</span>
-            <span>{uploadProgress}%</span>
+            <span className="text-polynesian-blue dark:text-white">Uploading...</span>
+            <span className="text-picton-blue font-medium">{uploadProgress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <motion.div
               className="bg-picton-blue h-2 rounded-full"
               initial={{ width: 0 }}
@@ -355,7 +362,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
       )}
 
       {/* Actions */}
-      <div className="flex justify-end space-x-3 pt-4 border-t">
+      <div className="flex justify-end space-x-3 pt-4 border-t border-ui-divider dark:border-gray-700">
         <Button
           type="button"
           variant="outline"
@@ -367,6 +374,7 @@ const ResourceUpload = ({ onSuccess, onCancel }) => {
         <Button
           type="submit"
           disabled={uploading || (requiresFile && !selectedFile) || (requiresUrl && !formData.external_url) || (requiresEmbed && !formData.embed_code) || (requiresContent && !formData.content)}
+          loading={uploading}
         >
           {uploading ? 'Uploading...' : 'Create Resource'}
         </Button>

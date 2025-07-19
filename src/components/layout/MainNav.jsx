@@ -2,22 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
+import ThemeToggle from '../ui/ThemeToggle'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const {
-  FiUser,
-  FiLogOut,
-  FiUsers,
-  FiChevronDown,
-  FiMenu,
-  FiX,
-  FiHome,
-  FiLayout,
-  FiSettings,
-  FiEdit3,
-  FiBox
-} = FiIcons
+const { FiUser, FiLogOut, FiUsers, FiChevronDown, FiMenu, FiX, FiHome, FiLayout, FiSettings, FiEdit3, FiBox } = FiIcons
 
 const MainNav = ({ variant = 'public' }) => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -54,11 +43,11 @@ const MainNav = ({ variant = 'public' }) => {
   // Dashboard sidebar variant
   if (variant === 'sidebar') {
     return (
-      <nav className="w-64 bg-white border-r border-gray-200">
+      <nav className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
         <div className="p-6">
           <Link to="/" className="flex items-center space-x-2">
             <SafeIcon icon={FiBox} className="w-6 h-6 text-picton-blue" />
-            <span className="text-lg font-bold text-polynesian-blue">
+            <span className="text-lg font-bold text-polynesian-blue dark:text-white">
               Prosperity Leaders™
             </span>
           </Link>
@@ -73,7 +62,7 @@ const MainNav = ({ variant = 'public' }) => {
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
                   isActive
                     ? 'bg-picton-blue/10 text-picton-blue'
-                    : 'text-polynesian-blue/70 hover:bg-anti-flash-white'
+                    : 'text-polynesian-blue/70 dark:text-gray-300 hover:bg-anti-flash-white dark:hover:bg-gray-700'
                 }`}
               >
                 <SafeIcon icon={item.icon} className="w-5 h-5" />
@@ -87,6 +76,11 @@ const MainNav = ({ variant = 'public' }) => {
               </Link>
             )
           })}
+          
+          <div className="mt-8 px-4 flex items-center justify-between">
+            <span className="text-sm text-polynesian-blue/60 dark:text-gray-400">Theme</span>
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
     )
@@ -110,20 +104,22 @@ const MainNav = ({ variant = 'public' }) => {
                 <span className="ml-2 text-sm text-white/70">Platform</span>
               </Link>
             </div>
-
             <div className="flex items-center space-x-4">
+              {/* Theme Toggle */}
+              <ThemeToggle className="border border-white/20" />
+              
               {/* User Switcher (Demo Only) */}
               <div className="relative">
                 <select
                   value={user?.id || ''}
                   onChange={(e) => switchUser(e.target.value)}
-                  className="appearance-none bg-white/10 border border-white/20 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-picton-blue"
+                  className="appearance-none bg-white/10 border border-white/20 rounded-md px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-picton-blue/50"
                 >
                   <option value="" className="text-polynesian-blue">Switch User (Demo)</option>
                   {/* This would come from mockUsers, but we'll keep it simple here */}
                 </select>
               </div>
-
+              
               {user && (
                 <div className="flex items-center space-x-3 relative">
                   <div
@@ -143,22 +139,22 @@ const MainNav = ({ variant = 'public' }) => {
                       className="w-4 h-4 text-white/70"
                     />
                   </div>
-
+                  
                   {userMenuOpen && (
                     <div
-                      className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                      className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <Link
                         to="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <SafeIcon icon={FiUser} className="inline-block mr-2 w-4 h-4" />
                         Profile Settings
                       </Link>
                       <button
                         onClick={logout}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <SafeIcon icon={FiLogOut} className="inline-block mr-2 w-4 h-4" />
                         Sign Out
@@ -187,7 +183,7 @@ const MainNav = ({ variant = 'public' }) => {
           <Link to="/" className="flex items-center">
             <span className="text-white font-bold text-xl">Prosperity Leaders™</span>
           </Link>
-
+          
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-white hover:text-[#3AA0FF] transition-colors">Home</Link>
@@ -196,7 +192,10 @@ const MainNav = ({ variant = 'public' }) => {
             <Link to="/find-a-professional" className="text-white hover:text-[#3AA0FF] transition-colors">Find a Professional</Link>
             <Link to="/blog" className="text-white hover:text-[#3AA0FF] transition-colors">Blog</Link>
             <Link to="/contact" className="text-white hover:text-[#3AA0FF] transition-colors">Contact</Link>
-
+            
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {user ? (
               <div className="relative">
                 <button
@@ -214,28 +213,28 @@ const MainNav = ({ variant = 'public' }) => {
                     className="ml-1 w-4 h-4"
                   />
                 </button>
-
+                
                 {/* User dropdown menu */}
                 {userMenuOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50"
                     onClick={() => setUserMenuOpen(false)}
                   >
                     <Link
                       to="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Dashboard
                     </Link>
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Profile
                     </Link>
                     <button
                       onClick={logout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Sign Out
                     </button>
@@ -251,17 +250,21 @@ const MainNav = ({ variant = 'public' }) => {
               </Link>
             )}
           </div>
-
+          
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white focus:outline-none"
-          >
-            <SafeIcon icon={mobileMenuOpen ? FiX : FiMenu} className="w-6 h-6" />
-          </button>
+          <div className="md:hidden flex items-center space-x-3">
+            <ThemeToggle />
+            
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white focus:outline-none"
+            >
+              <SafeIcon icon={mobileMenuOpen ? FiX : FiMenu} className="w-6 h-6" />
+            </button>
+          </div>
         </div>
       </div>
-
+      
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
@@ -315,7 +318,7 @@ const MainNav = ({ variant = 'public' }) => {
                 >
                   Contact
                 </Link>
-
+                
                 {user ? (
                   <>
                     <hr className="border-gray-700" />

@@ -65,8 +65,8 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
             size="sm"
             onClick={() => window.open(resource.external_url, '_blank')}
             className="flex items-center space-x-1"
+            icon={<SafeIcon icon={FiExternalLink} className="w-4 h-4" />}
           >
-            <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
             <span className="hidden sm:inline">Open</span>
           </Button>
         )
@@ -76,8 +76,8 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
             size="sm"
             onClick={onView}
             className="flex items-center space-x-1"
+            icon={<SafeIcon icon={FiCode} className="w-4 h-4" />}
           >
-            <SafeIcon icon={FiCode} className="w-4 h-4" />
             <span className="hidden sm:inline">View</span>
           </Button>
         )
@@ -88,8 +88,8 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
             size="sm"
             onClick={onView}
             className="flex items-center space-x-1"
+            icon={<SafeIcon icon={FiEye} className="w-4 h-4" />}
           >
-            <SafeIcon icon={FiEye} className="w-4 h-4" />
             <span className="hidden sm:inline">View</span>
           </Button>
         )
@@ -104,7 +104,7 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2 }}
       >
-        <Card className="p-4 hover:shadow-md transition-shadow">
+        <Card padding="p-4" hover shadow="md">
           <div className="flex items-center justify-between">
             <div className="flex items-start space-x-4 flex-1">
               <div className="flex-shrink-0">
@@ -122,7 +122,7 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-semibold text-polynesian-blue truncate">
+                  <h3 className="text-lg font-semibold text-polynesian-blue dark:text-white truncate">
                     {resource.title}
                   </h3>
                   {resource.is_pinned && (
@@ -134,10 +134,10 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-polynesian-blue/70 mt-1 line-clamp-2">
+                <p className="text-sm text-polynesian-blue/70 dark:text-white/70 mt-1 line-clamp-2">
                   {resource.description}
                 </p>
-                <div className="flex items-center space-x-4 mt-2 text-xs text-polynesian-blue/50">
+                <div className="flex items-center space-x-4 mt-2 text-xs text-polynesian-blue/50 dark:text-white/50">
                   <span>{resourceType?.name}</span>
                   {resource.file_size && <span>{formatFileSize(resource.file_size)}</span>}
                   {resource.duration && <span>{Math.ceil(resource.duration / 60)}min</span>}
@@ -153,8 +153,8 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
                   size="sm"
                   onClick={onDownload}
                   className="flex items-center space-x-1"
+                  icon={<SafeIcon icon={FiDownload} className="w-4 h-4" />}
                 >
-                  <SafeIcon icon={FiDownload} className="w-4 h-4" />
                   <span className="hidden sm:inline">Download</span>
                 </Button>
               )}
@@ -164,18 +164,14 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
                     variant="outline"
                     size="sm"
                     onClick={onEdit}
-                    className="flex items-center space-x-1"
-                  >
-                    <SafeIcon icon={FiEdit3} className="w-4 h-4" />
-                  </Button>
+                    icon={<SafeIcon icon={FiEdit3} className="w-4 h-4" />}
+                  />
                   <Button
                     variant="danger"
                     size="sm"
                     onClick={onDelete}
-                    className="flex items-center space-x-1"
-                  >
-                    <SafeIcon icon={FiTrash2} className="w-4 h-4" />
-                  </Button>
+                    icon={<SafeIcon icon={FiTrash2} className="w-4 h-4" />}
+                  />
                 </>
               )}
             </div>
@@ -192,7 +188,7 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
       whileHover={{ y: -5 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="h-full hover:shadow-lg transition-shadow overflow-hidden">
+      <Card padding="p-0" hover shadow="md" className="h-full overflow-hidden">
         {/* Thumbnail/Preview */}
         <div className="h-32 bg-gradient-to-br from-picton-blue/20 to-polynesian-blue/20 relative">
           {getThumbnailUrl() ? (
@@ -208,11 +204,11 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
           )}
           {resource.is_pinned && (
             <div className="absolute top-2 right-2">
-              <SafeIcon icon={FiStar} className="w-5 h-5 text-yellow-500" />
+              <SafeIcon icon={FiStar} className="w-5 h-5 text-yellow-500 drop-shadow-md" />
             </div>
           )}
           {resource.language && (
-            <div className="absolute top-2 left-2 text-lg">
+            <div className="absolute top-2 left-2 text-lg drop-shadow-md">
               {getLanguageFlag(resource.language)}
             </div>
           )}
@@ -225,16 +221,16 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
         
         <div className="p-4 flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-polynesian-blue line-clamp-2 flex-1">
+            <h3 className="font-semibold text-polynesian-blue dark:text-white line-clamp-2 flex-1">
               {resource.title}
             </h3>
           </div>
           
-          <p className="text-sm text-polynesian-blue/70 line-clamp-3 flex-1 mb-4">
+          <p className="text-sm text-polynesian-blue/70 dark:text-white/70 line-clamp-3 flex-1 mb-4">
             {resource.description}
           </p>
           
-          <div className="space-y-2 text-xs text-polynesian-blue/50 mb-4">
+          <div className="space-y-2 text-xs text-polynesian-blue/50 dark:text-white/50 mb-4">
             <div className="flex items-center justify-between">
               <span>{resourceType?.name}</span>
               {resource.file_size && <span>{formatFileSize(resource.file_size)}</span>}
@@ -251,32 +247,28 @@ const ResourceCard = ({ resource, viewMode = 'grid', onView, onDownload, onEdit,
                 variant="outline"
                 size="sm"
                 onClick={onDownload}
-                className="flex items-center justify-center"
-              >
-                <SafeIcon icon={FiDownload} className="w-4 h-4" />
-              </Button>
+                icon={<SafeIcon icon={FiDownload} className="w-4 h-4" />}
+              />
             )}
           </div>
           
           {isAdmin && (
-            <div className="flex items-center space-x-2 mt-2 pt-2 border-t border-gray-100">
+            <div className="flex items-center space-x-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={onEdit}
                 className="flex-1 flex items-center justify-center space-x-1"
+                icon={<SafeIcon icon={FiEdit3} className="w-3 h-3" />}
               >
-                <SafeIcon icon={FiEdit3} className="w-3 h-3" />
                 <span>Edit</span>
               </Button>
               <Button
                 variant="danger"
                 size="sm"
                 onClick={onDelete}
-                className="flex items-center justify-center"
-              >
-                <SafeIcon icon={FiTrash2} className="w-3 h-3" />
-              </Button>
+                icon={<SafeIcon icon={FiTrash2} className="w-3 h-3" />}
+              />
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
@@ -24,75 +25,54 @@ import './App.css'
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { user, loading } = useAuth()
-
+  
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#1C1F2A] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3AA0FF]"></div>
       </div>
     )
   }
-
+  
   if (!user) return <Navigate to="/login" />
   if (requireAdmin && user.role !== 'admin') return <Navigate to="/dashboard" />
-
+  
   return children
 }
 
 const AppRoutes = () => {
   const { user } = useAuth()
-
+  
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-
+      
       {/* Public Routes */}
       <Route path="/blog" element={<BlogList />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/find-a-professional" element={<ProfessionalDirectory />} />
-
+      
       {/* Dashboard Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="professional-profile" element={<ProfessionalProfile />} />
         <Route path="landing-pages" element={<MyLandingPages />} />
         <Route path="resources" element={<ResourcesCenter />} />
         <Route path="blog-submission" element={<AgentBlogSubmission />} />
-
+        
         {/* Leads Routes */}
         <Route path="leads" element={<LeadsLayout />}>
           <Route index element={<LeadsDashboard />} />
           <Route path="new" element={<CreateLead />} />
           <Route path=":id" element={<LeadDetails />} />
         </Route>
-
+        
         {/* Admin Only Routes */}
-        <Route
-          path="blog-manager"
-          element={
-            <ProtectedRoute requireAdmin>
-              <BlogManager />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="cms"
-          element={
-            <ProtectedRoute requireAdmin>
-              <ContentManager />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="blog-manager" element={<ProtectedRoute requireAdmin><BlogManager /></ProtectedRoute>} />
+        <Route path="cms" element={<ProtectedRoute requireAdmin><ContentManager /></ProtectedRoute>} />
       </Route>
-
+      
       {/* Public Profile & Landing Pages Routes */}
       <Route path="/:username" element={<ProfilePage />} />
       <Route path="/:username/:custom" element={<LandingPage />} />
@@ -103,11 +83,13 @@ const AppRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App">
-          <AppRoutes />
-        </div>
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <div className="App">
+            <AppRoutes />
+          </div>
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   )
 }
