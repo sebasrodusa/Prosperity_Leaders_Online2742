@@ -8,6 +8,8 @@ import Textarea from '../ui/Textarea'
 import Modal from '../ui/Modal'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
+import ReviewsStats from '../reviews/ReviewsStats'
+import { getProfessionalRating } from '../../lib/reviews'
 
 const {
   FiUser,
@@ -27,7 +29,9 @@ const {
   FiCheck,
   FiX,
   FiInfo,
-  FiPlus
+  FiPlus,
+  FiToggleLeft,
+  FiToggleRight
 } = FiIcons
 
 const ProfessionalProfile = () => {
@@ -38,13 +42,8 @@ const ProfessionalProfile = () => {
   const [previewMode, setPreviewMode] = useState(false)
   const [testimonials, setTestimonials] = useState([])
   const [showAddTestimonialModal, setShowAddTestimonialModal] = useState(false)
-  const [newTestimonial, setNewTestimonial] = useState({
-    clientName: '',
-    rating: 5,
-    content: '',
-    approved: false
-  })
-  
+  const [newTestimonial, setNewTestimonial] = useState({ clientName: '', rating: 5, content: '', approved: false })
+  const [ratingData, setRatingData] = useState({ averageRating: 0, reviewCount: 0 })
   const [formData, setFormData] = useState({
     full_name: '',
     title: '',
@@ -58,12 +57,8 @@ const ProfessionalProfile = () => {
     states_licensed: [],
     calendly_link: '',
     calendar_embed_code: '',
-    social_links: {
-      instagram: '',
-      facebook: '',
-      linkedin: '',
-      youtube: ''
-    }
+    reviews_enabled: true,
+    social_links: { instagram: '', facebook: '', linkedin: '', youtube: '' }
   })
 
   useEffect(() => {
@@ -72,9 +67,10 @@ const ProfessionalProfile = () => {
       setProfile({
         ...user,
         title: user.title || 'Financial Professional',
-        ratings: user.ratings || { average: 4.8, count: 24 }
+        ratings: user.ratings || { average: 4.8, count: 24 },
+        reviews_enabled: user.reviews_enabled !== false // default to true if not specified
       })
-      
+
       setFormData({
         full_name: user.full_name || '',
         title: user.title || 'Financial Professional',
@@ -88,9 +84,13 @@ const ProfessionalProfile = () => {
         states_licensed: user.states_licensed || [],
         calendly_link: user.calendly_link || '',
         calendar_embed_code: user.calendar_embed_code || '',
+        reviews_enabled: user.reviews_enabled !== false, // default to true if not specified
         social_links: user.social_links || {}
       })
-      
+
+      // Load actual rating data
+      loadRatingData(user.username)
+
       // Mock testimonials data
       setTestimonials([
         {
@@ -121,6 +121,15 @@ const ProfessionalProfile = () => {
     }
   }, [user])
 
+  const loadRatingData = async (username) => {
+    try {
+      const { averageRating, reviewCount } = await getProfessionalRating(username)
+      setRatingData({ averageRating, reviewCount })
+    } catch (error) {
+      console.error('Error loading rating data:', error)
+    }
+  }
+
   const handleSave = async () => {
     setSaving(true)
     try {
@@ -147,19 +156,17 @@ const ProfessionalProfile = () => {
       setFormData(prev => ({ ...prev, [field]: value }))
     }
   }
-  
+
   const handleApproveTestimonial = (testimonialId) => {
     setTestimonials(prev => 
-      prev.map(t => 
-        t.id === testimonialId ? { ...t, approved: true } : t
-      )
+      prev.map(t => t.id === testimonialId ? { ...t, approved: true } : t)
     )
   }
-  
+
   const handleRejectTestimonial = (testimonialId) => {
     setTestimonials(prev => prev.filter(t => t.id !== testimonialId))
   }
-  
+
   const handleAddTestimonial = () => {
     // In a real app, this would send the testimonial to the server
     const newId = `t${Date.now()}`
@@ -171,14 +178,8 @@ const ProfessionalProfile = () => {
       approved: false,
       since: new Date().getFullYear().toString()
     }
-    
     setTestimonials(prev => [...prev, testimonial])
-    setNewTestimonial({
-      clientName: '',
-      rating: 5,
-      content: '',
-      approved: false
-    })
+    setNewTestimonial({ clientName: '', rating: 5, content: '', approved: false })
     setShowAddTestimonialModal(false)
   }
 
@@ -201,26 +202,24 @@ const ProfessionalProfile = () => {
             <h2 className="text-xl font-semibold text-polynesian-blue">My Professional Profile</h2>
           </div>
           <div className="flex items-center space-x-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setPreviewMode(!previewMode)}
               className="flex items-center space-x-2"
             >
               <SafeIcon icon={previewMode ? FiEdit3 : FiEye} className="w-4 h-4" />
               <span>{previewMode ? 'Edit Mode' : 'Preview Mode'}</span>
             </Button>
-            
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => window.open(profileUrl, '_blank')}
               className="flex items-center space-x-2"
             >
               <SafeIcon icon={FiExternalLink} className="w-4 h-4" />
               <span>View Public Profile</span>
             </Button>
-            
             {!editing && !previewMode && (
-              <Button 
+              <Button
                 onClick={() => setEditing(true)}
                 className="flex items-center space-x-2"
               >
@@ -230,14 +229,15 @@ const ProfessionalProfile = () => {
             )}
           </div>
         </div>
-        
+
         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-sm text-blue-700">
           <div className="font-medium mb-1 flex items-center">
             <SafeIcon icon={FiInfo} className="mr-2" />
             <span>Your Professional Profile</span>
           </div>
-          <p>This is your primary public profile, always available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. 
-            It represents you in the professional directory and is linked from all your landing pages.</p>
+          <p>
+            This is your primary public profile, always available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. It represents you in the professional directory and is linked from all your landing pages.
+          </p>
         </div>
 
         {previewMode ? (
@@ -253,21 +253,13 @@ const ProfessionalProfile = () => {
                 />
                 <h1 className="text-2xl font-bold text-polynesian-blue mb-1">{profile.full_name}</h1>
                 <p className="text-polynesian-blue/70 mb-2">{formData.title}</p>
-                
+
                 {/* Ratings */}
                 <div className="flex items-center justify-center space-x-2 mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <SafeIcon 
-                        key={i} 
-                        icon={FiStar} 
-                        className={`w-4 h-4 ${i < Math.floor(profile.ratings.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-polynesian-blue/60">
-                    ({profile.ratings.count} reviews)
-                  </span>
+                  <ReviewsStats 
+                    averageRating={ratingData.averageRating || profile.ratings.average} 
+                    reviewCount={ratingData.reviewCount || profile.ratings.count} 
+                  />
                 </div>
 
                 {/* Contact Info */}
@@ -291,12 +283,14 @@ const ProfessionalProfile = () => {
                     Book Appointment
                   </div>
                 )}
-                
-                {/* Leave a Review Button */}
-                <div className="inline-flex items-center justify-center w-full px-4 py-2 bg-white border border-picton-blue text-picton-blue rounded-lg mb-6">
-                  <SafeIcon icon={FiMessageSquare} className="w-4 h-4 mr-2" />
-                  Leave a Review
-                </div>
+
+                {/* Leave a Review Button - Only if reviews are enabled */}
+                {formData.reviews_enabled && (
+                  <div className="inline-flex items-center justify-center w-full px-4 py-2 bg-white border border-picton-blue text-picton-blue rounded-lg mb-6">
+                    <SafeIcon icon={FiMessageSquare} className="w-4 h-4 mr-2" />
+                    Leave a Review
+                  </div>
+                )}
 
                 {/* Social Links */}
                 {Object.values(formData.social_links).some(Boolean) && (
@@ -305,7 +299,6 @@ const ProfessionalProfile = () => {
                     <div className="flex justify-center space-x-3">
                       {Object.entries(formData.social_links).map(([platform, url]) => {
                         if (!url) return null
-                        
                         const icons = {
                           instagram: FiInstagram,
                           facebook: FiFacebook,
@@ -330,7 +323,7 @@ const ProfessionalProfile = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {/* Professional IDs */}
                 {(formData.agent_id || formData.international_id) && (
                   <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-polynesian-blue/60">
@@ -349,55 +342,64 @@ const ProfessionalProfile = () => {
                   <h2 className="text-2xl font-bold text-polynesian-blue mb-4">About Me</h2>
                   <p className="text-polynesian-blue/70">{formData.bio}</p>
                 </div>
-                
-                {/* Testimonials Section */}
-                <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold text-polynesian-blue">Client Testimonials</h2>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <SafeIcon 
-                            key={i} 
-                            icon={FiStar} 
-                            className={`w-4 h-4 ${i < Math.floor(profile.ratings.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                          />
-                        ))}
+
+                {/* Testimonials Section - Only if reviews are enabled */}
+                {formData.reviews_enabled && (
+                  <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-polynesian-blue">Client Testimonials</h2>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <SafeIcon
+                              key={i}
+                              icon={FiStar}
+                              className={`w-4 h-4 ${
+                                i < Math.floor(ratingData.averageRating || profile.ratings.average)
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm font-medium text-polynesian-blue">
+                          {(ratingData.averageRating || profile.ratings.average).toFixed(1)}
+                        </span>
+                        <span className="text-sm text-polynesian-blue/60">
+                          ({ratingData.reviewCount || profile.ratings.count} reviews)
+                        </span>
                       </div>
-                      <span className="text-sm font-medium text-polynesian-blue">
-                        {profile.ratings.average.toFixed(1)}
-                      </span>
-                      <span className="text-sm text-polynesian-blue/60">
-                        ({profile.ratings.count} reviews)
-                      </span>
+                    </div>
+                    <div className="space-y-4">
+                      {testimonials.filter(t => t.approved).map(testimonial => (
+                        <div key={testimonial.id} className="bg-anti-flash-white p-4 rounded-lg">
+                          <div className="flex items-center mb-2">
+                            <div className="flex text-yellow-400">
+                              {[...Array(5)].map((_, i) => (
+                                <SafeIcon
+                                  key={i}
+                                  icon={FiStar}
+                                  className={`w-4 h-4 ${
+                                    i < testimonial.rating
+                                      ? 'text-yellow-400 fill-yellow-400'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-sm text-polynesian-blue/70 italic">
+                            "{testimonial.content}"
+                          </p>
+                          <p className="text-xs text-polynesian-blue/50 mt-2">
+                            - {testimonial.clientName}, Client since {testimonial.since}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  
-                  <div className="space-y-4">
-                    {testimonials.filter(t => t.approved).map(testimonial => (
-                      <div key={testimonial.id} className="bg-anti-flash-white p-4 rounded-lg">
-                        <div className="flex items-center mb-2">
-                          <div className="flex text-yellow-400">
-                            {[...Array(5)].map((_, i) => (
-                              <SafeIcon 
-                                key={i} 
-                                icon={FiStar} 
-                                className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-sm text-polynesian-blue/70 italic">
-                          "{testimonial.content}"
-                        </p>
-                        <p className="text-xs text-polynesian-blue/50 mt-2">
-                          - {testimonial.clientName}, Client since {testimonial.since}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
+                )}
+
                 {/* Calendar Section */}
                 {formData.calendar_embed_code && (
                   <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
@@ -428,7 +430,7 @@ const ProfessionalProfile = () => {
                 placeholder="Financial Professional"
               />
             </div>
-            
+
             <Textarea
               label="Professional Bio"
               value={formData.bio}
@@ -437,7 +439,7 @@ const ProfessionalProfile = () => {
               required
               placeholder="Tell visitors about your expertise and services..."
             />
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 label="Email"
@@ -454,7 +456,7 @@ const ProfessionalProfile = () => {
                 placeholder="+1 (555) 123-4567"
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 label="Agent ID"
@@ -469,7 +471,7 @@ const ProfessionalProfile = () => {
                 placeholder="INT123"
               />
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-polynesian-blue">Calendar Integration</h3>
               <Input
@@ -486,7 +488,30 @@ const ProfessionalProfile = () => {
                 rows={3}
               />
             </div>
-            
+
+            {/* Reviews Settings */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-polynesian-blue">Reviews Settings</h3>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange('reviews_enabled', !formData.reviews_enabled)}
+                  className="focus:outline-none"
+                >
+                  <SafeIcon
+                    icon={formData.reviews_enabled ? FiToggleRight : FiToggleLeft}
+                    className={`w-10 h-6 ${
+                      formData.reviews_enabled ? 'text-picton-blue' : 'text-gray-400'
+                    }`}
+                  />
+                </button>
+                <span className="text-polynesian-blue">Enable client reviews on your profile</span>
+              </div>
+              <p className="text-sm text-polynesian-blue/70">
+                When enabled, clients can submit reviews that will appear on your profile after approval.
+              </p>
+            </div>
+
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-polynesian-blue">Social Media Links</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -524,7 +549,7 @@ const ProfessionalProfile = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-3">
               <Button
                 type="button"
@@ -556,30 +581,20 @@ const ProfessionalProfile = () => {
               <div>
                 <h3 className="text-2xl font-bold text-polynesian-blue">{profile.full_name}</h3>
                 <p className="text-polynesian-blue/70">{profile.title}</p>
-                {profile.ratings && (
-                  <div className="flex items-center space-x-2 mt-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <span
-                          key={i}
-                          className={`text-${i < Math.floor(profile.ratings.average) ? 'yellow' : 'gray'}-400`}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-sm text-polynesian-blue/60">
-                      ({profile.ratings.count} reviews)
-                    </span>
-                  </div>
-                )}
+                
+                {/* Show actual ratings from reviews */}
+                <ReviewsStats 
+                  averageRating={ratingData.averageRating} 
+                  reviewCount={ratingData.reviewCount} 
+                  className="mt-2" 
+                />
               </div>
             </div>
-            
+
             <div className="prose max-w-none">
               <p className="text-polynesian-blue/70">{profile.bio}</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h4 className="font-medium text-polynesian-blue mb-2">Contact Information</h4>
@@ -608,7 +623,19 @@ const ProfessionalProfile = () => {
                 </div>
               </div>
             </div>
-            
+
+            <div className="flex items-center space-x-2">
+              <SafeIcon
+                icon={profile.reviews_enabled !== false ? FiToggleRight : FiToggleLeft}
+                className={`w-10 h-6 ${
+                  profile.reviews_enabled !== false ? 'text-picton-blue' : 'text-gray-400'
+                }`}
+              />
+              <span className="text-polynesian-blue">
+                Client reviews are {profile.reviews_enabled !== false ? 'enabled' : 'disabled'}
+              </span>
+            </div>
+
             {profile.calendly_link && (
               <div>
                 <h4 className="font-medium text-polynesian-blue mb-2">Schedule a Consultation</h4>
@@ -621,7 +648,7 @@ const ProfessionalProfile = () => {
                 </Button>
               </div>
             )}
-            
+
             {Object.values(profile.social_links || {}).some(Boolean) && (
               <div>
                 <h4 className="font-medium text-polynesian-blue mb-2">Connect With Me</h4>
@@ -672,7 +699,7 @@ const ProfessionalProfile = () => {
           </div>
         )}
       </Card>
-      
+
       {/* Testimonials Card */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
@@ -680,7 +707,7 @@ const ProfessionalProfile = () => {
             <SafeIcon icon={FiStar} className="w-6 h-6 text-yellow-400" />
             <h2 className="text-xl font-semibold text-polynesian-blue">Client Testimonials</h2>
           </div>
-          <Button 
+          <Button
             onClick={() => setShowAddTestimonialModal(true)}
             className="flex items-center space-x-2"
           >
@@ -688,7 +715,7 @@ const ProfessionalProfile = () => {
             <span>Add Testimonial</span>
           </Button>
         </div>
-        
+
         {testimonials.length === 0 ? (
           <div className="text-center py-12">
             <SafeIcon icon={FiStar} className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -702,71 +729,83 @@ const ProfessionalProfile = () => {
             <h3 className="text-lg font-medium text-polynesian-blue mb-2">Approved Testimonials</h3>
             {testimonials.filter(t => t.approved).length > 0 ? (
               <div className="space-y-4">
-                {testimonials.filter(t => t.approved).map(testimonial => (
-                  <div key={testimonial.id} className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <SafeIcon 
-                            key={i} 
-                            icon={FiStar} 
-                            className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                          />
-                        ))}
+                {testimonials
+                  .filter(t => t.approved)
+                  .map(testimonial => (
+                    <div key={testimonial.id} className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center mb-2">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <SafeIcon
+                              key={i}
+                              icon={FiStar}
+                              className={`w-4 h-4 ${
+                                i < testimonial.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
                       </div>
+                      <p className="text-polynesian-blue/70 italic mb-2">"{testimonial.content}"</p>
+                      <p className="text-sm text-polynesian-blue/50">
+                        - {testimonial.clientName}, Client since {testimonial.since}
+                      </p>
                     </div>
-                    <p className="text-polynesian-blue/70 italic mb-2">"{testimonial.content}"</p>
-                    <p className="text-sm text-polynesian-blue/50">
-                      - {testimonial.clientName}, Client since {testimonial.since}
-                    </p>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <p className="text-sm text-polynesian-blue/50 italic">No approved testimonials yet</p>
             )}
-            
+
             <h3 className="text-lg font-medium text-polynesian-blue mt-6 mb-2">Pending Approval</h3>
             {testimonials.filter(t => !t.approved).length > 0 ? (
               <div className="space-y-4">
-                {testimonials.filter(t => !t.approved).map(testimonial => (
-                  <div key={testimonial.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <SafeIcon 
-                            key={i} 
-                            icon={FiStar} 
-                            className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                          />
-                        ))}
+                {testimonials
+                  .filter(t => !t.approved)
+                  .map(testimonial => (
+                    <div key={testimonial.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <SafeIcon
+                              key={i}
+                              icon={FiStar}
+                              className={`w-4 h-4 ${
+                                i < testimonial.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleApproveTestimonial(testimonial.id)}
+                            className="flex items-center space-x-1"
+                          >
+                            <SafeIcon icon={FiCheck} className="w-3 h-3" />
+                            <span>Approve</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => handleRejectTestimonial(testimonial.id)}
+                            className="flex items-center space-x-1"
+                          >
+                            <SafeIcon icon={FiX} className="w-3 h-3" />
+                            <span>Reject</span>
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex space-x-2">
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleApproveTestimonial(testimonial.id)}
-                          className="flex items-center space-x-1"
-                        >
-                          <SafeIcon icon={FiCheck} className="w-3 h-3" />
-                          <span>Approve</span>
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="danger" 
-                          onClick={() => handleRejectTestimonial(testimonial.id)}
-                          className="flex items-center space-x-1"
-                        >
-                          <SafeIcon icon={FiX} className="w-3 h-3" />
-                          <span>Reject</span>
-                        </Button>
-                      </div>
+                      <p className="text-polynesian-blue/70 italic mb-2">"{testimonial.content}"</p>
+                      <p className="text-sm text-polynesian-blue/50">
+                        - {testimonial.clientName}, Client since {testimonial.since}
+                      </p>
                     </div>
-                    <p className="text-polynesian-blue/70 italic mb-2">"{testimonial.content}"</p>
-                    <p className="text-sm text-polynesian-blue/50">
-                      - {testimonial.clientName}, Client since {testimonial.since}
-                    </p>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <p className="text-sm text-polynesian-blue/50 italic">No pending testimonials</p>
@@ -774,7 +813,7 @@ const ProfessionalProfile = () => {
           </div>
         )}
       </Card>
-      
+
       {/* Add Testimonial Modal */}
       <Modal
         isOpen={showAddTestimonialModal}
@@ -789,7 +828,6 @@ const ProfessionalProfile = () => {
             placeholder="John Smith"
             required
           />
-          
           <div>
             <label className="block text-sm font-medium text-polynesian-blue mb-2">Rating</label>
             <div className="flex space-x-1">
@@ -800,15 +838,18 @@ const ProfessionalProfile = () => {
                   onClick={() => setNewTestimonial(prev => ({ ...prev, rating }))}
                   className="p-1 focus:outline-none"
                 >
-                  <SafeIcon 
-                    icon={FiStar} 
-                    className={`w-6 h-6 ${rating <= newTestimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                  <SafeIcon
+                    icon={FiStar}
+                    className={`w-6 h-6 ${
+                      rating <= newTestimonial.rating
+                        ? 'text-yellow-400 fill-yellow-400'
+                        : 'text-gray-300'
+                    }`}
                   />
                 </button>
               ))}
             </div>
           </div>
-          
           <Textarea
             label="Testimonial Content"
             value={newTestimonial.content}
@@ -817,7 +858,6 @@ const ProfessionalProfile = () => {
             rows={4}
             required
           />
-          
           <div className="flex justify-end space-x-3 mt-6">
             <Button
               type="button"

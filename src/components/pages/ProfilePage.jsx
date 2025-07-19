@@ -4,6 +4,9 @@ import { useParams, Link } from 'react-router-dom'
 import { mockUsers } from '../../data/mockUsers'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
+import ReviewsSection from '../reviews/ReviewsSection'
+import ReviewsStats from '../reviews/ReviewsStats'
+import { getProfessionalRating } from '../../lib/reviews'
 
 const {
   FiMail,
@@ -22,28 +25,15 @@ const ProfilePage = () => {
   const { username } = useParams()
   const [isLoading, setIsLoading] = useState(true)
   const [profile, setProfile] = useState(null)
-  const [testimonials, setTestimonials] = useState([
-    {
-      id: 't1',
-      client_name: 'Maria S.',
-      rating: 5,
-      content: 'Working with this professional has been transformative for our family\'s financial future. The personalized approach and attention to detail made all the difference.',
-      since: '2022'
-    },
-    {
-      id: 't2',
-      client_name: 'James T.',
-      rating: 5,
-      content: 'I appreciate the clear communication and expert guidance. My financial plan is now aligned with my long-term goals, giving me peace of mind.',
-      since: '2021'
-    }
-  ])
-  
+  const [ratingData, setRatingData] = useState({
+    averageRating: 0,
+    reviewCount: 0
+  })
+
   useEffect(() => {
     const loadProfile = async () => {
       try {
         setIsLoading(true)
-        
         // Find the user by username
         const user = mockUsers.find(u => u.username === username)
         
@@ -52,6 +42,13 @@ const ProfilePage = () => {
             ...user,
             title: user.title || 'Financial Professional',
             ratings: user.ratings || { average: 4.8, count: 24 }
+          })
+          
+          // Get actual reviews data
+          const { averageRating, reviewCount } = await getProfessionalRating(username)
+          setRatingData({
+            averageRating,
+            reviewCount
           })
         } else {
           // Not found
@@ -126,20 +123,12 @@ const ProfilePage = () => {
                 <h1 className="text-2xl font-bold text-polynesian-blue mb-1">{profile.full_name}</h1>
                 <p className="text-polynesian-blue/70 mb-2">{profile.title}</p>
                 
-                {/* Ratings */}
+                {/* Ratings - now using actual data */}
                 <div className="flex items-center justify-center space-x-2 mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <SafeIcon 
-                        key={i} 
-                        icon={FiStar} 
-                        className={`w-4 h-4 ${i < Math.floor(profile.ratings.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-polynesian-blue/60">
-                    ({profile.ratings.count} reviews)
-                  </span>
+                  <ReviewsStats 
+                    averageRating={ratingData.averageRating} 
+                    reviewCount={ratingData.reviewCount} 
+                  />
                 </div>
               </div>
 
@@ -171,16 +160,6 @@ const ProfilePage = () => {
                   Book Appointment
                 </motion.a>
               )}
-              
-              {/* Leave a Review Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center w-full px-4 py-2 bg-white border border-picton-blue text-picton-blue rounded-lg hover:bg-picton-blue/5 transition-colors mb-6"
-              >
-                <SafeIcon icon={FiMessageSquare} className="w-4 h-4 mr-2" />
-                Leave a Review
-              </motion.button>
 
               {/* Social Links */}
               {socialLinks.length > 0 && (
@@ -216,7 +195,7 @@ const ProfilePage = () => {
                   </div>
                 </div>
               )}
-              
+
               {/* Professional IDs */}
               {(profile.agent_id || profile.international_id) && (
                 <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-polynesian-blue/60">
@@ -239,7 +218,7 @@ const ProfilePage = () => {
                 <h2 className="text-2xl font-bold text-polynesian-blue mb-4">About Me</h2>
                 <p className="text-polynesian-blue/70">{profile.bio}</p>
               </div>
-              
+
               {/* Services Section */}
               <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
                 <h2 className="text-2xl font-bold text-polynesian-blue mb-4">Services</h2>
@@ -270,62 +249,19 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Testimonials Section */}
-              <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-polynesian-blue">Client Testimonials</h2>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <SafeIcon 
-                          key={i} 
-                          icon={FiStar} 
-                          className={`w-4 h-4 ${i < Math.floor(profile.ratings.average) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm font-medium text-polynesian-blue">
-                      {profile.ratings.average.toFixed(1)}
-                    </span>
-                    <span className="text-sm text-polynesian-blue/60">
-                      ({profile.ratings.count} reviews)
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  {testimonials.map(testimonial => (
-                    <div key={testimonial.id} className="bg-anti-flash-white p-4 rounded-lg">
-                      <div className="flex items-center mb-2">
-                        <div className="flex text-yellow-400">
-                          {[...Array(5)].map((_, i) => (
-                            <SafeIcon 
-                              key={i} 
-                              icon={FiStar} 
-                              className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm text-polynesian-blue/70 italic">
-                        "{testimonial.content}"
-                      </p>
-                      <p className="text-xs text-polynesian-blue/50 mt-2">
-                        - {testimonial.client_name}, Client since {testimonial.since}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
+
+              {/* Reviews Section - New Component */}
+              <ReviewsSection 
+                professionalUsername={profile.username} 
+                professionalId={profile.id}
+                showForm={true}
+              />
+
               {/* Calendar Section */}
               {profile.calendar_embed_code && (
                 <div className="bg-white rounded-lg shadow-sm p-8 border border-gray-200">
                   <h2 className="text-2xl font-bold text-polynesian-blue mb-4">Schedule a Consultation</h2>
-                  <div className="calendly-container" 
-                    dangerouslySetInnerHTML={{ __html: profile.calendar_embed_code }} 
-                  />
+                  <div className="calendly-container" dangerouslySetInnerHTML={{ __html: profile.calendar_embed_code }} />
                 </div>
               )}
             </div>
