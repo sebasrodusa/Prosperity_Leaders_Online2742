@@ -35,6 +35,10 @@ Create a `.env` file in the project root (or copy `.env.example`) and provide va
 - `VITE_PUBLITIO_PUBLIC_KEY`
 - `VITE_PUBLITIO_SECRET_KEY`
 
+If you see a console warning about unresolved Supabase variables, check that
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are defined in your `.env`
+file before starting the app.
+
 ## Supabase Setup
 
 1. Sign up at [Supabase](https://supabase.com/) and create a new project.
