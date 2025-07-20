@@ -5,8 +5,14 @@ import { useAuth } from '@clerk/clerk-react'
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.warn('Supabase env vars not resolved', {
+// Throw early if the environment variables are missing or left as placeholders
+if (
+  !SUPABASE_URL ||
+  !SUPABASE_ANON_KEY ||
+  SUPABASE_URL.includes('your_supabase_project_url') ||
+  SUPABASE_ANON_KEY.includes('your_supabase_anon_key')
+) {
+  console.error('Supabase env vars not resolved', {
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   })
