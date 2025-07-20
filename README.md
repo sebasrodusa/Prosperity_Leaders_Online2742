@@ -28,6 +28,7 @@ Create a `.env` file in the project root (or copy `.env.example`) and provide va
 1. Sign up at [Supabase](https://supabase.com/) and create a new project.
 2. In the project settings, find the **Project URL** and **anon public** key and add them to `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 3. Create the tables and functions required by the application (see `src/lib/supabase.js` for example RPC calls).
+4. A working Supabase project is required for profile changes to be saved from the dashboard.
 
 ## Clerk Setup
 
