@@ -13,6 +13,18 @@ Prosperity Leaders Platform is a React-based web application that helps families
    npm run dev
    ```
 
+## Build and Preview
+
+To generate the `dist/` directory for production, run:
+```bash
+npm run build
+```
+You can then preview the built files locally with:
+```bash
+npm run preview
+```
+Alternatively, serve the `dist/` directory with any static file server of your choice.
+
 ## Environment Variables
 
 Create a `.env` file in the project root (or copy `.env.example`) and provide values for these variables:
