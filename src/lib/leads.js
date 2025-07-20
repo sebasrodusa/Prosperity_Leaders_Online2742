@@ -1,7 +1,8 @@
-import supabase from './supabase'
+import { getSupabaseClient } from '@/lib/supabase.js'
 
 // Helper function to set user context for RLS
 const setUserContext = async (userId) => {
+  const supabase = await getSupabaseClient()
   const { error } = await supabase.rpc('set_config', {
     setting_name: 'app.current_user_id',
     setting_value: userId,
@@ -14,6 +15,7 @@ const setUserContext = async (userId) => {
 export const getLeads = async (userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('leads_12345')
       .select('*')
@@ -30,6 +32,7 @@ export const getLeads = async (userId) => {
 export const getLead = async (leadId, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('leads_12345')
       .select('*')
@@ -47,6 +50,7 @@ export const getLead = async (leadId, userId) => {
 export const createLead = async (leadData) => {
   try {
     await setUserContext(leadData.user_id)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('leads_12345')
       .insert([{
@@ -68,6 +72,7 @@ export const createLead = async (leadData) => {
 export const updateLead = async (leadId, updates, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('leads_12345')
       .update({
@@ -89,6 +94,7 @@ export const updateLead = async (leadId, updates, userId) => {
 export const deleteLead = async (leadId, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { error } = await supabase
       .from('leads_12345')
       .delete()
@@ -106,6 +112,7 @@ export const deleteLead = async (leadId, userId) => {
 export const getLeadStats = async (userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('leads_12345')
       .select('status')
@@ -131,6 +138,7 @@ export const getLeadStats = async (userId) => {
 export const getLeadNotes = async (leadId, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('lead_notes_12345')
       .select('*')
@@ -148,6 +156,7 @@ export const getLeadNotes = async (leadId, userId) => {
 export const createLeadNote = async (leadId, content, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('lead_notes_12345')
       .insert([{
@@ -171,6 +180,7 @@ export const createLeadNote = async (leadId, content, userId) => {
 export const getLeadTasks = async (leadId, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('lead_tasks_12345')
       .select('*')
@@ -188,6 +198,7 @@ export const getLeadTasks = async (leadId, userId) => {
 export const createLeadTask = async (leadId, taskData, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('lead_tasks_12345')
       .insert([{
@@ -211,6 +222,7 @@ export const createLeadTask = async (leadId, taskData, userId) => {
 export const updateLeadTask = async (taskId, updates, userId) => {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('lead_tasks_12345')
       .update({

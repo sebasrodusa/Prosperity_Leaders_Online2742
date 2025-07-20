@@ -8,7 +8,7 @@ import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
 import ReviewsManagement from '../reviews/ReviewsManagement'
-import supabase from '../../lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase.js'
 
 const { FiSave, FiRefreshCw, FiEye, FiEdit2, FiInfo } = FiIcons
 
@@ -29,6 +29,7 @@ const ContentManager = () => {
 
   const loadContent = async () => {
     try {
+      const supabase = await getSupabaseClient()
       const { data, error } = await supabase
         .from('site_content_12345')
         .select('*')
@@ -97,7 +98,7 @@ const ContentManager = () => {
           updated_at: new Date().toISOString()
         })
       }
-
+      const supabase = await getSupabaseClient()
       const { error } = await supabase
         .from('site_content_12345')
         .upsert(updates, { onConflict: ['section', 'key'] })
@@ -123,6 +124,7 @@ const ContentManager = () => {
       handleContentChange(selectedSection.value, key, '');
 
       // Add to database
+      const supabase = await getSupabaseClient();
       const { error } = await supabase
         .from('site_content_12345')
         .insert({ section: selectedSection.value, key, value: '' });

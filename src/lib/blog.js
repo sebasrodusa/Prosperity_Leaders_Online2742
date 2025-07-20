@@ -1,7 +1,8 @@
-import supabase from './supabase'
+import { getSupabaseClient } from '@/lib/supabase.js'
 
 // Helper function to set user context for RLS
 const setUserContext = async (userId, userRole = 'professional') => {
+  const supabase = await getSupabaseClient()
   await supabase.rpc('set_config', {
     setting_name: 'app.current_user_id',
     setting_value: userId,
@@ -44,7 +45,7 @@ const generateExcerpt = (content, maxLength = 150) => {
 export const getPublishedPosts = async (page = 1, limit = 10, tagFilter = null) => {
   try {
     const offset = (page - 1) * limit
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .rpc('get_published_posts', {
         page_limit: limit,
@@ -77,6 +78,7 @@ export const getPublishedPosts = async (page = 1, limit = 10, tagFilter = null) 
 // Get single post by slug
 export const getPostBySlug = async (slug) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .select('*')
@@ -96,7 +98,7 @@ export const getPostBySlug = async (slug) => {
 export const getAllPosts = async (userId, userRole = 'admin', statusFilter = 'all') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     let query = supabase
       .from('blog_posts_12345')
       .select('*')
@@ -120,7 +122,7 @@ export const getAllPosts = async (userId, userRole = 'admin', statusFilter = 'al
 export const getPostsByAuthor = async (authorId, userId, userRole = 'professional') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .select('*')
@@ -139,6 +141,7 @@ export const getPostsByAuthor = async (authorId, userId, userRole = 'professiona
 export const createPost = async (postData, userId, userRole = 'professional') => {
   try {
     await setUserContext(userId, userRole)
+    const supabase = await getSupabaseClient()
     
     const slug = generateSlug(postData.title)
     const readTime = calculateReadTime(postData.content)
@@ -170,6 +173,7 @@ export const createPost = async (postData, userId, userRole = 'professional') =>
 export const updatePost = async (postId, updates, userId, userRole = 'professional') => {
   try {
     await setUserContext(userId, userRole)
+    const supabase = await getSupabaseClient()
     
     const updateData = { ...updates }
     
@@ -207,7 +211,7 @@ export const updatePost = async (postId, updates, userId, userRole = 'profession
 export const deletePost = async (postId, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { error } = await supabase
       .from('blog_posts_12345')
       .delete()
@@ -225,7 +229,7 @@ export const deletePost = async (postId, userId, userRole = 'admin') => {
 export const approvePost = async (postId, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .update({
@@ -247,7 +251,7 @@ export const approvePost = async (postId, userId, userRole = 'admin') => {
 export const rejectPost = async (postId, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .update({
@@ -269,7 +273,7 @@ export const rejectPost = async (postId, userId, userRole = 'admin') => {
 export const publishPost = async (postId, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .update({
@@ -292,7 +296,7 @@ export const publishPost = async (postId, userId, userRole = 'admin') => {
 export const unpublishPost = async (postId, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .update({
@@ -315,6 +319,7 @@ export const unpublishPost = async (postId, userId, userRole = 'admin') => {
 // Categories
 export const getCategories = async () => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_categories_12345')
       .select('*')
@@ -331,6 +336,7 @@ export const getCategories = async () => {
 export const createCategory = async (categoryData, userId, userRole = 'admin') => {
   try {
     await setUserContext(userId, userRole)
+    const supabase = await getSupabaseClient()
     
     const slug = generateSlug(categoryData.name)
     
@@ -355,6 +361,7 @@ export const createCategory = async (categoryData, userId, userRole = 'admin') =
 // Get latest posts for widgets
 export const getLatestPosts = async (limit = 5) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .select('id, title, slug, author_name, published_at')
@@ -374,7 +381,7 @@ export const getLatestPosts = async (limit = 5) => {
 export const searchPosts = async (query, page = 1, limit = 10) => {
   try {
     const offset = (page - 1) * limit
-    
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('blog_posts_12345')
       .select('*')

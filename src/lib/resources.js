@@ -1,4 +1,4 @@
-import supabase from './supabase'
+import { getSupabaseClient } from '@/lib/supabase.js'
 import {
   uploadFile,
   deleteFile,
@@ -35,6 +35,7 @@ export const ALLOWED_FILE_TYPES = {
 
 // Helper used to set the current user for row level security
 const setUserContext = async (userId) => {
+  const supabase = await getSupabaseClient()
   const { error } = await supabase.rpc('set_config', {
     setting_name: 'app.current_user_id',
     setting_value: userId,
@@ -46,7 +47,7 @@ const setUserContext = async (userId) => {
 export async function getResources(userId, role = 'professional', filters = {}) {
   try {
     await setUserContext(userId)
-
+    const supabase = await getSupabaseClient()
     let query = supabase.from('resources_12345').select('*')
 
     if (filters.search) query = query.ilike('title', `%${filters.search}%`)
@@ -70,6 +71,7 @@ export async function getResources(userId, role = 'professional', filters = {}) 
 export async function createResource(resourceData, userId) {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('resources_12345')
       .insert([
@@ -125,6 +127,7 @@ export async function uploadResourceFile(file, resourceData, userId) {
 export async function updateResource(resourceId, updates, userId) {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('resources_12345')
       .update({
@@ -146,7 +149,7 @@ export async function updateResource(resourceId, updates, userId) {
 export async function deleteResource(resourceId, userId) {
   try {
     await setUserContext(userId)
-
+    const supabase = await getSupabaseClient()
     const { data: resource, error: fetchError } = await supabase
       .from('resources_12345')
       .select('publit_id')
@@ -179,6 +182,7 @@ export async function deleteResource(resourceId, userId) {
 export async function trackResourceAccess(resourceId, userId, actionType) {
   try {
     await setUserContext(userId)
+    const supabase = await getSupabaseClient()
     const { error } = await supabase.from('resource_analytics_12345').insert([
       { resource_id: resourceId, user_id: userId, action_type: actionType }
     ])

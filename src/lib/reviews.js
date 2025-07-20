@@ -1,8 +1,9 @@
-import supabase from './supabase'
+import { getSupabaseClient } from '@/lib/supabase.js'
 
 // Get approved reviews for a professional
 export const getApprovedReviews = async (professionalUsername) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data: reviews, error } = await supabase
       .from('reviews_12345')
       .select('*')
@@ -38,6 +39,7 @@ export const getApprovedReviews = async (professionalUsername) => {
 // Get approved testimonials for homepage
 export const getApprovedTestimonials = async (limit = 5) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('reviews_12345')
       .select('*')
@@ -59,6 +61,7 @@ export const getApprovedTestimonials = async (limit = 5) => {
 export const getProfessionalRating = async (professionalUsername) => {
   try {
     // Get average rating
+    const supabase = await getSupabaseClient()
     const { data: averageRating, error: ratingError } = await supabase
       .rpc('get_professional_rating', { p_username: professionalUsername })
     
@@ -83,6 +86,7 @@ export const getProfessionalRating = async (professionalUsername) => {
 // Submit a new review (public access)
 export const submitReview = async (reviewData) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('reviews_12345')
       .insert([{
@@ -111,6 +115,7 @@ export const submitReview = async (reviewData) => {
 // Get all reviews (admin only)
 export const getAllReviews = async (statusFilter = 'all') => {
   try {
+    const supabase = await getSupabaseClient()
     let query = supabase
       .from('reviews_12345')
       .select('*')
@@ -134,6 +139,7 @@ export const getAllReviews = async (statusFilter = 'all') => {
 // Approve a review (admin only)
 export const approveReview = async (reviewId) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('reviews_12345')
       .update({ 
@@ -154,6 +160,7 @@ export const approveReview = async (reviewId) => {
 // Reject a review (admin only)
 export const rejectReview = async (reviewId) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('reviews_12345')
       .update({ 
@@ -174,6 +181,7 @@ export const rejectReview = async (reviewId) => {
 // Delete a review (admin only)
 export const deleteReview = async (reviewId) => {
   try {
+    const supabase = await getSupabaseClient()
     const { error } = await supabase
       .from('reviews_12345')
       .delete()
@@ -191,6 +199,7 @@ export const deleteReview = async (reviewId) => {
 // Feature or unfeature a review for homepage (admin only)
 export const toggleFeatureReview = async (reviewId, featured) => {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('reviews_12345')
       .update({ 

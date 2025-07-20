@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { getToken } from '@clerk/clerk-browser'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -7,17 +8,24 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables')
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true
-  }
-})
-
-export default supabase
+export async function getSupabaseClient() {
+  const jwt = await getToken()
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${jwt}`
+      }
+    },
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true
+    }
+  })
+}
 
 export async function getSiteContent() {
   try {
+    const supabase = await getSupabaseClient()
     const { data, error } = await supabase
       .from('site_content_12345')
       .select('*')
@@ -67,6 +75,7 @@ export async function findProfessional(searchQuery) {
 // Database schema setup functions
 export const initializeDatabase = async () => {
   try {
+    const supabase = await getSupabaseClient()
     const { error: usersError } = await supabase.rpc('create_users_table')
     if (usersError && !usersError.message.includes('already exists')) {
       console.error('Error creating users table:', usersError)
@@ -85,6 +94,7 @@ export const initializeDatabase = async () => {
 
 // User operations
 export const createUser = async (userData) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('users')
     .insert([userData])
@@ -95,6 +105,7 @@ export const createUser = async (userData) => {
 }
 
 export const updateUser = async (userId, updates) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('users')
     .update(updates)
@@ -106,6 +117,7 @@ export const updateUser = async (userId, updates) => {
 }
 
 export const getUserById = async (userId) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('users')
     .select('*')
@@ -117,6 +129,7 @@ export const getUserById = async (userId) => {
 }
 
 export const getUserByUsername = async (username) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('users')
     .select('*')
@@ -129,6 +142,7 @@ export const getUserByUsername = async (username) => {
 
 // Pages operations
 export const createPage = async (pageData) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('pages')
     .insert([pageData])
@@ -139,6 +153,7 @@ export const createPage = async (pageData) => {
 }
 
 export const getUserPages = async (userId) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('pages')
     .select('*')
@@ -150,6 +165,7 @@ export const getUserPages = async (userId) => {
 }
 
 export const getPageByCustomUsername = async (customUsername) => {
+  const supabase = await getSupabaseClient()
   const { data, error } = await supabase
     .from('pages')
     .select(
@@ -165,6 +181,7 @@ export const getPageByCustomUsername = async (customUsername) => {
 }
 
 export const deletePage = async (pageId) => {
+  const supabase = await getSupabaseClient()
   const { error } = await supabase
     .from('pages')
     .delete()
