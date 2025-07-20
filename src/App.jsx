@@ -92,10 +92,10 @@ function App() {
       if (isSignedIn) {
         const token = await getToken({ template: 'supabase' })
         if (token) {
-          setSupabaseAuth(token)
+          await setSupabaseAuth(token)
         }
       } else {
-        setSupabaseAuth(null)
+        await setSupabaseAuth(null)
       }
     }
     applyToken()
