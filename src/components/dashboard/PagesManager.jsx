@@ -99,10 +99,10 @@ const PagesManager = () => {
       </div>
 
       <div className="space-y-4">
-        {pages.length === 0 ? (
+        {!Array.isArray(pages) || pages.length === 0 ? (
           <div className="text-center py-12">
             <SafeIcon icon={FiGlobe} className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-polynesian-blue/70">No pages created yet</p>
+            <p className="text-polynesian-blue/70">No pages found</p>
             <p className="text-sm text-polynesian-blue/50 mt-1">Create your first landing page to get started</p>
           </div>
         ) : (
