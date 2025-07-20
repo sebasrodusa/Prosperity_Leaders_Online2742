@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider, useAuth as useAuthContext } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { useAuth as useClerkAuth } from '@clerk/clerk-react'
+import { setSupabaseAuth } from './lib/supabase.js'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
@@ -25,7 +27,7 @@ import Signup from './components/pages/Signup'
 import './App.css'
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuthContext()
   
   if (loading) {
     return (
@@ -42,7 +44,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 }
 
 const AppRoutes = () => {
-  const { user } = useAuth()
+  const { user } = useAuthContext()
   
   return (
     <Routes>
@@ -83,6 +85,22 @@ const AppRoutes = () => {
 }
 
 function App() {
+  const { isSignedIn, getToken } = useClerkAuth()
+
+  useEffect(() => {
+    const applyToken = async () => {
+      if (isSignedIn) {
+        const token = await getToken({ template: 'supabase' })
+        if (token) {
+          setSupabaseAuth(token)
+        }
+      } else {
+        setSupabaseAuth(null)
+      }
+    }
+    applyToken()
+  }, [isSignedIn, getToken])
+
   return (
     <AuthProvider>
       <ThemeProvider>
