@@ -1,12 +1,12 @@
-import React from 'react'
-import { SignIn } from '@clerk/clerk-react'
+import React, { useEffect } from 'react'
 
 const Login = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-anti-flash-white to-white">
-      <SignIn routing="hash" path="/login" signUpUrl="/signup" />
-    </div>
-  )
+  useEffect(() => {
+    window.location.href =
+      'https://accounts.prosperityleaders.net/sign-in?redirect_url=https://prosperityleaders.net/#/dashboard'
+  }, [])
+
+  return null
 }
 
 export default Login
