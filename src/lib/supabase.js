@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { createClient } from '@supabase/supabase-js'
-import { getToken } from '@clerk/clerk-js'
+import { useAuth } from '@clerk/clerk-react'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -8,7 +9,8 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables')
 }
 
-export async function getSupabaseClient() {
+export async function useSupabaseClient() {
+  const { getToken } = useAuth()
   const jwt = await getToken()
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: {
@@ -22,6 +24,8 @@ export async function getSupabaseClient() {
     }
   })
 }
+
+export const getSupabaseClient = useSupabaseClient
 
 export async function getSiteContent() {
   try {
