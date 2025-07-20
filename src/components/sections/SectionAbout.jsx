@@ -42,9 +42,9 @@ const SectionAbout = ({ content }) => {
             <div className="absolute -top-10 -left-10 w-64 h-64 bg-picton-blue/5 rounded-full z-0"></div>
             <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-secondary-cta/5 rounded-full z-0"></div>
             
-            <img 
-              src={content.image_url || "https://images.unsplash.com/photo-1573497491765-dccce02b29df?w=800&auto=format&fit=crop&q=80"}
-              alt="About Prosperity Leaders" 
+            <img
+              src={content.image_url || "https://media.publit.io/file/ProsperityWebApp/SebasJenny.jpg"}
+              alt="About Prosperity Leaders"
               className="rounded-lg shadow-xl w-full h-auto object-cover z-10 relative"
             />
           </div>

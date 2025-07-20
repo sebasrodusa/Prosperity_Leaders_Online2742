@@ -19,9 +19,11 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-white">
-              Prosperity Leaders™
-            </h1>
+            <img
+              src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
+              alt="Prosperity Leaders"
+              className="h-8 w-auto"
+            />
             <span className="ml-2 text-sm text-white/70">Platform</span>
           </div>
 
