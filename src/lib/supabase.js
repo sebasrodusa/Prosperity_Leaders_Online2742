@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { createClient } from '@supabase/supabase-js'
-import { useAuth } from '@clerk/clerk-react'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -21,23 +19,15 @@ if (
   )
 }
 
-export async function useSupabaseClient() {
-  const { getToken } = useAuth()
-  const jwt = await getToken()
-  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${jwt}`
-      }
-    },
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true
-    }
-  })
+// Singleton Supabase client shared across the app
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// Helper to set the JWT from Clerk once the user is signed in
+export const setSupabaseAuth = (token) => {
+  supabase.auth.setAuth(token)
 }
 
-export const getSupabaseClient = useSupabaseClient
+export const getSupabaseClient = async () => supabase
 
 export async function getSiteContent() {
   try {
