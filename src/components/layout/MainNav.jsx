@@ -45,11 +45,12 @@ const MainNav = ({ variant = 'public' }) => {
     return (
       <nav className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
         <div className="p-6">
-          <Link to="/" className="flex items-center space-x-2">
-            <SafeIcon icon={FiBox} className="w-6 h-6 text-picton-blue" />
-            <span className="text-lg font-bold text-polynesian-blue dark:text-white">
-              Prosperity Leaders™
-            </span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
+              alt="Prosperity Leaders"
+              className="h-8 w-auto"
+            />
           </Link>
         </div>
         <div className="px-4 py-2">
@@ -97,10 +98,12 @@ const MainNav = ({ variant = 'public' }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link to="/" className="flex items-center">
-                <h1 className="text-2xl font-bold text-white">
-                  Prosperity Leaders™
-                </h1>
+              <Link to="/" className="flex items-center space-x-2">
+                <img
+                  src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
+                  alt="Prosperity Leaders"
+                  className="h-8 w-auto"
+                />
                 <span className="ml-2 text-sm text-white/70">Platform</span>
               </Link>
             </div>
@@ -171,7 +174,11 @@ const MainNav = ({ variant = 'public' }) => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-white font-bold text-xl">Prosperity Leaders™</span>
+            <img
+              src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
+              alt="Prosperity Leaders"
+              className="h-8 w-auto"
+            />
           </Link>
           
           {/* Desktop Navigation */}

@@ -71,7 +71,7 @@ const Home = () => {
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative bg-gradient-to-br from-primary-bg to-polynesian-blue text-white pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden"
+        className="relative bg-gradient-to-br from-picton-blue to-polynesian-blue text-white pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden"
       >
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -105,10 +105,10 @@ const Home = () => {
             animate={heroInView ? "visible" : "hidden"}
             variants={fadeIn}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
               {content.hero?.headline || 'Welcome to Prosperity Leaders™'}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow">
               {content.hero?.subheadline || 'Empowering families and professionals to grow, protect, and multiply their wealth — with clarity and purpose.'}
             </p>
             
