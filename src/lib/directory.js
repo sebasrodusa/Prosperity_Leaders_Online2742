@@ -1,4 +1,4 @@
-import supabase from './supabase';
+import { getSupabaseClient } from '@/lib/supabase.js';
 
 // Get all professionals with pagination and filtering
 export const searchProfessionals = async (
@@ -15,6 +15,7 @@ export const searchProfessionals = async (
       hasCalendly
     } = filters;
 
+    const supabase = await getSupabaseClient();
     const { data, error } = await supabase
       .rpc('search_professionals', {
         search_query: searchQuery,
@@ -52,6 +53,7 @@ export const searchProfessionals = async (
 // Get all available filter options
 export const getFilterOptions = async () => {
   try {
+    const supabase = await getSupabaseClient();
     const { data, error } = await supabase
       .rpc('get_directory_filter_options');
     
@@ -72,6 +74,7 @@ export const getFilterOptions = async () => {
 // Get professional by username
 export const getProfessionalByUsername = async (username) => {
   try {
+    const supabase = await getSupabaseClient();
     const { data, error } = await supabase
       .from('users_directory_12345')
       .select('*')
