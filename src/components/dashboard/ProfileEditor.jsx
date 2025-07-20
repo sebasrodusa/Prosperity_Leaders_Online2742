@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
+import { updateUser } from '../../lib/supabase'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
@@ -11,7 +12,7 @@ import SafeIcon from '../../common/SafeIcon'
 const { FiSave, FiUser, FiMail, FiPhone, FiInstagram, FiFacebook, FiLinkedin, FiYoutube } = FiIcons
 
 const ProfileEditor = () => {
-  const { user, updateUser } = useAuth()
+  const { user, updateUser: updateUserContext } = useAuth()
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
     username: user?.username || '',
@@ -52,15 +53,10 @@ const ProfileEditor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Update user context
-      const updatedUser = { ...user, ...formData }
-      updateUser(updatedUser)
-      
+      const updatedRecord = await updateUser(user.id, formData)
+      updateUserContext(updatedRecord)
       alert('Profile updated successfully!')
     } catch (error) {
       console.error('Error updating profile:', error)
