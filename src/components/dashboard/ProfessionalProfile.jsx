@@ -256,9 +256,9 @@ const ProfessionalProfile = () => {
 
                 {/* Ratings */}
                 <div className="flex items-center justify-center space-x-2 mb-4">
-                  <ReviewsStats 
-                    averageRating={ratingData.averageRating || profile.ratings.average} 
-                    reviewCount={ratingData.reviewCount || profile.ratings.count} 
+                  <ReviewsStats
+                    averageRating={ratingData.averageRating ?? profile.ratings.average ?? 0}
+                    reviewCount={ratingData.reviewCount ?? profile.ratings.count ?? 0}
                   />
                 </div>
 
@@ -355,7 +355,7 @@ const ProfessionalProfile = () => {
                               key={i}
                               icon={FiStar}
                               className={`w-4 h-4 ${
-                                i < Math.floor(ratingData.averageRating || profile.ratings.average)
+                                i < Math.floor(ratingData.averageRating ?? profile.ratings.average ?? 0)
                                   ? 'text-yellow-400 fill-yellow-400'
                                   : 'text-gray-300'
                               }`}
@@ -363,10 +363,10 @@ const ProfessionalProfile = () => {
                           ))}
                         </div>
                         <span className="text-sm font-medium text-polynesian-blue">
-                          {(ratingData.averageRating || profile.ratings.average).toFixed(1)}
+                          {(ratingData.averageRating ?? profile.ratings.average ?? 0).toFixed(1)}
                         </span>
                         <span className="text-sm text-polynesian-blue/60">
-                          ({ratingData.reviewCount || profile.ratings.count} reviews)
+                          ({ratingData.reviewCount ?? profile.ratings.count ?? 0} reviews)
                         </span>
                       </div>
                     </div>
