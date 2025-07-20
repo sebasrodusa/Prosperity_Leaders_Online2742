@@ -12,9 +12,6 @@ export default defineConfig({
   },
    build: {
     outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      external: ['@clerk/clerk-js']
-    }
+    sourcemap: true
   },
 });
