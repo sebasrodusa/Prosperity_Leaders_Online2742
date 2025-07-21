@@ -18,6 +18,7 @@ import BlogList from './components/blog/BlogList'
 import BlogPost from './components/blog/BlogPost'
 import ProfessionalDirectory from './components/professional-directory/ProfessionalDirectory'
 import Home from './components/pages/Home'
+import JennyBooking from './components/pages/JennyBooking'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
 import Login from './components/pages/Login'
@@ -50,6 +51,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/jenny" element={<JennyBooking />} />
       
       {/* Public Routes */}
       <Route path="/blog" element={<BlogList />} />
