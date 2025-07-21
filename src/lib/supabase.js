@@ -23,7 +23,19 @@ if (
 // Singleton Supabase client shared across the app
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-export const getSupabaseClient = async () => supabase
+export const useSupabaseClient = async () => {
+  const token = await getToken({ template: 'supabase' })
+  if (token) {
+    try {
+      supabase.auth.setAuth(token)
+    } catch (err) {
+      console.error('Error setting Supabase auth token:', err)
+    }
+  }
+  return supabase
+}
+
+export const getSupabaseClient = useSupabaseClient
 
 export async function getSiteContent() {
   try {
