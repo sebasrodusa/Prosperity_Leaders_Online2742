@@ -22,15 +22,6 @@ if (
 // Singleton Supabase client shared across the app
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// Helper to set the JWT from Clerk once the user is signed in
-export const setSupabaseAuth = async (token) => {
-  if (token) {
-    await supabase.auth.setSession({ access_token: token, refresh_token: '' })
-  } else {
-    await supabase.auth.signOut()
-  }
-}
-
 export const getSupabaseClient = async () => supabase
 
 export async function getSiteContent() {

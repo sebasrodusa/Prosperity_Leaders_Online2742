@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth as useAuthContext } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
-import { useAuth as useClerkAuth } from '@clerk/clerk-react'
-import { setSupabaseAuth } from './lib/supabase.js'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
@@ -85,21 +83,6 @@ const AppRoutes = () => {
 }
 
 function App() {
-  const { isSignedIn, getToken } = useClerkAuth()
-
-  useEffect(() => {
-    const applyToken = async () => {
-      if (isSignedIn) {
-        const token = await getToken({ template: 'supabase' })
-        if (token) {
-          await setSupabaseAuth(token)
-        }
-      } else {
-        await setSupabaseAuth(null)
-      }
-    }
-    applyToken()
-  }, [isSignedIn, getToken])
 
   return (
     <AuthProvider>
