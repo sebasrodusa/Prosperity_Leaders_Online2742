@@ -55,6 +55,9 @@ file before starting the app.
    ```bash
    npm install @clerk/clerk-react@latest
    ```
+5. Enable the **Supabase** integration in the Clerk dashboard. This automatically
+   adds the required `role: "authenticated"` claim to session tokens so the app
+   can communicate with Supabase without manual JWT handling.
 
 ## Publit.io Setup
 
