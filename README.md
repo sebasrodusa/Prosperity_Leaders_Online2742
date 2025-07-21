@@ -51,9 +51,11 @@ file before starting the app.
 1. Create an account at [Clerk](https://clerk.com/) and create a new application.
 2. Under API Keys, copy the **Publishable Key** and set `VITE_CLERK_PUBLISHABLE_KEY` in your `.env` file.
 3. Configure allowed redirect URLs in the Clerk dashboard to include your local dev URL (e.g., `http://localhost:5173`).
-4. Install the Clerk React SDK used for authentication:
+4. Install the Clerk React SDK used for authentication and the core Clerk JS
+   package. The Supabase client uses `getToken({ template: 'supabase' })`, so
+   `@clerk/clerk-js` must also be installed:
    ```bash
-   npm install @clerk/clerk-react@latest
+   npm install @clerk/clerk-react@latest @clerk/clerk-js@latest
    ```
 5. Enable the **Supabase** integration in the Clerk dashboard. This automatically
    adds the required `role: "authenticated"` claim to session tokens so the app
