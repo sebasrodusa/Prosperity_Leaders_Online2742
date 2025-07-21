@@ -22,6 +22,7 @@ import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
 import Login from './components/pages/Login'
 import Signup from './components/pages/Signup'
+import SebastianBooking from './components/pages/SebastianBooking'
 import './App.css'
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/blog" element={<BlogList />} />
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/find-a-professional" element={<ProfessionalDirectory />} />
+      <Route path="/sebastian" element={<SebastianBooking />} />
       
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
