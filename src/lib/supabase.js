@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
+import { getToken } from '@clerk/clerk-react'
+import { useMemo } from 'react'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -20,7 +22,16 @@ if (
 }
 
 // Singleton Supabase client shared across the app
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    getSession: async () => {
+      const token = await getToken({ template: 'supabase' })
+      return { data: { session: token ? { access_token: token } : null } }
+    }
+  }
+})
+
+export const useSupabaseClient = () => useMemo(() => supabase, [])
 
 export const getSupabaseClient = async () => supabase
 

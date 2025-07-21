@@ -58,6 +58,8 @@ file before starting the app.
 5. Enable the **Supabase** integration in the Clerk dashboard. This automatically
    adds the required `role: "authenticated"` claim to session tokens so the app
    can communicate with Supabase without manual JWT handling.
+6. The Supabase client fetches your session token via `getToken({ template: 'supabase' })`.
+   Ensure this token template is enabled in Clerk so API requests are authorized.
 
 ## Publit.io Setup
 
