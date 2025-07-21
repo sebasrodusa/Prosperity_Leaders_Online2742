@@ -6,9 +6,14 @@ import './index.css'
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
+const navigate = (to) => {
+  window.history.pushState({}, '', to)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ClerkProvider publishableKey={publishableKey} navigate={(to) => window.location.hash = to}>
+    <ClerkProvider publishableKey={publishableKey} navigate={navigate}>
       <App />
     </ClerkProvider>
   </StrictMode>

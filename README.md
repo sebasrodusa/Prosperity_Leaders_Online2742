@@ -67,3 +67,13 @@ file before starting the app.
 2. Copy the **API Key** and **API Secret** into `VITE_PUBLITIO_PUBLIC_KEY` and `VITE_PUBLITIO_SECRET_KEY`.
 3. Optional: configure default folders or permissions from the Publit.io dashboard according to your needs.
 
+## Deployment
+
+When deploying the app, make sure your hosting provider serves `index.html` for any unknown routes so the React Router `BrowserRouter` can handle client-side navigation. For static hosts like Netlify, add a file named `_redirects` to the `public/` directory containing:
+
+```
+/* /index.html 200
+```
+
+This rule redirects all requests to `index.html` allowing the router to resolve the path on the client.
+

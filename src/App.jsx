@@ -1,5 +1,5 @@
 import React from 'react'
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth as useAuthContext } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import DashboardLayout from './components/dashboard/DashboardLayout'
