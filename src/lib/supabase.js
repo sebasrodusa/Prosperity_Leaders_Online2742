@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { Clerk } from '@clerk/clerk-js'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -23,24 +22,8 @@ if (
 // Singleton Supabase client shared across the app
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-export const useSupabaseClient = async () => {
-  let token
-  try {
-    token = await Clerk.session?.getToken({ template: 'supabase' })
-  } catch (err) {
-    console.error('Error fetching Clerk token:', err)
-  }
-  if (token) {
-    try {
-      supabase.auth.setAuth(token)
-    } catch (err) {
-      console.error('Error setting Supabase auth token:', err)
-    }
-  }
-  return supabase
-}
-
-export const getSupabaseClient = useSupabaseClient
+export const getSupabaseClient = () => supabase
+export const useSupabaseClient = getSupabaseClient
 
 export async function getSiteContent() {
   try {

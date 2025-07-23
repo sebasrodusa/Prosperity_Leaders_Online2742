@@ -239,12 +239,12 @@ const MainNav = ({ variant = 'public' }) => {
                 )}
               </div>
             ) : (
-              <a
-                href="https://accounts.prosperityleaders.net/sign-in"
+              <Link
+                to="/login"
                 className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors"
               >
                 Login
-              </a>
+              </Link>
             )}
           </div>
           
@@ -352,13 +352,13 @@ const MainNav = ({ variant = 'public' }) => {
                     </button>
                   </>
                 ) : (
-                  <a
-                    href="https://accounts.prosperityleaders.net/sign-in"
+                  <Link
+                    to="/login"
                     className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors inline-block"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Login
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>

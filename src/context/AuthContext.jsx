@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { useUser, useAuth as useClerkAuth } from '@clerk/clerk-react'
+import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext()
 
@@ -12,32 +12,48 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
-  const { user: clerkUser, isLoaded } = useUser()
-  const { signOut } = useClerkAuth()
   const [userData, setUserData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isLoaded) {
-      const role = clerkUser?.publicMetadata?.role || 'visitor'
-      setUserData(clerkUser ? { ...clerkUser, role } : null)
+    const init = async () => {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+      setUserData(user)
+      setLoading(false)
     }
-  }, [clerkUser, isLoaded])
+    init()
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserData(session?.user ?? null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setUserData(null)
+  }
 
   const updateUser = (updates) => {
-    setUserData(prev => (prev ? { ...prev, ...updates } : prev))
+    setUserData((prev) => (prev ? { ...prev, ...updates } : prev))
   }
 
   const value = {
     user: userData,
-    loading: !isLoaded,
-    logout: signOut,
+    loading,
+    logout,
     updateUser,
-    isAuthenticated: !!clerkUser
+    isAuthenticated: !!userData
   }
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   )
 }

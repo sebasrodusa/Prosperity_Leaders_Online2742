@@ -1,10 +1,11 @@
 import React from 'react'
-import { SignUp } from '@clerk/clerk-react'
+import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { supabase } from '../../lib/supabase'
 
 const Signup = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-anti-flash-white to-white">
-      <SignUp routing="hash" path="/signup" signInUrl="/login" />
+      <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={[]} view="sign_up" />
     </div>
   )
 }

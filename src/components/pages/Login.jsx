@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { supabase } from '../../lib/supabase'
 
-const Login = () => {
-  useEffect(() => {
-    window.location.href =
-      'https://accounts.prosperityleaders.net/sign-in'
-  }, [])
-
-  return null
-}
+const Login = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-anti-flash-white to-white">
+    <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={[]} view="sign_in" />
+  </div>
+)
 
 export default Login

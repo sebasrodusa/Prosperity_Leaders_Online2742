@@ -1,6 +1,6 @@
 # Prosperity Leaders Platform
 
-Prosperity Leaders Platform is a React-based web application that helps families and professionals grow and manage their wealth. The project uses Vite for development tooling and integrates Supabase for the database, Clerk for authentication (handled entirely with the `@clerk/clerk-react` package), and Publit.io for file hosting.
+Prosperity Leaders Platform is a React-based web application that helps families and professionals grow and manage their wealth. The project uses Vite for development tooling and integrates Supabase for both the database and authentication. Publit.io is used for file hosting.
 
 ## Setup
 
@@ -31,7 +31,6 @@ Create a `.env` file in the project root (or copy `.env.example`) and provide va
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
-- `VITE_CLERK_PUBLISHABLE_KEY`
 - `VITE_PUBLITIO_PUBLIC_KEY`
 - `VITE_PUBLITIO_SECRET_KEY`
 
@@ -46,20 +45,6 @@ file before starting the app.
 3. Create the tables and functions required by the application (see `src/lib/supabase.js` for example RPC calls).
 4. A working Supabase project is required for profile changes to be saved from the dashboard.
 
-## Clerk Setup
-
-1. Create an account at [Clerk](https://clerk.com/) and create a new application.
-2. Under API Keys, copy the **Publishable Key** and set `VITE_CLERK_PUBLISHABLE_KEY` in your `.env` file.
-3. Configure allowed redirect URLs in the Clerk dashboard to include your local dev URL (e.g., `http://localhost:5173`).
-4. Install the Clerk React SDK used for authentication and the core Clerk JS
-   package. The Supabase client uses `getToken({ template: 'supabase' })`, so
-   `@clerk/clerk-js` must also be installed:
-   ```bash
-   npm install @clerk/clerk-react@latest @clerk/clerk-js@latest
-   ```
-5. Enable the **Supabase** integration in the Clerk dashboard. This automatically
-   adds the required `role: "authenticated"` claim to session tokens so the app
-   can communicate with Supabase without manual JWT handling.
 
 ## Publit.io Setup
 
