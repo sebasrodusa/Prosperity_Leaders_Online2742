@@ -1,5 +1,6 @@
 import React from 'react'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '../../lib/supabase'
 
 const Login = () => (
