@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useParams, Link } from 'react-router-dom'
-import { getUserByUsername } from '../../lib/supabase'
+import { getProfessionalByUsername } from '../../lib/directory'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 import ReviewsSection from '../reviews/ReviewsSection'
@@ -34,8 +34,8 @@ const ProfilePage = () => {
     const loadProfile = async () => {
       try {
         setIsLoading(true)
-        // Fetch user by username from Supabase
-        const user = await getUserByUsername(username)
+        // Fetch professional by username from Supabase
+        const user = await getProfessionalByUsername(username)
 
         if (user) {
           setProfile({
