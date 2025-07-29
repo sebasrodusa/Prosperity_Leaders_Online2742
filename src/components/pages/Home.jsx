@@ -106,7 +106,7 @@ const Home = () => {
             variants={fadeIn}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">
-              {content.hero?.headline || 'Welcome to Prosperity Leaders™'}
+              {content.hero?.headline || 'Welcome to Prosperity Online'}
             </h1>
             <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow">
               {content.hero?.subheadline || 'Empowering families and professionals to grow, protect, and multiply their wealth — with clarity and purpose.'}
@@ -189,7 +189,7 @@ const Home = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="md:col-span-2">
-              <h3 className="text-2xl font-bold mb-4">Prosperity Leaders™</h3>
+              <h3 className="text-2xl font-bold mb-4">Prosperity Online</h3>
               <p className="text-gray-300 mb-4 text-lg italic">
                 {content.footer?.tagline || 'Faith. Family. Finance.'}
               </p>
@@ -233,7 +233,7 @@ const Home = () => {
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-500 text-sm mb-4 md:mb-0">
-              {content.footer?.disclaimer || '© 2023 Prosperity Leaders™. All rights reserved.'}
+              {content.footer?.disclaimer || '© 2023 Prosperity Online. All rights reserved.'}
             </div>
             <div className="flex space-x-4 text-sm">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">English</a>

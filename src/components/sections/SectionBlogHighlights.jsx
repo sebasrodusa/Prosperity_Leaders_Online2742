@@ -134,7 +134,7 @@ const SectionBlogHighlights = () => {
                       <div className="flex items-center space-x-2 text-sm text-polynesian-blue/60 mb-3">
                         <div className="flex items-center space-x-1">
                           <SafeIcon icon={FiUser} className="w-4 h-4" />
-                          <span>{post.author_name || 'Prosperity Leaders'}</span>
+                          <span>{post.author_name || 'Prosperity Online'}</span>
                         </div>
                         <span>•</span>
                         <div className="flex items-center space-x-1">

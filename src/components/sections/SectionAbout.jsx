@@ -44,7 +44,7 @@ const SectionAbout = ({ content }) => {
             
             <img
               src={content.image_url || "https://media.publit.io/file/ProsperityWebApp/SebasJenny.jpg"}
-              alt="About Prosperity Leaders"
+              alt="About Prosperity Online"
               className="rounded-lg shadow-xl w-full h-auto object-cover z-10 relative"
             />
           </div>
@@ -58,7 +58,7 @@ const SectionAbout = ({ content }) => {
             <div className="h-1 w-24 bg-picton-blue mb-8"></div>
             
             <div className="text-polynesian-blue/80 prose prose-lg mb-8">
-              {renderFormattedContent(content.body || 'Prosperity Leaders™ is a platform dedicated to helping individuals and families achieve financial independence through personalized strategies and expert guidance. Our network of professionals is committed to empowering clients with the knowledge and tools needed to build lasting wealth and security.')}
+              {renderFormattedContent(content.body || 'Prosperity Online is a platform dedicated to helping individuals and families achieve financial independence through personalized strategies and expert guidance. Our network of professionals is committed to empowering clients with the knowledge and tools needed to build lasting wealth and security.')}
             </div>
             
             {content.cta_url && (

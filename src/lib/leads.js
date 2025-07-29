@@ -17,7 +17,7 @@ export const getLeads = async (userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .select('*')
       .order('created_at', { ascending: false })
     
@@ -34,7 +34,7 @@ export const getLead = async (leadId, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .select('*')
       .eq('id', leadId)
       .single()
@@ -52,7 +52,7 @@ export const createLead = async (leadData) => {
     await setUserContext(leadData.user_id)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .insert([{
         ...leadData,
         created_at: new Date().toISOString(),
@@ -74,7 +74,7 @@ export const updateLead = async (leadId, updates, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .update({
         ...updates,
         updated_at: new Date().toISOString()
@@ -96,7 +96,7 @@ export const deleteLead = async (leadId, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .delete()
       .eq('id', leadId)
     
@@ -114,7 +114,7 @@ export const getLeadStats = async (userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('leads_12345')
+      .from('leads_po')
       .select('status')
     
     if (error) throw error
@@ -140,7 +140,7 @@ export const getLeadNotes = async (leadId, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('lead_notes_12345')
+      .from('lead_notes_po')
       .select('*')
       .eq('lead_id', leadId)
       .order('created_at', { ascending: false })
@@ -158,7 +158,7 @@ export const createLeadNote = async (leadId, content, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('lead_notes_12345')
+      .from('lead_notes_po')
       .insert([{
         lead_id: leadId,
         user_id: userId,
@@ -182,7 +182,7 @@ export const getLeadTasks = async (leadId, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('lead_tasks_12345')
+      .from('lead_tasks_po')
       .select('*')
       .eq('lead_id', leadId)
       .order('due_date', { ascending: true, nullsLast: true })
@@ -200,7 +200,7 @@ export const createLeadTask = async (leadId, taskData, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('lead_tasks_12345')
+      .from('lead_tasks_po')
       .insert([{
         lead_id: leadId,
         user_id: userId,
@@ -224,7 +224,7 @@ export const updateLeadTask = async (taskId, updates, userId) => {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('lead_tasks_12345')
+      .from('lead_tasks_po')
       .update({
         ...updates,
         updated_at: new Date().toISOString()

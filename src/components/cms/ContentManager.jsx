@@ -31,7 +31,7 @@ const ContentManager = () => {
     try {
       const supabase = await getSupabaseClient()
       const { data, error } = await supabase
-        .from('site_content_12345')
+        .from('site_content_po')
         .select('*')
         .order('section', { ascending: true })
 
@@ -100,7 +100,7 @@ const ContentManager = () => {
       }
       const supabase = await getSupabaseClient()
       const { error } = await supabase
-        .from('site_content_12345')
+        .from('site_content_po')
         .upsert(updates, { onConflict: ['section', 'key'] })
 
       if (error) throw error
@@ -126,7 +126,7 @@ const ContentManager = () => {
       // Add to database
       const supabase = await getSupabaseClient();
       const { error } = await supabase
-        .from('site_content_12345')
+        .from('site_content_po')
         .insert({ section: selectedSection.value, key, value: '' });
 
       if (error && error.code === '23505') {

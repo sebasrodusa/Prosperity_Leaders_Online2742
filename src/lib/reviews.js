@@ -5,7 +5,7 @@ export const getApprovedReviews = async (professionalUsername) => {
   try {
     const supabase = await getSupabaseClient()
     const { data: reviews, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .select('*')
       .eq('professional_username', professionalUsername)
       .eq('status', 'approved')
@@ -41,7 +41,7 @@ export const getApprovedTestimonials = async (limit = 5) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .select('*')
       .eq('status', 'approved')
       .eq('featured', true)
@@ -88,7 +88,7 @@ export const submitReview = async (reviewData) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .insert([{
         professional_id: reviewData.professionalId,
         professional_username: reviewData.professionalUsername,
@@ -117,7 +117,7 @@ export const getAllReviews = async (statusFilter = 'all') => {
   try {
     const supabase = await getSupabaseClient()
     let query = supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .select('*')
       .order('submitted_at', { ascending: false })
     
@@ -141,7 +141,7 @@ export const approveReview = async (reviewId) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .update({ 
         status: 'approved', 
         updated_at: new Date().toISOString() 
@@ -162,7 +162,7 @@ export const rejectReview = async (reviewId) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .update({ 
         status: 'rejected', 
         updated_at: new Date().toISOString() 
@@ -183,7 +183,7 @@ export const deleteReview = async (reviewId) => {
   try {
     const supabase = await getSupabaseClient()
     const { error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .delete()
       .eq('id', reviewId)
     
@@ -201,7 +201,7 @@ export const toggleFeatureReview = async (reviewId, featured) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('reviews_12345')
+      .from('reviews_po')
       .update({ 
         featured,
         updated_at: new Date().toISOString() 

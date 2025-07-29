@@ -76,7 +76,7 @@ export const getProfessionalByUsername = async (username) => {
   try {
     const supabase = await getSupabaseClient();
     const { data, error } = await supabase
-      .from('users_directory_12345')
+      .from('users_directory_po')
       .select('*')
       .eq('username', username)
       .single();

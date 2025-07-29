@@ -122,7 +122,7 @@ const LandingPage = () => {
                 {user.full_name}
               </span>
               <div className="text-sm text-white/70">
-                Prosperity Leaders™
+                Prosperity Online
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ const LandingPage = () => {
           </div>
           
           <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm text-white/60">
-            <p>© 2024 Prosperity Leaders™. All rights reserved.</p>
+            <p>© 2024 Prosperity Online. All rights reserved.</p>
           </div>
         </div>
       </footer>
