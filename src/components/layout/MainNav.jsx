@@ -239,12 +239,20 @@ const MainNav = ({ variant = 'public' }) => {
                 )}
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors"
-              >
-                Login
-              </Link>
+              <>
+                <Link
+                  to="/signup"
+                  className="text-white hover:text-[#3AA0FF] transition-colors"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  to="/login"
+                  className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors"
+                >
+                  Login
+                </Link>
+              </>
             )}
           </div>
           
@@ -352,13 +360,22 @@ const MainNav = ({ variant = 'public' }) => {
                     </button>
                   </>
                 ) : (
-                  <Link
-                    to="/login"
-                    className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors inline-block"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
+                  <>
+                    <Link
+                      to="/signup"
+                      className="text-white hover:text-[#3AA0FF] transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="bg-[#3AA0FF] hover:bg-[#3AA0FF]/90 text-white py-2 px-4 rounded-md transition-colors inline-block"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                  </>
                 )}
               </div>
             </div>
