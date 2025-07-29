@@ -142,6 +142,38 @@ export const getUserByUsername = async (username) => {
   return data
 }
 
+export const createDirectoryUser = async (data) => {
+  const supabase = await getSupabaseClient()
+  const { data: result, error } = await supabase
+    .from('users_directory_po')
+    .insert([data])
+    .select()
+
+  if (error) throw error
+  return result[0]
+}
+
+export const checkUsernameAvailable = async (username) => {
+  const supabase = await getSupabaseClient()
+
+  const { data: pfUsers, error: pfError } = await supabase
+    .from('users_pf')
+    .select('id')
+    .eq('username', username)
+
+  if (pfError) throw pfError
+  if (pfUsers && pfUsers.length > 0) return false
+
+  const { data: dirUsers, error: dirError } = await supabase
+    .from('users_directory_po')
+    .select('id')
+    .eq('username', username)
+
+  if (dirError) throw dirError
+
+  return !dirUsers || dirUsers.length === 0
+}
+
 // Pages operations
 export const createPage = async (pageData) => {
   const supabase = await getSupabaseClient()
