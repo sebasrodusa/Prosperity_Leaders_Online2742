@@ -25,7 +25,7 @@ const PagesManager = () => {
   const [creating, setCreating] = useState(false)
 
   useEffect(() => {
-    if (user) {
+    if (user && user.id) {
       const loadPages = async () => {
         try {
           const data = await getUserPages(user.id)
@@ -45,6 +45,8 @@ const PagesManager = () => {
       }
 
       loadPages()
+    } else if (!user || !user.id) {
+      console.warn('user or user.id missing, skipping getUserPages')
     }
   }, [user])
 
