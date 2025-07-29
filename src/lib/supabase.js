@@ -146,7 +146,7 @@ export const getUserByUsername = async (username) => {
 export const createPage = async (pageData) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('pages')
+    .from('pages_po')
     .insert([pageData])
     .select()
 
@@ -157,7 +157,7 @@ export const createPage = async (pageData) => {
 export const getUserPages = async (userId) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('pages')
+    .from('pages_po')
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
@@ -169,7 +169,7 @@ export const getUserPages = async (userId) => {
 export const getPageByCustomUsername = async (customUsername) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('pages')
+    .from('pages_po')
     .select(
       `*,
       users (*)
@@ -185,7 +185,7 @@ export const getPageByCustomUsername = async (customUsername) => {
 export const deletePage = async (pageId) => {
   const supabase = await getSupabaseClient()
   const { error } = await supabase
-    .from('pages')
+    .from('pages_po')
     .delete()
     .eq('id', pageId)
 
