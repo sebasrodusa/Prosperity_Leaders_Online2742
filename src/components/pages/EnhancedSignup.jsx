@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { supabase, createUser } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
 import Button from '../ui/Button'
@@ -54,31 +54,30 @@ const EnhancedSignup = () => {
   const onSubmit = async (data) => {
     setSubmitting(true)
     try {
-      const { data: signUpData, error } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-        options: { data: { role: role } }
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            role,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            phone: data.phone,
+            agent_id: data.agentCode,
+            team: data.team,
+            username: role === 'advisor' ? data.username : null,
+            title: role === 'advisor' ? data.title : null,
+            city: role === 'advisor' ? data.city : null,
+            state: role === 'advisor' ? data.state : null,
+            languages: role === 'advisor' ? languages.map(l => l.value) : null,
+            services_offered: role === 'advisor' ? servicesOffered.map(s => s.value) : null
+          }
+        }
       })
-      if (error) throw error
-      const user = signUpData.user
-      if (user) {
-        await createUser({
-          id: user.id,
-          role,
-          first_name: data.firstName,
-          last_name: data.lastName,
-          full_name: `${data.firstName} ${data.lastName}`,
-          email: data.email,
-          phone: data.phone || null,
-          username: role === 'advisor' ? data.username : null,
-          title: role === 'advisor' ? data.title : null,
-          city: role === 'advisor' ? data.city : null,
-          state: role === 'advisor' ? data.state : null,
-          agent_id: role === 'advisor' ? data.agentCode : null,
-          team: role === 'advisor' ? data.team : null,
-          languages: role === 'advisor' ? languages.map(l => l.value) : null,
-          services_offered: role === 'advisor' ? servicesOffered.map(s => s.value) : null
-        })
+      if (signUpError) throw signUpError
+      if (signUpData.user) {
+        // Profile will be created by AuthProvider on session establishment
       }
       alert('Signup successful! Please check your email to confirm your account.')
       navigate('/login')
