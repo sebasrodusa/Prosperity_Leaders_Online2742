@@ -31,7 +31,16 @@ const PagesManager = () => {
           const data = await getUserPages(user.id)
           setPages(data)
         } catch (error) {
-          console.error('Error loading pages:', error)
+          if (!error.status) {
+            console.error('Network error loading pages:', error.message)
+          } else {
+            console.error('Error loading pages:', {
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              code: error.code
+            })
+          }
         }
       }
 
