@@ -22,7 +22,7 @@ import JennyBooking from './components/pages/JennyBooking'
 import LandingPage from './components/pages/LandingPage'
 import ProfilePage from './components/pages/ProfilePage'
 import Login from './components/pages/Login'
-import Signup from './components/pages/Signup'
+import EnhancedSignup from './components/pages/EnhancedSignup'
 import SebastianBooking from './components/pages/SebastianBooking'
 import ExamfxPreLicense from './components/pages/ExamfxPreLicense'
 import './App.css'
@@ -51,7 +51,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/signup" element={<EnhancedSignup />} />
       <Route path="/jenny" element={<JennyBooking />} />
       
       {/* Public Routes */}
