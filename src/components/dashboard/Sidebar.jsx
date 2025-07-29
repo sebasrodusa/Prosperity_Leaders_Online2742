@@ -33,7 +33,7 @@ const Sidebar = () => {
         <Link to="/" className="flex items-center space-x-2">
           <SafeIcon icon={FiBox} className="w-6 h-6 text-picton-blue" />
           <span className="text-lg font-bold text-polynesian-blue">
-            Prosperity Leaders™
+            Prosperity Online
           </span>
         </Link>
       </div>

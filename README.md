@@ -1,6 +1,6 @@
-# Prosperity Leaders Platform
+# Prosperity Online Platform
 
-ProsperityOnline is a React-based web application for managing the Prosperity Leaders public website and attracting new leads. The back office equips agents with tools to manage leads, maintain professional profiles, embed booking calendars, deploy landing pages to recruit agents and clients, and track contacts through a simple CRM. Supabase powers the backend, database, and authentication, and Publit.io is used for file hosting. The project relies on Vite for development tooling.
+Prosperity Online is a React-based web application for managing the Prosperity Online public website and attracting new leads. The back office equips agents with tools to manage leads, maintain professional profiles, embed booking calendars, deploy landing pages to recruit agents and clients, and track contacts through a simple CRM. Supabase powers the backend, database, and authentication, and Publit.io is used for file hosting. The project relies on Vite for development tooling.
 
 ## Setup
 

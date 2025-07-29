@@ -99,7 +99,7 @@ const ProfilePage = () => {
               <div className="w-3 h-3 rounded-full bg-picton-blue" />
               <span className="text-sm font-medium text-white/90">Professional Profile</span>
             </div>
-            <div className="text-sm text-white/70">Prosperity Leaders™</div>
+            <div className="text-sm text-white/70">Prosperity Online</div>
           </div>
         </div>
       </motion.header>

@@ -231,7 +231,7 @@ export const LANDING_PAGE_TEMPLATES = {
       
       intro: {
         title: "Two Paths to Prosperity",
-        content: "At Prosperity Leaders™, we believe everyone deserves the opportunity to achieve financial freedom. Whether you're seeking professional financial guidance or looking to start a career helping others with their finances, we have the right path for you."
+        content: "At Prosperity Online, we believe everyone deserves the opportunity to achieve financial freedom. Whether you're seeking professional financial guidance or looking to start a career helping others with their finances, we have the right path for you."
       },
       
       splitSection: {

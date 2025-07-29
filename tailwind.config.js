@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Prosperity Leaders™ Brand Colors
+        // Prosperity Online Brand Colors
         'picton-blue': '#3AA0FF',
         'polynesian-blue': '#1C1F2A',
         'anti-flash-white': '#F5F7FA',

@@ -48,7 +48,7 @@ const MainNav = ({ variant = 'public' }) => {
           <Link to="/" className="flex items-center">
             <img
               src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
-              alt="Prosperity Leaders"
+              alt="Prosperity Online"
               className="h-8 w-auto"
             />
           </Link>
@@ -101,7 +101,7 @@ const MainNav = ({ variant = 'public' }) => {
               <Link to="/" className="flex items-center space-x-2">
                 <img
                   src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
-                  alt="Prosperity Leaders"
+                  alt="Prosperity Online"
                   className="h-8 w-auto"
                 />
                 <span className="ml-2 text-sm text-white/70">Platform</span>
@@ -176,7 +176,7 @@ const MainNav = ({ variant = 'public' }) => {
           <Link to="/" className="flex items-center">
             <img
               src="https://media.publit.io/file/ProsperityWebApp/Prosperity-Elephant-WIDE-BLUEPNG.png"
-              alt="Prosperity Leaders"
+              alt="Prosperity Online"
               className="h-8 w-auto"
             />
           </Link>

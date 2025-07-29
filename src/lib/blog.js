@@ -80,7 +80,7 @@ export const getPostBySlug = async (slug) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
@@ -100,7 +100,7 @@ export const getAllPosts = async (userId, userRole = 'admin', statusFilter = 'al
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     let query = supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .select('*')
       .order('updated_at', { ascending: false })
     
@@ -124,7 +124,7 @@ export const getPostsByAuthor = async (authorId, userId, userRole = 'professiona
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .select('*')
       .eq('author_id', authorId)
       .order('updated_at', { ascending: false })
@@ -148,7 +148,7 @@ export const createPost = async (postData, userId, userRole = 'professional') =>
     const excerpt = !postData.excerpt ? generateExcerpt(postData.content) : postData.excerpt
     
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .insert([{
         ...postData,
         slug,
@@ -193,7 +193,7 @@ export const updatePost = async (postId, updates, userId, userRole = 'profession
     updateData.updated_at = new Date().toISOString()
     
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .update(updateData)
       .eq('id', postId)
       .select()
@@ -213,7 +213,7 @@ export const deletePost = async (postId, userId, userRole = 'admin') => {
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .delete()
       .eq('id', postId)
     
@@ -231,7 +231,7 @@ export const approvePost = async (postId, userId, userRole = 'admin') => {
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .update({
         status: 'approved',
         updated_at: new Date().toISOString()
@@ -253,7 +253,7 @@ export const rejectPost = async (postId, userId, userRole = 'admin') => {
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .update({
         status: 'rejected',
         updated_at: new Date().toISOString()
@@ -275,7 +275,7 @@ export const publishPost = async (postId, userId, userRole = 'admin') => {
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .update({
         status: 'published',
         published_at: new Date().toISOString(),
@@ -298,7 +298,7 @@ export const unpublishPost = async (postId, userId, userRole = 'admin') => {
     await setUserContext(userId, userRole)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .update({
         status: 'approved',
         published_at: null,
@@ -321,7 +321,7 @@ export const getCategories = async () => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_categories_12345')
+      .from('blog_categories_po')
       .select('*')
       .order('name')
     
@@ -341,7 +341,7 @@ export const createCategory = async (categoryData, userId, userRole = 'admin') =
     const slug = generateSlug(categoryData.name)
     
     const { data, error } = await supabase
-      .from('blog_categories_12345')
+      .from('blog_categories_po')
       .insert([{
         ...categoryData,
         slug,
@@ -363,7 +363,7 @@ export const getLatestPosts = async (limit = 5) => {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .select('id, title, slug, author_name, published_at')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
@@ -383,7 +383,7 @@ export const searchPosts = async (query, page = 1, limit = 10) => {
     const offset = (page - 1) * limit
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('blog_posts_12345')
+      .from('blog_posts_po')
       .select('*')
       .eq('status', 'published')
       .or(`title.ilike.%${query}%, content.ilike.%${query}%`)

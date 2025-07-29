@@ -1,7 +1,7 @@
 -- Resources Center Database Schema with Publit.io Integration
 
 -- Main resources table
-CREATE TABLE IF NOT EXISTS resources_12345 (
+CREATE TABLE IF NOT EXISTS resources_po (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
@@ -58,23 +58,23 @@ CREATE TABLE IF NOT EXISTS resources_12345 (
 );
 
 -- Resource analytics table
-CREATE TABLE IF NOT EXISTS resource_analytics_12345 (
+CREATE TABLE IF NOT EXISTS resource_analytics_po (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  resource_id UUID REFERENCES resources_12345(id) ON DELETE CASCADE,
+  resource_id UUID REFERENCES resources_po(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id),
   action_type TEXT NOT NULL CHECK (action_type IN ('view', 'download')),
   accessed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Enable RLS
-ALTER TABLE resources_12345 ENABLE ROW LEVEL SECURITY;
-ALTER TABLE resource_analytics_12345 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resources_po ENABLE ROW LEVEL SECURITY;
+ALTER TABLE resource_analytics_po ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies for resources_12345
-CREATE POLICY "Users can view active resources" ON resources_12345 
+-- RLS Policies for resources_po
+CREATE POLICY "Users can view active resources" ON resources_po 
   FOR SELECT USING (is_active = true);
 
-CREATE POLICY "Admins can manage all resources" ON resources_12345 
+CREATE POLICY "Admins can manage all resources" ON resources_po 
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM auth.users 
@@ -83,11 +83,11 @@ CREATE POLICY "Admins can manage all resources" ON resources_12345
     )
   );
 
--- RLS Policies for resource_analytics_12345  
-CREATE POLICY "Users can insert their own analytics" ON resource_analytics_12345 
+-- RLS Policies for resource_analytics_po  
+CREATE POLICY "Users can insert their own analytics" ON resource_analytics_po 
   FOR INSERT WITH CHECK (user_id = auth.uid());
 
-CREATE POLICY "Admins can view all analytics" ON resource_analytics_12345 
+CREATE POLICY "Admins can view all analytics" ON resource_analytics_po 
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM auth.users 
@@ -97,13 +97,13 @@ CREATE POLICY "Admins can view all analytics" ON resource_analytics_12345
   );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_resources_category ON resources_12345(category) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_resources_type ON resources_12345(resource_type) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_resources_language ON resources_12345(language) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_resources_pinned ON resources_12345(is_pinned, created_at) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_resources_tags ON resources_12345 USING GIN(tags) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS idx_resources_publit ON resources_12345(publit_id) WHERE publit_id IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_analytics_resource_user ON resource_analytics_12345(resource_id, user_id);
+CREATE INDEX IF NOT EXISTS idx_resources_category ON resources_po(category) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_type ON resources_po(resource_type) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_language ON resources_po(language) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_pinned ON resources_po(is_pinned, created_at) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_tags ON resources_po USING GIN(tags) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_resources_publit ON resources_po(publit_id) WHERE publit_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_analytics_resource_user ON resource_analytics_po(resource_id, user_id);
 
 -- Function to get resource analytics
 CREATE OR REPLACE FUNCTION get_resource_analytics()
@@ -120,8 +120,8 @@ RETURNS TABLE (
     COUNT(CASE WHEN ra.action_type = 'view' THEN 1 END) as total_views,
     COUNT(CASE WHEN ra.action_type = 'download' THEN 1 END) as total_downloads,
     COUNT(DISTINCT ra.user_id) as unique_users
-  FROM resources_12345 r
-  LEFT JOIN resource_analytics_12345 ra ON r.id = ra.resource_id
+  FROM resources_po r
+  LEFT JOIN resource_analytics_po ra ON r.id = ra.resource_id
   WHERE r.is_active = true
   GROUP BY r.id, r.title
   ORDER BY total_views DESC;
@@ -136,7 +136,7 @@ RETURNS TABLE (
   SELECT 
     r.publit_id,
     r.file_name
-  FROM resources_12345 r
+  FROM resources_po r
   WHERE r.publit_id IS NOT NULL 
   AND r.is_active = false
   AND r.updated_at < NOW() - INTERVAL '30 days';

@@ -29,7 +29,7 @@ export async function getSiteContent() {
   try {
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('site_content_12345')
+      .from('site_content_po')
       .select('*')
     
     if (error) {
@@ -98,7 +98,7 @@ export const initializeDatabase = async () => {
 export const createUser = async (userData) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('users')
+    .from('users_pf')
     .insert([userData])
     .select()
 
@@ -109,7 +109,7 @@ export const createUser = async (userData) => {
 export const updateUser = async (userId, updates) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('users')
+    .from('users_pf')
     .update(updates)
     .eq('id', userId)
     .select()
@@ -121,7 +121,7 @@ export const updateUser = async (userId, updates) => {
 export const getUserById = async (userId) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('users')
+    .from('users_pf')
     .select('*')
     .eq('id', userId)
     .single()
@@ -133,7 +133,7 @@ export const getUserById = async (userId) => {
 export const getUserByUsername = async (username) => {
   const supabase = await getSupabaseClient()
   const { data, error } = await supabase
-    .from('users')
+    .from('users_pf')
     .select('*')
     .eq('username', username)
     .single()

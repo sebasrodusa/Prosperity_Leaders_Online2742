@@ -244,8 +244,8 @@ const BlogPost = () => {
                   </h3>
                   <p className="text-polynesian-blue/70 text-sm">
                     {post.author_type === 'admin' 
-                      ? 'Member of the Prosperity Leaders™ editorial team'
-                      : 'Financial Professional at Prosperity Leaders™'
+                      ? 'Member of the Prosperity Online editorial team'
+                      : 'Financial Professional at Prosperity Online'
                     }
                   </p>
                   <Link

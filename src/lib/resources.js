@@ -48,7 +48,7 @@ export async function getResources(userId, role = 'professional', filters = {}) 
   try {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
-    let query = supabase.from('resources_12345').select('*')
+    let query = supabase.from('resources_po').select('*')
 
     if (filters.search) query = query.ilike('title', `%${filters.search}%`)
     if (filters.category) query = query.eq('category', filters.category)
@@ -73,7 +73,7 @@ export async function createResource(resourceData, userId) {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('resources_12345')
+      .from('resources_po')
       .insert([
         {
           ...resourceData,
@@ -129,7 +129,7 @@ export async function updateResource(resourceId, updates, userId) {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data, error } = await supabase
-      .from('resources_12345')
+      .from('resources_po')
       .update({
         ...updates,
         updated_at: new Date().toISOString()
@@ -151,7 +151,7 @@ export async function deleteResource(resourceId, userId) {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
     const { data: resource, error: fetchError } = await supabase
-      .from('resources_12345')
+      .from('resources_po')
       .select('publit_id')
       .eq('id', resourceId)
       .single()
@@ -167,7 +167,7 @@ export async function deleteResource(resourceId, userId) {
     }
 
     const { error } = await supabase
-      .from('resources_12345')
+      .from('resources_po')
       .update({ is_active: false, updated_at: new Date().toISOString() })
       .eq('id', resourceId)
 
@@ -183,7 +183,7 @@ export async function trackResourceAccess(resourceId, userId, actionType) {
   try {
     await setUserContext(userId)
     const supabase = await getSupabaseClient()
-    const { error } = await supabase.from('resource_analytics_12345').insert([
+    const { error } = await supabase.from('resource_analytics_po').insert([
       { resource_id: resourceId, user_id: userId, action_type: actionType }
     ])
     if (error) throw error
