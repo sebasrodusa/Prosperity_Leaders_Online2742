@@ -55,7 +55,20 @@ const ProfilePage = () => {
           setProfile(null)
         }
       } catch (error) {
-        console.error('Error loading profile:', error)
+        // Distinguish between Supabase errors and network-level exceptions
+        if (
+          error &&
+          (error.message || error.details || error.hint || error.code)
+        ) {
+          console.error('Error loading profile:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          })
+        } else {
+          console.error('Network error loading profile:', error)
+        }
       } finally {
         setIsLoading(false)
       }
