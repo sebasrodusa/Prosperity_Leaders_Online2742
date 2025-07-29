@@ -5,11 +5,22 @@ import { supabase, createUser } from '../../lib/supabase'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
 import Button from '../ui/Button'
+import MultiSelect from '../ui/MultiSelect'
+import { SERVICE_OPTIONS } from '../../lib/directory'
 
 const EnhancedSignup = () => {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
+  const [languages, setLanguages] = useState([])
+  const [servicesOffered, setServicesOffered] = useState([])
+
+  const LANGUAGE_OPTIONS = [
+    { value: 'English', label: 'English' },
+    { value: 'Spanish', label: 'Spanish' },
+    { value: 'Mandarin', label: 'Mandarin' },
+    { value: 'French', label: 'French' }
+  ]
   const {
     register,
     handleSubmit,
@@ -64,7 +75,9 @@ const EnhancedSignup = () => {
           city: role === 'advisor' ? data.city : null,
           state: role === 'advisor' ? data.state : null,
           agent_id: role === 'advisor' ? data.agentCode : null,
-          team: role === 'advisor' ? data.team : null
+          team: role === 'advisor' ? data.team : null,
+          languages: role === 'advisor' ? languages.map(l => l.value) : null,
+          services_offered: role === 'advisor' ? servicesOffered.map(s => s.value) : null
         })
       }
       alert('Signup successful! Please check your email to confirm your account.')
@@ -128,6 +141,18 @@ const EnhancedSignup = () => {
           <div className="space-y-4">
             <Input label="Agent Code" error={errors.agentCode?.message} {...register('agentCode')} />
             <Input label="Team" error={errors.team?.message} {...register('team')} />
+            <MultiSelect
+              label="Services Offered"
+              options={SERVICE_OPTIONS}
+              value={servicesOffered}
+              onChange={setServicesOffered}
+            />
+            <MultiSelect
+              label="Languages Spoken"
+              options={LANGUAGE_OPTIONS}
+              value={languages}
+              onChange={setLanguages}
+            />
           </div>
         )}
 
