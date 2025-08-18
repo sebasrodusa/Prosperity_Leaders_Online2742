@@ -14,6 +14,8 @@ const {
   FiMessageSquare
 } = FiIcons
 
+const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOUNBM0FGIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0Ii8+PHBhdGggZD0iTTQgMjBjMC00IDQtNiA4LTZzOCAyIDggNiIvPjwvc3ZnPg=='
+
 const DirectoryCard = ({ professional }) => {
   return (
     <motion.div
@@ -24,9 +26,9 @@ const DirectoryCard = ({ professional }) => {
       <Card className="h-full hover:shadow-lg transition-all duration-300" hover>
         <div className="p-6 flex flex-col h-full">
           <div className="flex items-center space-x-4 mb-4">
-            <img 
-              src={professional.profile_photo_url || 'https://via.placeholder.com/60?text=Profile'} 
-              alt={professional.full_name} 
+            <img
+              src={professional.profile_photo_url || defaultAvatar}
+              alt={professional.full_name}
               className="w-16 h-16 rounded-full object-cover border-2 border-picton-blue/20"
             />
             <div>

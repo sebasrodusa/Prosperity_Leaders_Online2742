@@ -8,6 +8,8 @@ import SafeIcon from '../../common/SafeIcon'
 
 const { FiUser, FiLogOut, FiUsers, FiChevronDown, FiMenu, FiX, FiHome, FiLayout, FiSettings, FiEdit3, FiBox } = FiIcons
 
+const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjOUNBM0FGIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI0Ii8+PHBhdGggZD0iTTQgMjBjMC00IDQtNiA4LTZzOCAyIDggNiIvPjwvc3ZnPg=='
+
 const MainNav = ({ variant = 'public' }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -120,7 +122,7 @@ const MainNav = ({ variant = 'public' }) => {
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                   >
                     <img
-                      src={user.profile_photo_url || 'https://via.placeholder.com/40'}
+                      src={user.profile_photo_url || defaultAvatar}
                       alt={user.full_name}
                       className="w-8 h-8 rounded-full object-cover border-2 border-white/20"
                     />
@@ -200,7 +202,7 @@ const MainNav = ({ variant = 'public' }) => {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
                   <img
-                    src={user.profile_photo_url || 'https://via.placeholder.com/40'}
+                    src={user.profile_photo_url || defaultAvatar}
                     alt={user.full_name}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
@@ -329,7 +331,7 @@ const MainNav = ({ variant = 'public' }) => {
                     <hr className="border-gray-700" />
                     <div className="flex items-center py-2">
                       <img
-                        src={user.profile_photo_url || 'https://via.placeholder.com/40'}
+                        src={user.profile_photo_url || defaultAvatar}
                         alt={user.full_name}
                         className="w-8 h-8 rounded-full mr-2 object-cover"
                       />
