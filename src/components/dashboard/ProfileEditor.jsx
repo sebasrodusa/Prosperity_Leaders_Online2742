@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { updateUser } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
@@ -9,7 +8,7 @@ import Card from '../ui/Card'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiSave, FiUser, FiMail, FiPhone, FiInstagram, FiFacebook, FiLinkedin, FiYoutube } = FiIcons
+const { FiSave, FiUser, FiInstagram, FiFacebook, FiLinkedin, FiYoutube } = FiIcons
 
 const ProfileEditor = () => {
   const { user, updateUser: updateUserContext } = useAuth()
@@ -31,6 +30,40 @@ const ProfileEditor = () => {
     }
   })
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user?.id) return
+      const { data, error } = await supabase
+        .from('users_pf')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      if (error) {
+        console.error('Error loading profile:', error)
+        return
+      }
+      setFormData({
+        full_name: data.full_name || '',
+        username: data.username || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        bio: data.bio || '',
+        agent_id: data.agent_id || '',
+        international_id: data.international_id || '',
+        calendly_link: data.calendly_link || '',
+        social_links: {
+          instagram: data.social_links?.instagram || '',
+          facebook: data.social_links?.facebook || '',
+          linkedin: data.social_links?.linkedin || '',
+          tiktok: data.social_links?.tiktok || '',
+          youtube: data.social_links?.youtube || ''
+        }
+      })
+    }
+
+    loadProfile()
+  }, [user])
 
   const handleChange = (field, value) => {
     if (field.startsWith('social_links.')) {
@@ -55,8 +88,14 @@ const ProfileEditor = () => {
     setSaving(true)
 
     try {
-      const updatedRecord = await updateUser(user.id, formData)
-      updateUserContext(updatedRecord)
+      const { data, error } = await supabase
+        .from('users_pf')
+        .update(formData)
+        .eq('id', user.id)
+        .select()
+        .single()
+      if (error) throw error
+      updateUserContext(data)
       alert('Profile updated successfully!')
     } catch (error) {
       console.error('Error updating profile:', error)

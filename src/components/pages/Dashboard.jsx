@@ -8,6 +8,13 @@ import MainNav from '../layout/MainNav'
 
 const Dashboard = () => {
   const { user } = useAuth()
+  const displayName =
+    user?.full_name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(' ') ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email ||
+    ''
 
   return (
     <div className="min-h-screen bg-anti-flash-white">
@@ -18,7 +25,7 @@ const Dashboard = () => {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-polynesian-blue">
-            Welcome back, {user?.full_name}!
+            Welcome back, {displayName}!
           </h1>
           <p className="text-polynesian-blue/70 mt-2">
             Manage your profile and landing pages from your dashboard.
