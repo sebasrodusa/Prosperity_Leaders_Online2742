@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { getUserPages, createPage, deletePage } from '../../lib/supabase'
+import { createPage, deletePage, supabase } from '../../lib/supabase'
 import { getTemplateById, getAllTemplates } from '../../data/landingPageTemplates'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -10,7 +10,7 @@ import Input from '../ui/Input'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
-const { FiPlus, FiEye, FiTrash2, FiEdit3, FiExternalLink, FiGlobe } = FiIcons
+const { FiPlus, FiTrash2, FiEdit3, FiExternalLink, FiGlobe } = FiIcons
 
 const PagesManager = () => {
   const { user } = useAuth()
@@ -27,26 +27,19 @@ const PagesManager = () => {
   useEffect(() => {
     if (user && user.id) {
       const loadPages = async () => {
-        try {
-          const data = await getUserPages(user.id)
-          setPages(data)
-        } catch (error) {
-          if (!error.status) {
-            console.error('Network error loading pages:', error.message)
-          } else {
-            console.error('Error loading pages:', {
-              message: error.message,
-              details: error.details,
-              hint: error.hint,
-              code: error.code
-            })
-          }
+        const { data, error } = await supabase.rpc('get_user_landing_pages', {
+          user_id: user.id
+        })
+        if (error) {
+          console.error('Error loading pages:', error)
+          return
         }
+        setPages(data || [])
       }
 
       loadPages()
     } else if (!user || !user.id) {
-      console.warn('user or user.id missing, skipping getUserPages')
+      console.warn('user or user.id missing, skipping get_user_landing_pages')
     }
   }, [user])
 

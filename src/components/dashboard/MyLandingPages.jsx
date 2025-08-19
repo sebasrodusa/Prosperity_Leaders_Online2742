@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
-import { getUserPages, createPage, deletePage } from '../../lib/supabase'
+import { createPage, deletePage, supabase } from '../../lib/supabase'
 import { getAllTemplates } from '../../data/landingPageTemplates'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
@@ -27,17 +27,19 @@ const MyLandingPages = () => {
   useEffect(() => {
     if (user && user.id) {
       const loadPages = async () => {
-        try {
-          const data = await getUserPages(user.id)
-          setPages(data)
-        } catch (error) {
+        const { data, error } = await supabase.rpc('get_user_landing_pages', {
+          user_id: user.id
+        })
+        if (error) {
           console.error('Error loading pages:', error)
+          return
         }
+        setPages(data || [])
       }
 
       loadPages()
     } else if (!user || !user.id) {
-      console.warn('user or user.id missing, skipping getUserPages')
+      console.warn('user or user.id missing, skipping get_user_landing_pages')
     }
   }, [user])
 
