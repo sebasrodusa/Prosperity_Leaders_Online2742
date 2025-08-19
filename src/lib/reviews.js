@@ -16,19 +16,22 @@ export const getApprovedReviews = async (professionalUsername) => {
     // Get average rating using the function we created
     const { data: ratingData, error: ratingError } = await supabase
       .rpc('get_professional_rating', { p_username: professionalUsername })
-    
+
     if (ratingError) throw ratingError
 
     // Get review count using the function we created
     const { data: countData, error: countError } = await supabase
       .rpc('count_professional_reviews', { p_username: professionalUsername })
-    
+
     if (countError) throw countError
+
+    const rating = parseFloat(ratingData)
+    const count = parseInt(countData, 10)
 
     return {
       reviews: reviews || [],
-      averageRating: ratingData || 0,
-      reviewCount: countData || 0
+      averageRating: rating || 0,
+      reviewCount: count || 0
     }
   } catch (error) {
     console.error('Error fetching reviews:', error)
@@ -62,20 +65,23 @@ export const getProfessionalRating = async (professionalUsername) => {
   try {
     // Get average rating
     const supabase = await getSupabaseClient()
-    const { data: averageRating, error: ratingError } = await supabase
+    const { data: ratingData, error: ratingError } = await supabase
       .rpc('get_professional_rating', { p_username: professionalUsername })
-    
+
     if (ratingError) throw ratingError
 
     // Get review count
-    const { data: reviewCount, error: countError } = await supabase
+    const { data: countData, error: countError } = await supabase
       .rpc('count_professional_reviews', { p_username: professionalUsername })
-    
+
     if (countError) throw countError
 
+    const rating = parseFloat(ratingData)
+    const count = parseInt(countData, 10)
+
     return {
-      averageRating: averageRating || 0,
-      reviewCount: reviewCount || 0
+      averageRating: rating || 0,
+      reviewCount: count || 0
     }
   } catch (error) {
     console.error('Error fetching professional rating:', error)
