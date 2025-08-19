@@ -5,7 +5,8 @@ import SafeIcon from '../../common/SafeIcon'
 const { FiStar } = FiIcons
 
 const ReviewsStats = ({ averageRating = 0, reviewCount = 0, className = '' }) => {
-  if (!averageRating || !reviewCount) {
+  const rating = Number(averageRating)
+  if (!Number.isFinite(rating) || !reviewCount) {
     return null
   }
 
@@ -17,7 +18,7 @@ const ReviewsStats = ({ averageRating = 0, reviewCount = 0, className = '' }) =>
             key={i}
             icon={FiStar}
             className={`w-4 h-4 ${
-              i < Math.floor(averageRating)
+              i < Math.floor(rating)
                 ? 'text-yellow-400 fill-yellow-400'
                 : 'text-gray-300'
             }`}
@@ -25,7 +26,7 @@ const ReviewsStats = ({ averageRating = 0, reviewCount = 0, className = '' }) =>
         ))}
       </div>
       <span className="text-sm font-medium text-polynesian-blue">
-        {averageRating.toFixed(1)}
+        {rating.toFixed(1)}
       </span>
       <span className="text-sm text-polynesian-blue/60">
         ({reviewCount})

@@ -6,6 +6,8 @@ import SafeIcon from '../../common/SafeIcon'
 const { FiStar } = FiIcons
 
 const ReviewsList = ({ reviews, averageRating = 0, reviewCount = 0, loading = false }) => {
+  const rating = Number(averageRating)
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40">
@@ -33,7 +35,7 @@ const ReviewsList = ({ reviews, averageRating = 0, reviewCount = 0, loading = fa
                 key={i}
                 icon={FiStar}
                 className={`w-5 h-5 ${
-                  i < Math.floor(averageRating)
+                  i < Math.floor(rating)
                     ? 'text-yellow-400 fill-yellow-400'
                     : 'text-gray-300'
                 }`}
@@ -41,7 +43,7 @@ const ReviewsList = ({ reviews, averageRating = 0, reviewCount = 0, loading = fa
             ))}
           </div>
           <span className="ml-2 text-lg font-medium text-polynesian-blue">
-            {averageRating.toFixed(1)}
+            {rating.toFixed(1)}
           </span>
         </div>
         <span className="text-sm text-polynesian-blue/60">
