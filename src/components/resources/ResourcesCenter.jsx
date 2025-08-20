@@ -13,7 +13,7 @@ import ResourceCard from './ResourceCard'
 import ResourceUpload from './ResourceUpload'
 import ResourceViewer from './ResourceViewer'
 
-const { FiSearch, FiFilter, FiPlus, FiGrid, FiList, FiBookOpen } = FiIcons
+const { FiSearch, FiFilter, FiPlus, FiGrid, FiList, FiBookOpen, FiTrendingUp, FiMail } = FiIcons
 
 const ResourcesCenter = () => {
   const { user } = useAuth()
@@ -159,6 +159,28 @@ const ResourcesCenter = () => {
         </div>
       </div>
       
+      {/* External Quick Links */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          icon={<SafeIcon icon={FiTrendingUp} className="w-5 h-5" />}
+          onClick={() => window.open('https://fin.prosperityleaders.net', '_blank')}
+        >
+          Prosperity FNA
+        </Button>
+        <Button
+          variant="secondary"
+          size="lg"
+          fullWidth
+          icon={<SafeIcon icon={FiMail} className="w-5 h-5" />}
+          onClick={() => window.open('https://email.prosperityleaders.net', '_blank')}
+        >
+          Email Templates
+        </Button>
+      </div>
+
       {/* Filters */}
       <Card shadow="md">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
