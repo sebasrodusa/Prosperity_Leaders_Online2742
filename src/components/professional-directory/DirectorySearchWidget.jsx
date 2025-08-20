@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import * as FiIcons from 'react-icons/fi'
@@ -28,6 +29,54 @@ const DirectorySearchWidget = ({ variant = 'default', className = '' }) => {
   const [searchResults, setSearchResults] = useState([])
   const [showResults, setShowResults] = useState(false)
   const [loading, setLoading] = useState(false)
+  const containerRef = useRef(null)
+  const [usePortal, setUsePortal] = useState(false)
+  const [dropdownStyles, setDropdownStyles] = useState({})
+
+  const updateDropdownPosition = useCallback(() => {
+    if (!containerRef.current) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const offset = 8
+
+    setDropdownStyles({
+      top: rect.bottom + window.scrollY + offset,
+      left: rect.left + window.scrollX,
+      width: rect.width
+    })
+
+    let parent = containerRef.current.parentElement
+    let needsPortal = false
+
+    while (parent && parent !== document.body) {
+      const style = window.getComputedStyle(parent)
+      const overflowY = style.overflowY
+      const overflowX = style.overflowX
+
+      if (
+        ['hidden', 'auto', 'scroll', 'clip'].includes(overflowY) ||
+        ['hidden', 'auto', 'scroll', 'clip'].includes(overflowX)
+      ) {
+        needsPortal = true
+        break
+      }
+
+      parent = parent.parentElement
+    }
+
+    setUsePortal(needsPortal)
+  }, [])
+
+  useEffect(() => {
+    if (!showResults) return
+    updateDropdownPosition()
+    window.addEventListener('resize', updateDropdownPosition)
+    window.addEventListener('scroll', updateDropdownPosition, true)
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition)
+      window.removeEventListener('scroll', updateDropdownPosition, true)
+    }
+  }, [showResults, updateDropdownPosition])
 
   // Search function
   const performSearch = async (query) => {
@@ -111,8 +160,77 @@ const DirectorySearchWidget = ({ variant = 'default', className = '' }) => {
 
   const currentVariant = variants[variant] || variants.default
 
+  const dropdownContent = (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      style={{
+        position: usePortal ? 'absolute' : 'fixed',
+        zIndex: 10000,
+        ...dropdownStyles
+      }}
+      className="bg-white rounded-lg shadow-xl max-h-80 overflow-y-auto"
+      onMouseDown={(e) => e.preventDefault()} // Prevent blur event from closing dropdown when clicking inside
+    >
+      {loading ? (
+        <div className="p-4 text-center text-polynesian-blue/70">
+          <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-picton-blue mr-2"></div>
+          Searching...
+        </div>
+      ) : searchResults.length > 0 ? (
+        <>
+          <div className="p-3 border-b border-gray-100">
+            <p className="text-sm text-polynesian-blue/70">
+              {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} found
+            </p>
+          </div>
+          {searchResults.map((professional) => (
+            <div
+              key={professional.id}
+              className="p-3 hover:bg-anti-flash-white cursor-pointer border-b border-gray-100 last:border-b-0"
+              onClick={() => handleResultClick(professional.username)}
+            >
+              <div className="flex items-center space-x-3">
+                {professional.profile_photo_url ? (
+                  <img
+                    src={professional.profile_photo_url}
+                    alt={professional.full_name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-picton-blue/10 flex items-center justify-center">
+                    <SafeIcon icon={FiUser} className="w-5 h-5 text-picton-blue" />
+                  </div>
+                )}
+                <div>
+                  <p className="font-medium text-polynesian-blue">{professional.full_name}</p>
+                  <p className="text-xs text-polynesian-blue/60">
+                    {professional.title || 'Financial Professional'} {professional.city && `• ${professional.city}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="p-3 border-t border-gray-100 bg-anti-flash-white/50">
+            <button
+              onClick={handleSearchSubmit}
+              className="w-full text-center text-picton-blue hover:text-picton-blue/80 text-sm font-medium"
+            >
+              View all results
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="p-4 text-center text-polynesian-blue/70">
+          No professionals found
+        </div>
+      )}
+    </motion.div>
+  )
+
   return (
-    <div className={`${currentVariant.container} ${className}`}>
+    <div ref={containerRef} className={`${currentVariant.container} ${className}`}>
       <form onSubmit={handleSearchSubmit}>
         <div className="relative">
           <input
@@ -123,9 +241,9 @@ const DirectorySearchWidget = ({ variant = 'default', className = '' }) => {
             placeholder="Find a financial professional..."
             className={currentVariant.input}
           />
-          
+
           {searchQuery && (
-            <button 
+            <button
               type="button"
               onClick={clearSearch}
               className={`absolute ${variant === 'navbar' ? 'right-10' : 'right-12'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600`}
@@ -133,7 +251,7 @@ const DirectorySearchWidget = ({ variant = 'default', className = '' }) => {
               <SafeIcon icon={FiX} className="w-4 h-4" />
             </button>
           )}
-          
+
           <button
             type="submit"
             className={currentVariant.button}
@@ -145,67 +263,7 @@ const DirectorySearchWidget = ({ variant = 'default', className = '' }) => {
 
       {/* Search Results Dropdown */}
       {showResults && searchQuery.length >= 2 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-lg shadow-xl max-h-80 overflow-y-auto"
-          onMouseDown={(e) => e.preventDefault()} // Prevent blur event from closing dropdown when clicking inside
-        >
-          {loading ? (
-            <div className="p-4 text-center text-polynesian-blue/70">
-              <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-picton-blue mr-2"></div>
-              Searching...
-            </div>
-          ) : searchResults.length > 0 ? (
-            <>
-              <div className="p-3 border-b border-gray-100">
-                <p className="text-sm text-polynesian-blue/70">
-                  {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} found
-                </p>
-              </div>
-              {searchResults.map((professional) => (
-                <div
-                  key={professional.id}
-                  className="p-3 hover:bg-anti-flash-white cursor-pointer border-b border-gray-100 last:border-b-0"
-                  onClick={() => handleResultClick(professional.username)}
-                >
-                  <div className="flex items-center space-x-3">
-                    {professional.profile_photo_url ? (
-                      <img
-                        src={professional.profile_photo_url}
-                        alt={professional.full_name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-picton-blue/10 flex items-center justify-center">
-                        <SafeIcon icon={FiUser} className="w-5 h-5 text-picton-blue" />
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-medium text-polynesian-blue">{professional.full_name}</p>
-                      <p className="text-xs text-polynesian-blue/60">
-                        {professional.title || 'Financial Professional'} {professional.city && `• ${professional.city}`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <div className="p-3 border-t border-gray-100 bg-anti-flash-white/50">
-                <button
-                  onClick={handleSearchSubmit}
-                  className="w-full text-center text-picton-blue hover:text-picton-blue/80 text-sm font-medium"
-                >
-                  View all results
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="p-4 text-center text-polynesian-blue/70">
-              No professionals found
-            </div>
-          )}
-        </motion.div>
+        usePortal ? createPortal(dropdownContent, document.body) : dropdownContent
       )}
     </div>
   )
