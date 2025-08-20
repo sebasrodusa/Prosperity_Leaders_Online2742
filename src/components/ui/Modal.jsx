@@ -86,7 +86,7 @@ const Modal = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className={`z-[10000] inline-block align-bottom bg-white dark:bg-polynesian-blue rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizes[size]}`}
+              className={`relative z-[10000] inline-block align-bottom bg-white dark:bg-polynesian-blue rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizes[size]}`}
             >
               {/* Header */}
               {title && (
