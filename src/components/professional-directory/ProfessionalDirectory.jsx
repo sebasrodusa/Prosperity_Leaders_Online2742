@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Card from '../ui/Card'
@@ -243,55 +244,57 @@ const ProfessionalDirectory = () => {
         </div>
 
         {/* Mobile Filters (Slide-in Panel) */}
-        {showMobileFilters && (
-          <div className="fixed inset-0 z-40 lg:hidden overflow-hidden">
-            <div 
-              className="fixed inset-0 bg-black bg-opacity-50"
-              onClick={() => setShowMobileFilters(false)}
-            ></div>
-            <div className="fixed inset-y-0 right-0 max-w-full flex">
-              <motion.div
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="w-screen max-w-md h-full bg-white shadow-xl flex flex-col"
-              >
-                <div className="flex items-center justify-between p-4 border-b">
-                  <h2 className="text-lg font-medium text-polynesian-blue">Filters</h2>
-                  <button 
-                    onClick={() => setShowMobileFilters(false)}
-                    className="text-gray-500 hover:text-gray-700"
+          {showMobileFilters &&
+            createPortal(
+              <div className="fixed inset-0 z-[9999] lg:hidden overflow-hidden">
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50"
+                  onClick={() => setShowMobileFilters(false)}
+                ></div>
+                <div className="fixed inset-y-0 right-0 max-w-full flex">
+                  <motion.div
+                    initial={{ x: '100%' }}
+                    animate={{ x: 0 }}
+                    exit={{ x: '100%' }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="w-screen max-w-md h-full bg-white shadow-xl flex flex-col z-[10000]"
                   >
-                    <SafeIcon icon={FiX} className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h2 className="text-lg font-medium text-polynesian-blue">Filters</h2>
+                    <button
+                      onClick={() => setShowMobileFilters(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <SafeIcon icon={FiX} className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+                    <DirectoryFilters
+                      options={filterOptions}
+                      filters={filters}
+                      onChange={handleFilterChange}
+                    />
+                  </div>
+                  <div className="border-t p-4 flex space-x-3">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={handleClearFilters}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={() => setShowMobileFilters(false)}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                  </motion.div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                  <DirectoryFilters 
-                    options={filterOptions}
-                    filters={filters}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-                <div className="border-t p-4 flex space-x-3">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={handleClearFilters}
-                  >
-                    Clear
-                  </Button>
-                  <Button 
-                    className="flex-1"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                    Apply
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        )}
+              </div>,
+              document.body
+            )}
 
         {/* Results Grid */}
         <div className="lg:col-span-3">
