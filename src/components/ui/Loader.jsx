@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 const Loader = ({ size = 'md', color = 'primary', fullScreen = false, text = '' }) => {
   // Size variants
@@ -22,16 +23,18 @@ const Loader = ({ size = 'md', color = 'primary', fullScreen = false, text = '' 
   }
   
   const containerClasses = fullScreen
-    ? 'fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-polynesian-blue/80 backdrop-blur-sm z-50'
+    ? 'fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-polynesian-blue/80 backdrop-blur-sm'
     : 'flex items-center justify-center py-8'
   
-  return (
+  const content = (
     <div className={containerClasses}>
-      <div className="flex flex-col items-center">
-        <motion.div 
+      <div
+        className={`flex flex-col items-center ${fullScreen ? 'relative z-[10000]' : ''}`}
+      >
+        <motion.div
           animate={{ rotate: 360 }}
-          transition={{ 
-            repeat: Infinity, 
+          transition={{
+            repeat: Infinity,
             duration: 1,
             ease: "linear"
           }}
@@ -45,6 +48,8 @@ const Loader = ({ size = 'md', color = 'primary', fullScreen = false, text = '' 
       </div>
     </div>
   )
+
+  return fullScreen ? createPortal(content, document.body) : content
 }
 
 export default Loader
