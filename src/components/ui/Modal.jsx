@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
@@ -57,11 +58,11 @@ const Modal = ({
     }
   }
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div 
+        <div className="fixed inset-0 z-[9999] overflow-y-auto">
+          <div
             className={`flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0 ${centered ? 'items-center' : 'items-start sm:items-center'}`}
             onClick={handleBackdropClick}
           >
@@ -70,7 +71,7 @@ const Modal = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+              className="fixed inset-0 z-[9999] bg-black bg-opacity-50 transition-opacity"
               aria-hidden="true"
             />
 
@@ -85,7 +86,7 @@ const Modal = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className={`inline-block align-bottom bg-white dark:bg-polynesian-blue rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizes[size]}`}
+              className={`z-[10000] inline-block align-bottom bg-white dark:bg-polynesian-blue rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full ${sizes[size]}`}
             >
               {/* Header */}
               {title && (
@@ -129,7 +130,8 @@ const Modal = ({
           </div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 
