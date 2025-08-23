@@ -25,6 +25,7 @@ import Login from './components/pages/Login'
 import EnhancedSignup from './components/pages/EnhancedSignup'
 import SebastianBooking from './components/pages/SebastianBooking'
 import ExamfxPreLicense from './components/pages/ExamfxPreLicense'
+import AgentLinks from './components/pages/AgentLinks'
 import './App.css'
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -60,6 +61,7 @@ const AppRoutes = () => {
       <Route path="/find-a-professional" element={<ProfessionalDirectory />} />
       <Route path="/sebastian" element={<SebastianBooking />} />
       <Route path="/examfx" element={<ExamfxPreLicense />} />
+      <Route path="/agents" element={<AgentLinks />} />
       
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
