@@ -190,6 +190,7 @@ const MainNav = ({ variant = 'public' }) => {
             <Link to="/services" className="text-white hover:text-[#3AA0FF] transition-colors">Services</Link>
             <Link to="/find-a-professional" className="text-white hover:text-[#3AA0FF] transition-colors">Find a Professional</Link>
             <Link to="/blog" className="text-white hover:text-[#3AA0FF] transition-colors">Blog</Link>
+            <Link to="/agents" className="text-white hover:text-[#3AA0FF] transition-colors">Agents</Link>
             <Link to="/contact" className="text-white hover:text-[#3AA0FF] transition-colors">Contact</Link>
             
             {/* Theme Toggle */}
