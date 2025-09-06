@@ -4,14 +4,13 @@ import { motion } from 'framer-motion'
 import { getTemplateById } from '../../data/landingPageTemplates'
 import { getPageByCustomUsername } from '../../lib/supabase'
 import LandingPageTemplate from '../landingPages/LandingPageTemplate'
-import MainNav from '../layout/MainNav'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
 
 const { FiArrowLeft } = FiIcons
 
 const LandingPage = () => {
-  const { slug, username, custom } = useParams()
+  const { slug } = useParams()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [pageData, setPageData] = useState(null)
@@ -21,13 +20,10 @@ const LandingPage = () => {
     const loadPage = async () => {
       try {
         setIsLoading(true)
+        setError(null)
 
-        // Build the full custom username path. Support both legacy username/custom
-        // routes and the new /pages/:slug format.
-        const fullPath = slug || (custom ? `${username}-${custom}` : username)
-
-        // Fetch page from Supabase
-        const landingPage = await getPageByCustomUsername(fullPath)
+        // Fetch page from Supabase using slug directly
+        const landingPage = await getPageByCustomUsername(slug)
 
         if (landingPage) {
           const template = getTemplateById(landingPage.template_type)
@@ -36,11 +32,29 @@ const LandingPage = () => {
             throw new Error('Template not found')
           }
 
+          let content = template.defaultContent
+
+          if (landingPage.content) {
+            try {
+              const parsedContent = JSON.parse(landingPage.content)
+              if (
+                parsedContent &&
+                typeof parsedContent === 'object' &&
+                Object.keys(parsedContent).length > 0
+              ) {
+                content = parsedContent
+              }
+            } catch (err) {
+              console.error('Invalid page content:', err)
+              throw new Error('Invalid page content')
+            }
+          }
+
           setPageData({
             page: landingPage,
             user: landingPage.users,
             template,
-            content: template.defaultContent // In production, this would be user-customized content
+            content
           })
         } else {
           setError('Page not found')
@@ -54,7 +68,7 @@ const LandingPage = () => {
     }
 
     loadPage()
-  }, [slug, username, custom])
+  }, [slug])
 
   const handleFormSubmit = async (formData) => {
     // In production, this would submit to your backend
