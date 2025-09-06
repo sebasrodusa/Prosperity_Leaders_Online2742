@@ -141,7 +141,7 @@ const MainNav = ({ variant = 'public' }) => {
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <Link
-                        to="/profile"
+                        to={`/profile/${user.username}`}
                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <SafeIcon icon={FiUser} className="inline-block mr-2 w-4 h-4" />
@@ -227,7 +227,7 @@ const MainNav = ({ variant = 'public' }) => {
                       Dashboard
                     </Link>
                     <Link
-                      to="/profile"
+                      to={`/profile/${user.username}`}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Profile
@@ -346,7 +346,7 @@ const MainNav = ({ variant = 'public' }) => {
                       Dashboard
                     </Link>
                     <Link
-                      to="/profile"
+                      to={`/profile/${user.username}`}
                       className="text-white hover:text-[#3AA0FF] transition-colors py-2 pl-10"
                       onClick={() => setMobileMenuOpen(false)}
                     >

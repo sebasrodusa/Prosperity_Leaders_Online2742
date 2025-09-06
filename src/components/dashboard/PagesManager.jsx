@@ -83,7 +83,7 @@ const PagesManager = () => {
   }
 
   const generatePageUrl = (customUsername) => {
-    return `https://prosperityleaders.net/pages/${customUsername}`
+    return `https://prosperityleaders.net/${customUsername}`
   }
 
   return (

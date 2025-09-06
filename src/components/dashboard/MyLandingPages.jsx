@@ -108,7 +108,7 @@ const MyLandingPages = () => {
   }
 
   const generatePageUrl = (customUsername) => {
-    return `https://prosperityleaders.net/pages/${customUsername}`
+    return `https://prosperityleaders.net/${customUsername}`
   }
 
   return (
@@ -141,7 +141,7 @@ const MyLandingPages = () => {
         </div>
         <p>
           Your professional profile is available at{' '}
-          <span className="font-semibold">prosperityleaders.net/{user?.username}</span>.
+          <span className="font-semibold">prosperityleaders.net/profile/{user?.username}</span>.
           Landing pages are additional marketing pages with specific themes you can create below.
         </p>
       </div>

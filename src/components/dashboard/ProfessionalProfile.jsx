@@ -183,7 +183,7 @@ const ProfessionalProfile = () => {
     setShowAddTestimonialModal(false)
   }
 
-  const profileUrl = `https://prosperityleaders.net/${user?.username}`
+  const profileUrl = `https://prosperityleaders.net/profile/${user?.username}`
 
   if (!profile) {
     return (
@@ -236,7 +236,7 @@ const ProfessionalProfile = () => {
             <span>Your Professional Profile</span>
           </div>
           <p>
-            This is your primary public profile, always available at <span className="font-semibold">prosperityleaders.net/{user?.username}</span>. It represents you in the professional directory and is linked from all your landing pages.
+            This is your primary public profile, always available at <span className="font-semibold">prosperityleaders.net/profile/{user?.username}</span>. It represents you in the professional directory and is linked from all your landing pages.
           </p>
         </div>
 
