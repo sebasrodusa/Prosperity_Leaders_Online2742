@@ -11,7 +11,7 @@ import SafeIcon from '../../common/SafeIcon'
 const { FiArrowLeft } = FiIcons
 
 const LandingPage = () => {
-  const { username, custom } = useParams()
+  const { slug, username, custom } = useParams()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [pageData, setPageData] = useState(null)
@@ -22,8 +22,9 @@ const LandingPage = () => {
       try {
         setIsLoading(true)
 
-        // Build the full custom username path
-        const fullPath = custom ? `${username}-${custom}` : username
+        // Build the full custom username path. Support both legacy username/custom
+        // routes and the new /pages/:slug format.
+        const fullPath = slug || (custom ? `${username}-${custom}` : username)
 
         // Fetch page from Supabase
         const landingPage = await getPageByCustomUsername(fullPath)
@@ -53,7 +54,7 @@ const LandingPage = () => {
     }
 
     loadPage()
-  }, [username, custom])
+  }, [slug, username, custom])
 
   const handleFormSubmit = async (formData) => {
     // In production, this would submit to your backend

@@ -62,7 +62,8 @@ const AppRoutes = () => {
       <Route path="/sebastian" element={<SebastianBooking />} />
       <Route path="/examfx" element={<ExamfxPreLicense />} />
       <Route path="/agents" element={<AgentLinks />} />
-      
+      <Route path="/pages/:slug" element={<LandingPage />} />
+
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
