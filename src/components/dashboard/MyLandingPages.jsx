@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { createPage, deletePage, supabase } from '../../lib/supabase'
 import { getAllTemplates } from '../../data/landingPageTemplates'
+import TemplateGallery from '../landingPages/TemplateGallery'
 import Button from '../ui/Button'
 import Card from '../ui/Card'
 import Modal from '../ui/Modal'
@@ -65,13 +66,19 @@ const MyLandingPages = () => {
       }
 
       const selectedTemplate = availableTemplates.find(t => t.id === newPage.template_type)
+      const defaultContent = {
+        ...selectedTemplate?.defaultContent,
+        themeColor: selectedTemplate?.color,
+        layout: 'default'
+      }
 
       const pageData = {
         user_id: user.id,
         template_type: newPage.template_type,
         custom_username: customUsername,
         title: newPage.title || selectedTemplate?.name,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        content: JSON.stringify(defaultContent)
       }
 
       const created = await createPage(pageData)
@@ -234,34 +241,10 @@ const MyLandingPages = () => {
             <label className="block text-sm font-medium text-polynesian-blue mb-2">
               Template Type
             </label>
-            <div className="grid grid-cols-1 gap-3">
-              {availableTemplates.map((template) => (
-                <label
-                  key={template.id}
-                  className={`relative flex items-start p-4 border rounded-lg cursor-pointer hover:bg-anti-flash-white/50 transition-colors ${
-                    newPage.template_type === template.id
-                      ? 'border-picton-blue bg-picton-blue/5'
-                      : 'border-gray-200'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="template_type"
-                    value={template.id}
-                    checked={newPage.template_type === template.id}
-                    onChange={(e) => setNewPage(prev => ({ ...prev, template_type: e.target.value }))}
-                    className="sr-only"
-                  />
-                  <div className="flex items-start space-x-3 w-full">
-                    <div className={`w-4 h-4 rounded-full ${template.color} flex-shrink-0 mt-1`} />
-                    <div className="flex-1">
-                      <p className="font-medium text-polynesian-blue">{template.name}</p>
-                      <p className="text-sm text-polynesian-blue/70 mt-1">{template.description}</p>
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
+            <TemplateGallery
+              selected={newPage.template_type}
+              onSelect={(id) => setNewPage(prev => ({ ...prev, template_type: id }))}
+            />
           </div>
 
           <Input
