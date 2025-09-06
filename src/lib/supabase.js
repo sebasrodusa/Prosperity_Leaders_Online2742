@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { uploadFile as publitioUploadFile, deleteFile as publitioDeleteFile } from './publitio'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -247,4 +248,23 @@ export const updatePage = async (pageId, updates) => {
 
   if (error) throw error
   return data
+}
+
+// Publit.io helpers
+export const uploadMedia = async (file, options = {}) => {
+  try {
+    return await publitioUploadFile(file, options)
+  } catch (error) {
+    console.error('Publit.io upload failed:', error)
+    throw error
+  }
+}
+
+export const deleteMedia = async (fileId) => {
+  try {
+    return await publitioDeleteFile(fileId)
+  } catch (error) {
+    console.error('Publit.io delete failed:', error)
+    throw error
+  }
 }
