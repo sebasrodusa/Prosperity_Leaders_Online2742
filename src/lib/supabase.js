@@ -223,3 +223,28 @@ export const deletePage = async (pageId) => {
 
   if (error) throw error
 }
+
+export const getPageById = async (pageId) => {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase
+    .from('pages_po')
+    .select('*')
+    .eq('id', pageId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const updatePage = async (pageId, updates) => {
+  const supabase = await getSupabaseClient()
+  const { data, error } = await supabase
+    .from('pages_po')
+    .update(updates)
+    .eq('id', pageId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
