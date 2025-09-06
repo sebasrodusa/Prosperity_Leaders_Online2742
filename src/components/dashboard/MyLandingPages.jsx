@@ -83,10 +83,10 @@ const MyLandingPages = () => {
         },
         cancel: {
           label: 'Continue Editing',
-          onClick: () => navigate(`/dashboard/landing-pages/${created.id}`)
+          onClick: () => navigate(`/dashboard/landing-pages/${created.id}/edit`)
         }
       })
-      navigate(`/dashboard/landing-pages/${created.id}`)
+      navigate(`/dashboard/landing-pages/${created.id}/edit`)
     } catch (error) {
       console.error('Error creating page:', error)
       alert('Failed to create page')
@@ -200,6 +200,7 @@ const MyLandingPages = () => {
                       variant="outline"
                       size="sm"
                       className="flex items-center space-x-1"
+                      onClick={() => navigate(`/dashboard/landing-pages/${page.id}/edit`)}
                     >
                       <SafeIcon icon={FiEdit3} className="w-4 h-4" />
                       <span>Edit</span>
