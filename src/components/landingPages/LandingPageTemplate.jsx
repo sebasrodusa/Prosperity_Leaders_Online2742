@@ -7,7 +7,7 @@ import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
 import Card from '../ui/Card'
 
-const LandingPageTemplate = ({ template, content, professional, onFormSubmit }) => {
+const LandingPageTemplate = ({ template = {}, content = {}, professional = {}, onFormSubmit = () => {} }) => {
   const [formData, setFormData] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -78,6 +78,70 @@ const LandingPageTemplate = ({ template, content, professional, onFormSubmit }) 
       default:
         return <Input {...commonProps} type="text" />
     }
+  }
+
+  // Dynamic block-based rendering for builder previews
+  if (Array.isArray(content.blocks)) {
+    const renderBlock = (block, index) => {
+      switch (block.type) {
+        case 'header':
+          return (
+            <section key={index} className="py-8 text-center">
+              <h1 className="text-3xl font-bold text-polynesian-blue">{block.title}</h1>
+              {block.subtitle && (
+                <p className="mt-2 text-polynesian-blue/70">{block.subtitle}</p>
+              )}
+            </section>
+          )
+        case 'hero':
+          return (
+            <section key={index} className="py-16 text-center bg-white">
+              {block.image && (
+                <img src={block.image} alt="" className="mx-auto mb-6 max-h-96 w-full object-cover" />
+              )}
+              <h1 className="text-4xl font-bold text-polynesian-blue mb-4">{block.headline}</h1>
+              {block.subheadline && (
+                <p className="text-xl text-polynesian-blue/70 mb-6">{block.subheadline}</p>
+              )}
+              {block.ctaText && (
+                <Button onClick={() => window.open(block.ctaUrl || '#', '_blank')}>
+                  {block.ctaText}
+                </Button>
+              )}
+            </section>
+          )
+        case 'form':
+          return (
+            <section key={index} className="py-16 bg-gray-50">
+              <Card className="max-w-md mx-auto p-8">
+                <h3 className="text-xl font-semibold text-polynesian-blue mb-4">{block.title}</h3>
+                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                  {block.fields?.map(renderFormField)}
+                  <Button type="submit" disabled={submitting} className="w-full">
+                    {block.submitText || 'Submit'}
+                  </Button>
+                </form>
+              </Card>
+            </section>
+          )
+        case 'testimonials':
+          return (
+            <section key={index} className="py-16 bg-gray-50">
+              <div className="max-w-3xl mx-auto space-y-6">
+                {block.items?.map((t, i) => (
+                  <div key={i} className="p-6 bg-white rounded-lg shadow">
+                    <p className="text-lg text-polynesian-blue/70 mb-2">{t.quote}</p>
+                    <p className="font-semibold text-polynesian-blue">{t.author}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        default:
+          return null
+      }
+    }
+    return <div>{content.blocks.map(renderBlock)}</div>
   }
 
   const renderForm = () => {
