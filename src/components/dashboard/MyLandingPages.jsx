@@ -9,6 +9,8 @@ import Modal from '../ui/Modal'
 import Input from '../ui/Input'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 const { FiPlus, FiTrash2, FiEdit3, FiExternalLink, FiGlobe, FiInfo } = FiIcons
 
@@ -23,6 +25,7 @@ const MyLandingPages = () => {
   })
   const [creating, setCreating] = useState(false)
   const availableTemplates = getAllTemplates()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (user && user.id) {
@@ -73,12 +76,17 @@ const MyLandingPages = () => {
 
       const created = await createPage(pageData)
       setPages(prev => [...prev, created])
-      setShowCreateModal(false)
-      setNewPage({
-        template_type: 'recruiting',
-        custom_username: '',
-        title: ''
+      toast.success('Landing page created', {
+        action: {
+          label: 'View Page',
+          onClick: () => window.open(generatePageUrl(created.custom_username), '_blank')
+        },
+        cancel: {
+          label: 'Continue Editing',
+          onClick: () => navigate(`/dashboard/landing-pages/${created.id}`)
+        }
       })
+      navigate(`/dashboard/landing-pages/${created.id}`)
     } catch (error) {
       console.error('Error creating page:', error)
       alert('Failed to create page')
@@ -111,7 +119,14 @@ const MyLandingPages = () => {
           <h2 className="text-xl font-semibold text-polynesian-blue">My Landing Pages</h2>
         </div>
         <Button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setNewPage({
+              template_type: 'recruiting',
+              custom_username: '',
+              title: ''
+            })
+            setShowCreateModal(true)
+          }}
           className="flex items-center space-x-2"
         >
           <SafeIcon icon={FiPlus} className="w-4 h-4" />
