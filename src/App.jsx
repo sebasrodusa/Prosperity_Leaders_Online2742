@@ -7,7 +7,7 @@ import Dashboard from './components/pages/Dashboard'
 import ContentManager from './components/cms/ContentManager'
 import ProfessionalProfile from './components/dashboard/ProfessionalProfile'
 import MyLandingPages from './components/dashboard/MyLandingPages'
-import LandingPageEditor from './components/landingPages/LandingPageEditor'
+import LandingPageBuilder from './components/landingPages/LandingPageBuilder'
 import ResourcesCenter from './components/resources/ResourcesCenter'
 import LeadsLayout from './components/leads/LeadsLayout'
 import LeadsDashboard from './components/leads/LeadsDashboard'
@@ -69,7 +69,7 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
         <Route path="professional-profile" element={<ProfessionalProfile />} />
         <Route path="landing-pages" element={<MyLandingPages />} />
-        <Route path="landing-pages/:id/edit" element={<LandingPageEditor />} />
+        <Route path="landing-pages/:id/edit" element={<LandingPageBuilder />} />
         <Route path="resources" element={<ResourcesCenter />} />
         <Route path="blog-submission" element={<AgentBlogSubmission />} />
         

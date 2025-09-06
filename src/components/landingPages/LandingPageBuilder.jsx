@@ -1,57 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Card from '../ui/Card'
-import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Textarea from '../ui/Textarea'
+import Button from '../ui/Button'
 import { getPageById, updatePage } from '../../lib/supabase'
-import LandingPageTemplate from './LandingPageTemplate'
-
-const COMPONENTS = {
-  header: {
-    label: 'Header',
-    default: { type: 'header', title: 'New Header', subtitle: '' }
-  },
-  hero: {
-    label: 'Hero Section',
-    default: {
-      type: 'hero',
-      headline: 'Your headline here',
-      subheadline: '',
-      image: '',
-      ctaText: 'Learn More',
-      ctaUrl: '#'
-    }
-  },
-  form: {
-    label: 'Form',
-    default: {
-      type: 'form',
-      title: 'Contact Us',
-      submitText: 'Submit',
-      fields: [
-        { name: 'name', label: 'Name', type: 'text', required: true },
-        { name: 'email', label: 'Email', type: 'email', required: true }
-      ]
-    }
-  },
-  testimonials: {
-    label: 'Testimonials',
-    default: {
-      type: 'testimonials',
-      items: [
-        { quote: 'Great service!', author: 'Jane Doe' }
-      ]
-    }
-  }
-}
+import { getTemplateById } from '../../data/landingPageTemplates'
 
 const LandingPageBuilder = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [blocks, setBlocks] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [mode, setMode] = useState('edit')
+  const [template, setTemplate] = useState(null)
+  const [content, setContent] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [unsaved, setUnsaved] = useState(false)
@@ -61,13 +21,18 @@ const LandingPageBuilder = () => {
     const load = async () => {
       try {
         const page = await getPageById(id)
-        let content = []
+        const tmpl = getTemplateById(page.template_type)
+        setTemplate(tmpl)
+        let parsed = {}
         try {
-          content = page.content ? JSON.parse(page.content).blocks || [] : []
-        } catch (err) {
-          content = []
+          parsed = page.content ? JSON.parse(page.content) : {}
+        } catch {
+          parsed = {}
         }
-        setBlocks(content)
+        if (!parsed || Object.keys(parsed).length === 0) {
+          parsed = { ...tmpl.defaultContent, themeColor: tmpl.color, layout: 'default' }
+        }
+        setContent(parsed)
       } catch (err) {
         console.error('Error loading page:', err)
       } finally {
@@ -77,21 +42,10 @@ const LandingPageBuilder = () => {
     load()
   }, [id])
 
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (unsaved) {
-        e.preventDefault()
-        e.returnValue = ''
-      }
-    }
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [unsaved])
-
-  const save = async (newBlocks) => {
+  const save = async (newContent) => {
     setSaving(true)
     try {
-      await updatePage(id, { content: JSON.stringify({ blocks: newBlocks }) })
+      await updatePage(id, { content: JSON.stringify(newContent) })
       setUnsaved(false)
     } catch (err) {
       console.error('Error saving page:', err)
@@ -100,305 +54,117 @@ const LandingPageBuilder = () => {
     }
   }
 
-  const scheduleSave = (newBlocks) => {
-    setBlocks(newBlocks)
+  const scheduleSave = (newContent) => {
+    setContent(newContent)
     setUnsaved(true)
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
-    saveTimeout.current = setTimeout(() => save(newBlocks), 1000)
+    saveTimeout.current = setTimeout(() => save(newContent), 1000)
   }
 
-  const handleDragStart = (e, index) => {
-    e.dataTransfer.setData('text/plain', index)
+  const handleFieldChange = (field, value) => {
+    scheduleSave({ ...content, [field]: value })
   }
 
-  const handleDrop = (e, index) => {
-    e.preventDefault()
-    const from = parseInt(e.dataTransfer.getData('text/plain'), 10)
-    if (Number.isNaN(from) || from === index) return
-    const updated = [...blocks]
-    const [moved] = updated.splice(from, 1)
-    updated.splice(index, 0, moved)
-    scheduleSave(updated)
+  const handleFormConfigChange = (field, value) => {
+    scheduleSave({
+      ...content,
+      formConfig: { ...content.formConfig, [field]: value }
+    })
   }
 
-  const handleDragOver = (e) => e.preventDefault()
-
-  const addBlock = (type) => {
-    const block = { ...COMPONENTS[type].default, id: Date.now() }
-    const updated = [...blocks, block]
-    scheduleSave(updated)
-    setSelected(updated.length - 1)
+  const handleFormFieldChange = (index, key, value) => {
+    const fields = [...(content.formConfig?.fields || [])]
+    fields[index] = { ...fields[index], [key]: value }
+    handleFormConfigChange('fields', fields)
   }
 
-  const removeBlock = (index) => {
-    const updated = blocks.filter((_, i) => i !== index)
-    scheduleSave(updated)
-    if (selected === index) setSelected(null)
-  }
-
-  const updateBlock = (index, changes) => {
-    const updated = blocks.map((b, i) => (i === index ? { ...b, ...changes } : b))
-    scheduleSave(updated)
-  }
-
-  const renderFieldsEditor = (block, index) => (
-    <div className="space-y-4">
-      {block.fields.map((field, fIndex) => (
-        <Card key={fIndex} className="p-4 space-y-2">
-          <Input
-            label="Label"
-            value={field.label}
-            onChange={(e) => {
-              const fields = [...block.fields]
-              fields[fIndex] = { ...fields[fIndex], label: e.target.value }
-              updateBlock(index, { fields })
-            }}
-          />
-          <Input
-            label="Name"
-            value={field.name}
-            onChange={(e) => {
-              const fields = [...block.fields]
-              fields[fIndex] = { ...fields[fIndex], name: e.target.value }
-              updateBlock(index, { fields })
-            }}
-          />
-          <Input
-            label="Type"
-            value={field.type}
-            onChange={(e) => {
-              const fields = [...block.fields]
-              fields[fIndex] = { ...fields[fIndex], type: e.target.value }
-              updateBlock(index, { fields })
-            }}
-          />
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                const fields = block.fields.filter((_, i) => i !== fIndex)
-                updateBlock(index, { fields })
-              }}
-            >
-              Remove Field
-            </Button>
-          </div>
-        </Card>
-      ))}
-      <Button
-        variant="outline"
-        onClick={() => {
-          const fields = [...block.fields, { name: '', label: '', type: 'text', required: false }]
-          updateBlock(index, { fields })
-        }}
-      >
-        Add Field
-      </Button>
-    </div>
-  )
-
-  const renderTestimonialsEditor = (block, index) => (
-    <div className="space-y-4">
-      {block.items.map((item, tIndex) => (
-        <Card key={tIndex} className="p-4 space-y-2">
-          <Textarea
-            label="Quote"
-            rows={3}
-            value={item.quote}
-            onChange={(e) => {
-              const items = [...block.items]
-              items[tIndex] = { ...items[tIndex], quote: e.target.value }
-              updateBlock(index, { items })
-            }}
-          />
-          <Input
-            label="Author"
-            value={item.author}
-            onChange={(e) => {
-              const items = [...block.items]
-              items[tIndex] = { ...items[tIndex], author: e.target.value }
-              updateBlock(index, { items })
-            }}
-          />
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                const items = block.items.filter((_, i) => i !== tIndex)
-                updateBlock(index, { items })
-              }}
-            >
-              Remove Testimonial
-            </Button>
-          </div>
-        </Card>
-      ))}
-      <Button
-        variant="outline"
-        onClick={() => {
-          const items = [...block.items, { quote: '', author: '' }]
-          updateBlock(index, { items })
-        }}
-      >
-        Add Testimonial
-      </Button>
-    </div>
-  )
-
-  const renderEditor = (block, index) => {
-    switch (block.type) {
-      case 'header':
-        return (
-          <div className="space-y-4">
-            <Input
-              label="Title"
-              value={block.title}
-              onChange={(e) => updateBlock(index, { title: e.target.value })}
-            />
-            <Textarea
-              label="Subtitle"
-              rows={3}
-              value={block.subtitle}
-              onChange={(e) => updateBlock(index, { subtitle: e.target.value })}
-            />
-          </div>
-        )
-      case 'hero':
-        return (
-          <div className="space-y-4">
-            <Input
-              label="Headline"
-              value={block.headline}
-              onChange={(e) => updateBlock(index, { headline: e.target.value })}
-            />
-            <Textarea
-              label="Subheadline"
-              rows={3}
-              value={block.subheadline}
-              onChange={(e) => updateBlock(index, { subheadline: e.target.value })}
-            />
-            <Input
-              label="Image URL"
-              value={block.image}
-              onChange={(e) => updateBlock(index, { image: e.target.value })}
-            />
-            <Input
-              label="CTA Text"
-              value={block.ctaText}
-              onChange={(e) => updateBlock(index, { ctaText: e.target.value })}
-            />
-            <Input
-              label="CTA URL"
-              value={block.ctaUrl}
-              onChange={(e) => updateBlock(index, { ctaUrl: e.target.value })}
-            />
-          </div>
-        )
-      case 'form':
-        return (
-          <div className="space-y-4">
-            <Input
-              label="Form Title"
-              value={block.title}
-              onChange={(e) => updateBlock(index, { title: e.target.value })}
-            />
-            <Input
-              label="Submit Button Text"
-              value={block.submitText}
-              onChange={(e) => updateBlock(index, { submitText: e.target.value })}
-            />
-            {renderFieldsEditor(block, index)}
-          </div>
-        )
-      case 'testimonials':
-        return renderTestimonialsEditor(block, index)
-      default:
-        return null
-    }
-  }
-
-  const handleBack = () => {
-    if (!unsaved || window.confirm('You have unsaved changes. Leave anyway?')) {
-      navigate('/dashboard/landing-pages')
-    }
-  }
-
-  if (loading) {
+  if (loading || !content) {
     return <div className="p-6">Loading...</div>
   }
 
   return (
     <Card className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-polynesian-blue">Landing Page Builder</h2>
-        <div className="flex space-x-2">
-          <Button variant="outline" onClick={() => setMode(mode === 'edit' ? 'preview' : 'edit')}>
-            {mode === 'preview' ? 'Edit' : 'Preview'}
-          </Button>
-          <Button variant="outline" onClick={handleBack}>Back</Button>
+        <h2 className="text-xl font-semibold text-polynesian-blue">
+          {template?.name} Builder
+        </h2>
+        <div className="text-sm text-polynesian-blue/70">
+          {saving ? 'Saving...' : unsaved ? 'Unsaved changes' : 'All changes saved'}
         </div>
       </div>
-      {mode === 'preview' ? (
-        <div className="border rounded-lg overflow-hidden">
-          <LandingPageTemplate content={{ blocks }} />
-        </div>
-      ) : (
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="md:w-1/3 space-y-6">
-            <div className="space-y-2">
-              <h3 className="font-medium text-polynesian-blue">Component Palette</h3>
-              {Object.entries(COMPONENTS).map(([type, cfg]) => (
-                <Button key={type} fullWidth onClick={() => addBlock(type)}>
-                  {cfg.label}
-                </Button>
-              ))}
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium text-polynesian-blue">Layout</h3>
-              <div>
-                {blocks.map((block, index) => (
-                  <div
-                    key={block.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, index)}
-                    className={`border p-2 mb-2 rounded cursor-move ${
-                      selected === index ? 'bg-picton-blue/10' : 'bg-white'
-                    }`}
-                    onClick={() => setSelected(index)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span>{COMPONENTS[block.type].label}</span>
-                      <button
-                        className="text-red-500"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          removeBlock(index)
-                        }}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="text-sm text-polynesian-blue/70">
-              {saving ? 'Saving...' : unsaved ? 'Unsaved changes' : 'All changes saved'}
-            </div>
-          </div>
-          <div className="flex-1">
-            {selected !== null && blocks[selected] ? (
-              <Card className="p-4 space-y-4">
-                {renderEditor(blocks[selected], selected)}
+
+      <Input
+        label="Headline"
+        value={content.headline || ''}
+        onChange={(e) => handleFieldChange('headline', e.target.value)}
+      />
+      <Textarea
+        label="Subheadline"
+        rows={3}
+        value={content.subheadline || ''}
+        onChange={(e) => handleFieldChange('subheadline', e.target.value)}
+      />
+      <Input
+        label="Hero Image URL"
+        value={content.heroImage || ''}
+        onChange={(e) => handleFieldChange('heroImage', e.target.value)}
+      />
+      <Input
+        label="Theme Color"
+        value={content.themeColor || ''}
+        onChange={(e) => handleFieldChange('themeColor', e.target.value)}
+      />
+      <Input
+        label="Layout"
+        value={content.layout || ''}
+        onChange={(e) => handleFieldChange('layout', e.target.value)}
+      />
+
+      {content.formConfig && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-polynesian-blue">Form</h3>
+          <Input
+            label="Form Title"
+            value={content.formConfig.title || ''}
+            onChange={(e) => handleFormConfigChange('title', e.target.value)}
+          />
+          <Input
+            label="Submit Button Text"
+            value={content.formConfig.submitButtonText || ''}
+            onChange={(e) => handleFormConfigChange('submitButtonText', e.target.value)}
+          />
+          <div className="space-y-3">
+            {content.formConfig.fields?.map((field, idx) => (
+              <Card key={idx} className="p-4 space-y-2">
+                <Input
+                  label="Label"
+                  value={field.label}
+                  onChange={(e) => handleFormFieldChange(idx, 'label', e.target.value)}
+                />
+                <Input
+                  label="Name"
+                  value={field.name}
+                  onChange={(e) => handleFormFieldChange(idx, 'name', e.target.value)}
+                />
+                <Input
+                  label="Type"
+                  value={field.type}
+                  onChange={(e) => handleFormFieldChange(idx, 'type', e.target.value)}
+                />
               </Card>
-            ) : (
-              <div className="text-polynesian-blue/70">Select a block to edit</div>
-            )}
+            ))}
           </div>
         </div>
       )}
+
+      <div className="flex justify-end space-x-3">
+        <Button variant="outline" onClick={() => navigate('/dashboard/landing-pages')}>
+          Back
+        </Button>
+        <Button onClick={() => save(content)} disabled={saving || !unsaved}>
+          Save
+        </Button>
+      </div>
     </Card>
   )
 }
