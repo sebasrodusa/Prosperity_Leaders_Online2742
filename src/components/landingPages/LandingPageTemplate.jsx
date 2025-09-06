@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
@@ -11,6 +11,22 @@ const LandingPageTemplate = ({ template = {}, content = {}, professional = {}, o
   const [formData, setFormData] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    const seo = content?.seo || {}
+    if (seo.title) {
+      document.title = seo.title
+    }
+    if (seo.description) {
+      let tag = document.querySelector('meta[name="description"]')
+      if (!tag) {
+        tag = document.createElement('meta')
+        tag.setAttribute('name', 'description')
+        document.head.appendChild(tag)
+      }
+      tag.setAttribute('content', seo.description)
+    }
+  }, [content])
 
   const handleFormChange = (field, value) => {
     setFormData(prev => ({
@@ -78,6 +94,43 @@ const LandingPageTemplate = ({ template = {}, content = {}, professional = {}, o
       default:
         return <Input {...commonProps} type="text" />
     }
+  }
+
+  // Convert simple JSONB sections into responsive HTML
+  const renderSections = () => {
+    return content.sections.map((section, index) => {
+      switch (section.type) {
+        case 'hero':
+          return (
+            <section key={index} className="py-16 px-4 text-center">
+              {section.image && (
+                <img src={section.image} alt="" className="mx-auto mb-6 max-w-full h-auto" />
+              )}
+              {section.title && (
+                <h1 className="text-4xl md:text-5xl font-bold text-polynesian-blue mb-4">{section.title}</h1>
+              )}
+              {section.subtitle && (
+                <p className="text-lg md:text-xl text-polynesian-blue/70 mb-6">{section.subtitle}</p>
+              )}
+            </section>
+          )
+        default:
+          return (
+            <section key={index} className="py-12 px-4 text-center">
+              {section.title && (
+                <h2 className="text-2xl md:text-3xl font-bold text-polynesian-blue mb-4">{section.title}</h2>
+              )}
+              {section.body && (
+                <p className="max-w-3xl mx-auto text-polynesian-blue/70">{section.body}</p>
+              )}
+            </section>
+          )
+      }
+    })
+  }
+
+  if (Array.isArray(content.sections)) {
+    return <div>{renderSections()}</div>
   }
 
   // Dynamic block-based rendering for builder previews

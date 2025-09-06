@@ -63,7 +63,6 @@ const AppRoutes = () => {
       <Route path="/sebastian" element={<SebastianBooking />} />
       <Route path="/examfx" element={<ExamfxPreLicense />} />
       <Route path="/agents" element={<AgentLinks />} />
-      <Route path="/pages/:slug" element={<LandingPage />} />
 
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
@@ -87,8 +86,8 @@ const AppRoutes = () => {
       </Route>
       
       {/* Public Profile & Landing Pages Routes */}
-      <Route path="/:username" element={<ProfilePage />} />
-      <Route path="/:username/:custom" element={<LandingPage />} />
+      <Route path="/profile/:username" element={<ProfilePage />} />
+      <Route path="/:custom_username" element={<LandingPage />} />
     </Routes>
   )
 }

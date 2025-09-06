@@ -6,15 +6,17 @@ import { getPageByCustomUsername } from '../../lib/supabase'
 import LandingPageTemplate from '../landingPages/LandingPageTemplate'
 import * as FiIcons from 'react-icons/fi'
 import SafeIcon from '../../common/SafeIcon'
+import NotFound from './NotFound'
 
 const { FiArrowLeft } = FiIcons
 
 const LandingPage = () => {
-  const { slug } = useParams()
+  const { custom_username, username } = useParams()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [pageData, setPageData] = useState(null)
   const [error, setError] = useState(null)
+  const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     const loadPage = async () => {
@@ -22,8 +24,8 @@ const LandingPage = () => {
         setIsLoading(true)
         setError(null)
 
-        // Fetch page from Supabase using slug directly
-        const landingPage = await getPageByCustomUsername(slug)
+        // Fetch page from Supabase using the custom username
+        const landingPage = await getPageByCustomUsername(custom_username)
 
         if (landingPage) {
           const template = getTemplateById(landingPage.template_type)
@@ -57,7 +59,7 @@ const LandingPage = () => {
             content
           })
         } else {
-          setError('Page not found')
+          setNotFound(true)
         }
       } catch (error) {
         console.error('Error loading landing page:', error)
@@ -68,7 +70,7 @@ const LandingPage = () => {
     }
 
     loadPage()
-  }, [slug])
+  }, [custom_username, username])
 
   const handleFormSubmit = async (formData) => {
     // In production, this would submit to your backend
@@ -89,12 +91,16 @@ const LandingPage = () => {
     )
   }
 
+  if (notFound) {
+    return <NotFound />
+  }
+
   if (error || !pageData) {
     return (
       <div className="min-h-screen bg-anti-flash-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-polynesian-blue mb-4">
-            {error || 'Page Not Found'}
+            {error || 'Error Loading Page'}
           </h1>
           <p className="text-polynesian-blue/70 mb-6">
             The landing page you're looking for doesn't exist or has been removed.
