@@ -1,5 +1,5 @@
 import React from 'react'
-import { getAllTemplates } from '../../data/landingPageTemplates'
+import { getAllTemplates } from '../../data/landingPageTemplates.js'
 
 const TemplateGallery = ({ selected, onSelect = () => {} }) => {
   const templates = getAllTemplates()

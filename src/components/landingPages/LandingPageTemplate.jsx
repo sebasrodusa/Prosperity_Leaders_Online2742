@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import * as FiIcons from 'react-icons/fi'
-import SafeIcon from '../../common/SafeIcon'
-import Button from '../ui/Button'
-import Input from '../ui/Input'
-import Textarea from '../ui/Textarea'
-import Card from '../ui/Card'
+import SafeIcon from '../../common/SafeIcon.jsx'
+import Button from '../ui/Button.jsx'
+import Input from '../ui/Input.jsx'
+import Textarea from '../ui/Textarea.jsx'
+import Card from '../ui/Card.jsx'
 
 const LandingPageTemplate = ({ template = {}, content = {}, professional = {}, onFormSubmit = () => {} }) => {
   const [formData, setFormData] = useState({})

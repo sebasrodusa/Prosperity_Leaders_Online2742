@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getTemplateById } from '../../data/landingPageTemplates'
-import { getPageByCustomUsername } from '../../lib/supabase'
-import LandingPageTemplate from '../landingPages/LandingPageTemplate'
+import { getTemplateById } from '../../data/landingPageTemplates.js'
+import { getPageByCustomUsername } from '../../lib/supabase.js'
+import LandingPageTemplate from '../landingPages/LandingPageTemplate.jsx'
 import * as FiIcons from 'react-icons/fi'
-import SafeIcon from '../../common/SafeIcon'
-import NotFound from './NotFound'
+import SafeIcon from '../../common/SafeIcon.jsx'
+import NotFound from './NotFound.jsx'
 
 const { FiArrowLeft } = FiIcons
 
