@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getPageById, updatePage } from '../../lib/supabase'
-import Card from '../ui/Card'
-import Input from '../ui/Input'
-import Textarea from '../ui/Textarea'
-import Button from '../ui/Button'
+import { getPageById, updatePage } from '../../lib/supabase.js'
+import Card from '../ui/Card.jsx'
+import Input from '../ui/Input.jsx'
+import Textarea from '../ui/Textarea.jsx'
+import Button from '../ui/Button.jsx'
 
 const LandingPageEditor = () => {
   const { id } = useParams()
