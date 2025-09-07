@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { AuthProvider, useAuth as useAuthContext } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import DashboardLayout from './components/dashboard/DashboardLayout'
@@ -46,6 +46,11 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   return children
 }
 
+const LegacyLandingPageRedirect = () => {
+  const { custom_username } = useParams()
+  return <Navigate to={`/pages/${custom_username}`} replace />
+}
+
 const AppRoutes = () => {
   const { user } = useAuthContext()
   
@@ -87,7 +92,8 @@ const AppRoutes = () => {
       
       {/* Public Profile & Landing Pages Routes */}
       <Route path="/profile/:username" element={<ProfilePage />} />
-      <Route path="/:custom_username" element={<LandingPage />} />
+      <Route path="/pages/:custom_username" element={<LandingPage />} />
+      <Route path="/:custom_username" element={<LegacyLandingPageRedirect />} />
     </Routes>
   )
 }
