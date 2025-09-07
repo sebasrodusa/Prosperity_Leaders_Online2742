@@ -13,13 +13,23 @@ const LandingPageEditor = () => {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [unsaved, setUnsaved] = useState(false)
+  const [parseError, setParseError] = useState(false)
   const saveTimeout = useRef(null)
 
   useEffect(() => {
     const load = async () => {
       try {
         const page = await getPageById(id)
-        setForm({ title: page.title || '', content: page.content || '' })
+        let content = ''
+        try {
+          content = page.content ? JSON.stringify(JSON.parse(page.content), null, 2) : ''
+          setParseError(false)
+        } catch (err) {
+          console.error('Error parsing page content:', err)
+          content = page.content || ''
+          setParseError(true)
+        }
+        setForm({ title: page.title || '', content })
       } catch (err) {
         console.error('Error loading page:', err)
       } finally {
@@ -44,8 +54,11 @@ const LandingPageEditor = () => {
   const save = async (updates) => {
     setSaving(true)
     try {
-      const updated = await updatePage(id, updates)
-      setForm(prev => ({ ...prev, ...updated }))
+      const serialized = { ...updates }
+      if (serialized.content !== undefined) {
+        serialized.content = JSON.stringify(serialized.content)
+      }
+      await updatePage(id, serialized)
       setUnsaved(false)
     } catch (err) {
       console.error('Error saving page:', err)
@@ -66,6 +79,20 @@ const LandingPageEditor = () => {
     scheduleSave({ [field]: value })
   }
 
+  const handleContentChange = (e) => {
+    const value = e.target.value
+    setForm(prev => ({ ...prev, content: value }))
+    setUnsaved(true)
+    try {
+      const parsed = JSON.parse(value)
+      setParseError(false)
+      scheduleSave({ content: parsed })
+    } catch {
+      setParseError(true)
+      if (saveTimeout.current) clearTimeout(saveTimeout.current)
+    }
+  }
+
   const handleBack = () => {
     if (!unsaved || window.confirm('You have unsaved changes. Leave anyway?')) {
       navigate('/dashboard/landing-pages')
@@ -73,8 +100,16 @@ const LandingPageEditor = () => {
   }
 
   const handleManualSave = () => {
+    if (parseError) return
     if (saveTimeout.current) clearTimeout(saveTimeout.current)
-    save(form)
+    let parsedContent
+    try {
+      parsedContent = JSON.parse(form.content)
+    } catch {
+      setParseError(true)
+      return
+    }
+    save({ title: form.title, content: parsedContent })
   }
 
   if (loading) {
@@ -98,8 +133,13 @@ const LandingPageEditor = () => {
         label="Content"
         rows={10}
         value={form.content}
-        onChange={handleChange('content')}
+        onChange={handleContentChange}
       />
+      {parseError && (
+        <div className="text-sm text-red-600">
+          Invalid JSON. Fix errors to enable saving.
+        </div>
+      )}
       <div className="flex justify-end space-x-3">
         <Button variant="outline" onClick={handleBack}>Back</Button>
         <Button onClick={handleManualSave} disabled={saving || !unsaved}>Save</Button>
